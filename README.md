@@ -1,8 +1,8 @@
-[![Build Status](https://travis-ci.com/temken/template_cpp_cmake.svg?branch=master)](https://travis-ci.com/temken/template_cpp_cmake)
-[![codecov](https://codecov.io/gh/temken/template_cpp_cmake/branch/master/graph/badge.svg)](https://codecov.io/gh/temken/template_cpp_cmake)
+[![Build Status](https://travis-ci.com/temken/libphysica.svg?branch=master)](https://travis-ci.com/temken/libphysica)
+[![codecov](https://codecov.io/gh/temken/libphysica/branch/master/graph/badge.svg)](https://codecov.io/gh/temken/libphysica)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-# template_cpp_cmake
+# libphysica
 A template for c++ projects with the following features.
 
 - build with [CMake](https://cmake.org/)
