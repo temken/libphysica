@@ -8,7 +8,7 @@ TEST(TestVector, TestSize)
 	unsigned int dim = 4;
 	Vector v(dim);
 	//ACT & ASSERT
-    ASSERT_EQ( v.Size() ,  dim);
+	ASSERT_EQ( v.Size() ,  dim);
 }
 
 TEST(TestVector, TestDot)
@@ -18,5 +18,5 @@ TEST(TestVector, TestDot)
 	Vector v2(3, 2.0);
 	double correct_result = 12.0;
 	//ACT & ASSERT
-    ASSERT_DOUBLE_EQ(v1.Dot(v2) ,  correct_result);
+	ASSERT_DOUBLE_EQ(v1.Dot(v2) ,  correct_result);
 }
