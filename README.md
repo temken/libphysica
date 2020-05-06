@@ -36,5 +36,5 @@ Cambridge University Press, (2007)
 
 ## TO DO
 
-- Many more unit tests.
-- *Linear_Algebra*: Eigen values and vector functions.
+- [ ] Many more unit tests.  
+- [ ] *Linear_Algebra*: Eigen values and vector functions.

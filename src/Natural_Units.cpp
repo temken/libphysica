@@ -153,7 +153,7 @@
 
 	//3.5 Coupling constants
 	const double aEM				=	1.0/137.035999139;
-	const double mPlanck			=	1.22091e19 * GeV;;
+	const double mPlanck			=	1.22091e19 * GeV;
 	const double mPlanck_reduced	=	mPlanck / sqrt(8.0 * M_PI);
 	const double G_Newton			=	1.0 / mPlanck / mPlanck;
 	const double G_Fermi			=	1.1663787e-5 / GeV / GeV;

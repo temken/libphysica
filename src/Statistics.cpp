@@ -149,7 +149,7 @@
 	double Log_Likelihood_Poisson(double N_prediction, unsigned long int N_observed, double expected_background)
 	{
 		double log_N_obs_factorial = 0.0;
-		for(int j=1; j<= N_observed; j++) log_N_obs_factorial += log(j);
+		for(unsigned int j=1; j<= N_observed; j++) log_N_obs_factorial += log(j);
 		
 		return N_observed * log(N_prediction + expected_background) - log_N_obs_factorial - (N_prediction + expected_background);
 	}
