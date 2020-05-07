@@ -1,6 +1,11 @@
 
 add_executable(tests
-	test_Linear_Algebra.cpp)
+	test_Linear_Algebra.cpp
+	test_Natural_Units.cpp
+	test_Numerics.cpp
+	test_Statistics.cpp
+	test_Utilities.cpp)
+
 target_link_libraries(tests 
 	PRIVATE
 		physica
