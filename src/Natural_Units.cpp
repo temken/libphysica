@@ -196,7 +196,7 @@
 		std::vector<std::vector<double>> result(quantities.size());
 		for(unsigned int i = 0; i < quantities.size(); i++)
 		{
-			result.push_back(In_Units(quantities[i],dimension));
+			result[i] = In_Units(quantities[i],dimension);
 		}
 		return result;
 	}
@@ -213,7 +213,7 @@
 			}
 			else
 			{
-				for(unsigned int j = 0; j < quantities[j].size(); j++)
+				for(unsigned int j = 0; j < quantities[i].size(); j++)
 				{
 					result[i][j] = In_Units(quantities[i][j],dimensions[j]);
 				}
