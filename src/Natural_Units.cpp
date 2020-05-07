@@ -60,7 +60,7 @@
 	const double inch			=	2.54 * cm;
 	const double foot			=	12.0 * inch;
 	const double yard			=	3.0 * foot;
-	const double mile			=	1609.34 * meter;
+	const double mile			=	1609.344 * meter;
 	const double Angstrom		=	1.0e-10 * meter;
 	const double Bohr_Radius	=	5.291772083e-11 * meter;
 
