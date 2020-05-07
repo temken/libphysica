@@ -35,7 +35,7 @@
 		v.Assign(dim, new_entry);
 		// ASSERT
 		ASSERT_EQ( v.Size(), dim );
-		for(int i = 0; i < dim; i++)
+		for(unsigned int i = 0; i < dim; i++)
 			ASSERT_DOUBLE_EQ( v[i], new_entry );
 	}
 
@@ -125,22 +125,22 @@
 		double v1_times_v2 = 15.0;
 
 		// ACT & ASSERT
-		for(int i = 0; i < 3; i++)
+		for(unsigned int i = 0; i < 3; i++)
 			ASSERT_DOUBLE_EQ( (v1 + v2)[i], v1_plus_v2[i]);
-		for(int i = 0; i < 3; i++)
+		for(unsigned int i = 0; i < 3; i++)
 			ASSERT_DOUBLE_EQ( (v1 - v2)[i], v1_minus_v2[i]);
-		for(int i = 0; i < 3; i++)
+		for(unsigned int i = 0; i < 3; i++)
 			ASSERT_DOUBLE_EQ( (s * v1)[i], v1_times_s[i]);
-		for(int i = 0; i < 3; i++)
+		for(unsigned int i = 0; i < 3; i++)
 			ASSERT_DOUBLE_EQ( (v2 * s)[i], v2_times_s[i]);
-		for(int i = 0; i < 3; i++)
+		for(unsigned int i = 0; i < 3; i++)
 			ASSERT_DOUBLE_EQ( (v1 / s)[i], v1_by_s[i]);
 		ASSERT_DOUBLE_EQ( v1 * v2, v1_times_v2);
 		v3 += v2;
-		for(int i = 0; i < 3; i++)
+		for(unsigned int i = 0; i < 3; i++)
 			ASSERT_DOUBLE_EQ( v3[i], v1_plus_v2[i]);
 		v3 -= v1;
-		for(int i = 0; i < 3; i++)
+		for(unsigned int i = 0; i < 3; i++)
 			ASSERT_DOUBLE_EQ( v3[i], v2[i]);
 		ASSERT_TRUE( v2 == v3 );
 	}
@@ -194,8 +194,8 @@
 		// ACT & ASSERT
 		ASSERT_EQ(M.Rows(), rows);
 		ASSERT_EQ(M.Columns(), columns);
-		for(int i = 0; i < rows; i++)
-			for(int j = 0; j < columns; j++)
+		for(unsigned int i = 0; i < rows; i++)
+			for(unsigned int j = 0; j < columns; j++)
 				ASSERT_DOUBLE_EQ( M[i][j], entry);
 	}
 
@@ -211,8 +211,8 @@
 		// ASSERT
 		ASSERT_EQ(M.Rows(), rows);
 		ASSERT_EQ(M.Columns(), columns);
-		for(int i = 0; i < rows; i++)
-			for(int j = 0; j < columns; j++)
+		for(unsigned int i = 0; i < rows; i++)
+			for(unsigned int j = 0; j < columns; j++)
 				ASSERT_DOUBLE_EQ( M[i][j], correct_result[i][j]);
 	}
 
@@ -228,8 +228,8 @@
 		// ASSERT
 		ASSERT_EQ(M.Rows(), rows);
 		ASSERT_EQ(M.Columns(), columns);
-		for(int i = 0; i < rows; i++)
-			for(int j = 0; j < columns; j++)
+		for(unsigned int i = 0; i < rows; i++)
+			for(unsigned int j = 0; j < columns; j++)
 				ASSERT_DOUBLE_EQ( M[i][j], correct_result[i][j]);
 	}
 
@@ -246,8 +246,8 @@
 		// ASSERT
 		ASSERT_EQ(M3.Rows(), rows);
 		ASSERT_EQ(M3.Columns(), columns);
-		for(int i = 0; i < M3.Rows(); i++)
-			for(int j = 0; j < M3.Columns(); j++)
+		for(unsigned int i = 0; i < M3.Rows(); i++)
+			for(unsigned int j = 0; j < M3.Columns(); j++)
 				ASSERT_DOUBLE_EQ(M3[i][j], M1_plus_M2[i][j]);
 	}
 
@@ -264,8 +264,8 @@
 		// ASSERT
 		ASSERT_EQ(M3.Rows(), rows);
 		ASSERT_EQ(M3.Columns(), columns);
-		for(int i = 0; i < M3.Rows(); i++)
-			for(int j = 0; j < M3.Columns(); j++)
+		for(unsigned int i = 0; i < M3.Rows(); i++)
+			for(unsigned int j = 0; j < M3.Columns(); j++)
 				ASSERT_DOUBLE_EQ(M3[i][j], M1_minus_M2[i][j]);
 	}
 
@@ -278,8 +278,8 @@
 		// ACT
 		Matrix M2 = M.Product(s);
 		// ASSERT
-		for(int i = 0; i < M2.Rows(); i++)
-			for(int j = 0; j < M2.Columns(); j++)
+		for(unsigned int i = 0; i < M2.Rows(); i++)
+			for(unsigned int j = 0; j < M2.Columns(); j++)
 				ASSERT_DOUBLE_EQ(M2[i][j], correct_result[i][j]);
 	}
 
@@ -293,8 +293,8 @@
 		// ACT
 		Matrix M3 = M1.Product(M2);
 		// ASSERT
-		for(int i = 0; i < M1.Rows(); i++)
-			for(int j = 0; j < M1.Columns(); j++)
+		for(unsigned int i = 0; i < M1.Rows(); i++)
+			for(unsigned int j = 0; j < M1.Columns(); j++)
 				ASSERT_DOUBLE_EQ(M3[i][j], M1_times_M2[i][j]);
 	}
 
@@ -307,7 +307,7 @@
 		// ACT
 		Vector v2 = M.Product(v1);
 		// ASSERT
-		for(int i = 0; i < v1.Size(); i++)
+		for(unsigned int i = 0; i < v1.Size(); i++)
 			ASSERT_DOUBLE_EQ(v2[i], M_times_v1[i]);
 	}
 
@@ -320,8 +320,8 @@
 		// ACT
 		Matrix M2 = M1.Division(s);
 		// ASSERT
-		for(int i = 0; i < M1.Rows(); i++)
-			for(int j = 0; j < M1.Columns(); j++)
+		for(unsigned int i = 0; i < M1.Rows(); i++)
+			for(unsigned int j = 0; j < M1.Columns(); j++)
 				ASSERT_DOUBLE_EQ(M2[i][j], M1_by_s[i][j]);
 	}
 
@@ -393,8 +393,8 @@
 		// ACT 
 		Matrix M2 = M1.Transpose();
 		// ASSERT
-		for(int i = 0; i < M1.Rows(); i++)
-			for(int j = 0; j < M1.Columns(); j++)
+		for(unsigned int i = 0; i < M1.Rows(); i++)
+			for(unsigned int j = 0; j < M1.Columns(); j++)
 				ASSERT_DOUBLE_EQ(M2[i][j], M_Transposed[i][j]);
 	}
 
@@ -406,8 +406,8 @@
 		// ACT 
 		Matrix M2 = M1.Inverse();
 		// ASSERT
-		for(int i = 0; i < M1.Rows(); i++)
-			for(int j = 0; j < M1.Columns(); j++)
+		for(unsigned int i = 0; i < M1.Rows(); i++)
+			for(unsigned int j = 0; j < M1.Columns(); j++)
 				ASSERT_DOUBLE_EQ(M2[i][j], M_Inverse[i][j]);
 	}
 
@@ -437,8 +437,8 @@
 		// ACT
 		Matrix M2 = M1.Sub_Matrix(1,1);
 		// ASSERT
-		for(int i = 0; i < M2.Rows(); i++)
-			for(int j = 0; j < M2.Columns(); j++)
+		for(unsigned int i = 0; i < M2.Rows(); i++)
+			for(unsigned int j = 0; j < M2.Columns(); j++)
 				ASSERT_DOUBLE_EQ(M2[i][j], correct_submatrix[i][j]);
 	}
 
@@ -448,8 +448,8 @@
 		std::vector<std::vector<double>> entries = {{11,12,13},{21,22,23},{31,32,33}};
 		Matrix M(entries);
 		// ACT & ASSERT
-		for(int i = 0; i < M.Rows(); i++)
-			for(int j = 0; j < M.Columns(); j++)
+		for(unsigned int i = 0; i < M.Rows(); i++)
+			for(unsigned int j = 0; j < M.Columns(); j++)
 				ASSERT_DOUBLE_EQ(M[i][j], entries[i][j]);
 	}
 
@@ -477,36 +477,36 @@
 
 		Matrix M_copy = M;
 		// ASSERT
-		for(int i = 0; i < M.Rows(); i++)
-			for(int j = 0; j < M.Columns(); j++)
+		for(unsigned int i = 0; i < M.Rows(); i++)
+			for(unsigned int j = 0; j < M.Columns(); j++)
 				ASSERT_DOUBLE_EQ(M2[i][j], M_plus_M[i][j]);
-		for(int i = 0; i < M.Rows(); i++)
-			for(int j = 0; j < M.Columns(); j++)
+		for(unsigned int i = 0; i < M.Rows(); i++)
+			for(unsigned int j = 0; j < M.Columns(); j++)
 				ASSERT_DOUBLE_EQ(M3[i][j], M_minus_M[i][j]);
-		for(int i = 0; i < M.Rows(); i++)
-			for(int j = 0; j < M.Columns(); j++)
+		for(unsigned int i = 0; i < M.Rows(); i++)
+			for(unsigned int j = 0; j < M.Columns(); j++)
 				ASSERT_DOUBLE_EQ(M4[i][j], M_times_M[i][j]);
-		for(int i = 0; i < v.Size(); i++)
+		for(unsigned int i = 0; i < v.Size(); i++)
 			ASSERT_DOUBLE_EQ(v1[i], M_times_v[i]);
-		for(int i = 0; i < M.Rows(); i++)
-			for(int j = 0; j < M.Columns(); j++)
+		for(unsigned int i = 0; i < M.Rows(); i++)
+			for(unsigned int j = 0; j < M.Columns(); j++)
 				ASSERT_DOUBLE_EQ(M5[i][j], M_times_s[i][j]);
-		for(int i = 0; i < M.Rows(); i++)
-			for(int j = 0; j < M.Columns(); j++)
+		for(unsigned int i = 0; i < M.Rows(); i++)
+			for(unsigned int j = 0; j < M.Columns(); j++)
 				ASSERT_DOUBLE_EQ(M6[i][j], M_times_s[i][j]);
-		for(int i = 0; i < M.Rows(); i++)
-			for(int j = 0; j < M.Columns(); j++)
+		for(unsigned int i = 0; i < M.Rows(); i++)
+			for(unsigned int j = 0; j < M.Columns(); j++)
 				ASSERT_DOUBLE_EQ(M7[i][j], M_by_s[i][j]);
-		for(int i = 0; i < M.Rows(); i++)
-			for(int j = 0; j < M.Columns(); j++)
+		for(unsigned int i = 0; i < M.Rows(); i++)
+			for(unsigned int j = 0; j < M.Columns(); j++)
 				ASSERT_DOUBLE_EQ(M_copy[i][j], M[i][j]);
 		M_copy += M;
-		for(int i = 0; i < M.Rows(); i++)
-			for(int j = 0; j < M.Columns(); j++)
+		for(unsigned int i = 0; i < M.Rows(); i++)
+			for(unsigned int j = 0; j < M.Columns(); j++)
 				ASSERT_DOUBLE_EQ(M_copy[i][j], M_plus_M[i][j]);
 		M_copy -= M+M;
-		for(int i = 0; i < M.Rows(); i++)
-			for(int j = 0; j < M.Columns(); j++)
+		for(unsigned int i = 0; i < M.Rows(); i++)
+			for(unsigned int j = 0; j < M.Columns(); j++)
 				ASSERT_DOUBLE_EQ(M_copy[i][j], M_minus_M[i][j]);
 	}
 
@@ -520,11 +520,11 @@
 		Matrix M1;
 		Matrix M2 = Unit_Matrix(4);
 		// ASSERT
-		for(int i = 0; i < unit_matrix_3.Rows(); i++)
-			for(int j = 0; j < unit_matrix_3.Columns(); j++)
+		for(unsigned int i = 0; i < unit_matrix_3.Rows(); i++)
+			for(unsigned int j = 0; j < unit_matrix_3.Columns(); j++)
 				ASSERT_DOUBLE_EQ(M1[i][j], unit_matrix_3[i][j]);
-		for(int i = 0; i < unit_matrix_4.Rows(); i++)
-			for(int j = 0; j < unit_matrix_4.Columns(); j++)
+		for(unsigned int i = 0; i < unit_matrix_4.Rows(); i++)
+			for(unsigned int j = 0; j < unit_matrix_4.Columns(); j++)
 				ASSERT_DOUBLE_EQ(M2[i][j], unit_matrix_4[i][j]);
 	}
 
@@ -535,7 +535,7 @@
 		// ACT
 		Matrix M = Rotation_Matrix(M_PI/4.0, 2);
 		// ASSERT
-		for(int i = 0; i < rotation_matrix.Rows(); i++)
-			for(int j = 0; j < rotation_matrix.Columns(); j++)
+		for(unsigned int i = 0; i < rotation_matrix.Rows(); i++)
+			for(unsigned int j = 0; j < rotation_matrix.Columns(); j++)
 				ASSERT_DOUBLE_EQ(M[i][j], rotation_matrix[i][j]);
 	}
