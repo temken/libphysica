@@ -34,9 +34,10 @@
 	double Round(double N,unsigned int digits)
 	{
 		if(N == 0) return 0;
-		if(digits>5)
+		unsigned int digits_max = 7;
+		if(digits > digits_max)
 		{
-			std::cerr <<"Error in Round(): Significant digits > 5."<<std::endl;
+			std::cerr <<"Error in Round(): Significant digits > "<<digits_max <<"."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		//Make the argument a positive number.
@@ -226,9 +227,9 @@
 			std::cerr <<"Error in GammaQ("<<x<<","<<a<<"): Invalid arguments."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
-		else if(x == 0)return 1.0;
+		else if(x == 0) return 1.0;
 		else if (a > aMax) return GammaQint(x,a);
-		else if (x < a+1.0) return 1.0-GammaPser(x,a);
+		else if (x < a+1.0) return 1.0 - GammaPser(x,a);
 		else return GammaQcf(x,a);
 	}
 
@@ -296,7 +297,7 @@
 	}
 
 	//2.2 Other special functions
-	double Inv_erf(double p)
+	double Inv_Erf(double p)
 	{
 		// return inverfc(1.-p);
 		if(fabs(p-1.0) < 1e-16)

@@ -25,7 +25,7 @@
 	extern double Inv_GammaP(double p,double a); //Solves P(x,a)=p for x.
 	extern double Inv_GammaQ(double q,double a); //Solves Q(x,a)=q for x.
 //2.2 Other special functions
-	extern double Inv_erf(double p);
+	extern double Inv_Erf(double p);
 
 //3. Integration
 //3.1 One-dimensional integration via adaptive Simpson method 

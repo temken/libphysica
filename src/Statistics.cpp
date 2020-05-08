@@ -28,7 +28,7 @@
 
 	double Quantile_Gauss(double p, double mu, double sigma)
 	{
-		return mu + sqrt(2.0) * sigma * Inv_erf(2.0*p-1.0);
+		return mu + sqrt(2.0) * sigma * Inv_Erf(2.0*p-1.0);
 	}
 
 	//1.3 Binomial distribution
