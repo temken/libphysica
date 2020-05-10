@@ -7,12 +7,20 @@
 	//1.1. Uniform distribution
 	double PDF_Uniform(double x, double x_min, double x_max)
 	{
-		return 1.0/(x_max-x_min);
+		if( x < x_min || x > x_max)
+			return 0.0;
+		else
+			return 1.0/(x_max-x_min);
 	}
 
 	double CDF_Uniform(double x, double x_min, double x_max)
 	{
-		return (x - x_min) / (x_max - x_min);
+		if(x < x_min)
+			return 0.0;
+		else if(x > x_max)
+			return 1.0;
+		else
+			return (x - x_min) / (x_max - x_min);
 	}
 
 	//1.2 Normal distribution
