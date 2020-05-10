@@ -55,27 +55,35 @@
 	//1.4 Poission distribution
 	double PMF_Poisson(double expected_events, unsigned int events)
 	{
-		if(expected_events==0&&events==0) return 1.0;
-		else if(expected_events==0&&events>0) return 0.0;
+		if(expected_events == 0 && events == 0)
+			return 1.0;
+		else if(expected_events == 0 && events > 0)
+			return 0.0;
 		else
 		{
-			double sum=events*log(expected_events) -expected_events;
-			for(unsigned int i=2;i<=events;i++)sum-= log(i);
+			double sum = events * log(expected_events) - expected_events;
+			for(unsigned int i = 2; i <= events; i++)
+				sum-= log(i);
+			
 			return exp(sum);
 		}
 	}
 
 	double CDF_Poisson(double expectation_value,unsigned int observed_events)
 	{
-		double gq = GammaQ(expectation_value,observed_events+1);
-		if (gq>=0) return gq;
-		else return 0.0;
+		double gq = GammaQ(expectation_value, observed_events + 1);
+		if(gq >= 0)
+			return gq;
+		else
+			return 0.0;
 	}
 
 	double Inv_CDF_Poisson(unsigned int observed_events, double cdf)
 	{
-		if(observed_events==0) return (-1.0)*log(cdf);
-		else return Inv_GammaQ(cdf,observed_events+1); 
+		if(observed_events == 0)
+			return (-1.0) * log(cdf);
+		else
+			return Inv_GammaQ(cdf,observed_events+1); 
 	}
 
 	//1.5 Chi-square distribution
@@ -86,7 +94,8 @@
 			std::cerr <<"Error in PDF_Chi_Square(double, double): Negative x value: x = "<<x<<"."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
-		else return 1.0/ pow(2.0,dof/2.0) / Gamma(dof/2.0) * pow(x,dof/2.0-1.0) * exp(-x/2.0);
+		else
+			return 1.0/ pow(2.0,dof/2.0) / Gamma(dof/2.0) * pow(x,dof/2.0-1.0) * exp(-x/2.0);
 	}
 
 	double CDF_Chi_Square(double x, double dof)
@@ -96,8 +105,10 @@
 			std::cerr <<"Error in CDF_Chi_Square(double, double): Negative x value: x = "<<x<<"."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
-		else if(fabs(dof)<1e-6)  return 1.0;
-		else return 1.0/Gamma(dof/2.0) * Lower_Incomplete_Gamma(x/2.0,dof/2.0);
+		else if(fabs(dof) < 1e-6)
+			return 1.0;
+		else 
+			return 1.0/Gamma(dof/2.0) * Lower_Incomplete_Gamma(x/2.0,dof/2.0);
 	}
 
 	double PDF_Chi_Bar_Square(double x, std::vector<double> weights)
@@ -125,20 +136,20 @@
 			std::cerr <<"Error in CDF_Chi_Bar_Square(double, std::vector<double>): Negative x value: x = "<<x<<"."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
-		else if(x == 0) return 0.0;
+		else if(x == 0)
+			return 0.0;
 		else
 		{
 			double cdf = weights[0];
 			for(unsigned int dof = 1; dof < weights.size(); dof++) //start at 1 because of dof = 0
-			{
 				cdf += weights[dof] * CDF_Chi_Square(x,dof);
-			}
 			if(cdf > 1.0)
 			{
 				std::cerr<<"Warning in CDF_Chi_Bar_Square(double,std::vector<double>): 1-CDF = "<<(1.0 - cdf)<<"< 0. Return 1." <<std::endl;
 				return 1.0;
 			}
-			else return cdf;
+			else
+				return cdf;
 		}
 	}
 
@@ -157,7 +168,8 @@
 	double Log_Likelihood_Poisson(double N_prediction, unsigned long int N_observed, double expected_background)
 	{
 		double log_N_obs_factorial = 0.0;
-		for(unsigned int j=1; j<= N_observed; j++) log_N_obs_factorial += log(j);
+		for(unsigned int j = 1; j <= N_observed; j++)
+			log_N_obs_factorial += log(j);
 		
 		return N_observed * log(N_prediction + expected_background) - log_N_obs_factorial - (N_prediction + expected_background);
 	}
@@ -170,7 +182,8 @@
 	double Log_Likelihood_Poisson_Binned(std::vector<double> N_prediction_binned, const std::vector<unsigned long int>& N_observed_binned, std::vector<double> expected_background_binned )
 	{
 		unsigned int N_bins = N_prediction_binned.size();
-		if(expected_background_binned.empty()) expected_background_binned = std::vector<double>(N_bins, 0.0);
+		if(expected_background_binned.empty())
+			expected_background_binned = std::vector<double>(N_bins, 0.0);
 		if(N_observed_binned.size() != N_bins || expected_background_binned.size() != N_bins)
 		{
 			std::cerr <<"Error in Log_Likelihood_Poisson_Binned(): Predicted signals, observed events, and/or expected background are not of equal size."<<std::endl;
@@ -180,9 +193,8 @@
 		{
 			double log_likelihood = 0.0;
 			for(unsigned int i = 0; i < N_bins; i++)
-			{
 				log_likelihood += Log_Likelihood_Poisson(N_prediction_binned[i], N_observed_binned[i], expected_background_binned[i]);
-			}
+		
 			return log_likelihood;
 		}
 	}
@@ -245,10 +257,9 @@
 		while(!success)
 		{
 			count++;
-			if(count%1000 == 0)
-			{
+			if(count % 1000 == 0)
 				std::cout <<"Warning in Rejection_Sampling(): Very inefficient sampling with N="<<count<<"."<< std::endl;
-			}
+			
 			x = xMin + Sample_Xi(PRNG) * (xMax-xMin);
 			double y = Sample_Xi(PRNG) * yMax;
 			double pdf = PDF(x);
@@ -262,7 +273,8 @@
 				std::cout <<"Warning in Rejection_Sampling(): PDF>yMax, yMax is set to PDF."<< std::endl;
 				return Rejection_Sampling(PDF,xMin,xMax,pdf,PRNG);
 			}
-			else if(y <= pdf) success = true;
+			else if(y <= pdf)
+				success = true;
 		}
 		return x;
 	}
@@ -300,7 +312,7 @@
 	
 	std::ostream& operator <<(std::ostream &output,const DataPoint& dp)
 	{
-		output <<dp.value<<"\t" <<dp.weight;
+		output <<dp.value <<"\t" <<dp.weight;
 		return output;
 	}
 
@@ -349,28 +361,28 @@
 
 	std::vector<double> Weighted_Average(std::vector<DataPoint>& data)
 	{
-		double sum =0.0;
-		double wsum=0.0;
-		long unsigned int N=data.size();
+		double sum = 0.0;
+		double wsum = 0.0;
+		long unsigned int N = data.size();
 		//1. Average
-			for(unsigned int i=0;i<N;i++)
-			{
-				sum+=data[i].weight*data[i].value;
-				wsum+=data[i].weight;
-			}
-			double Average = sum/wsum;
-			double wAverage= wsum/N;
+		for(unsigned int i = 0; i < N; i++)
+		{
+			sum += data[i].weight * data[i].value;
+			wsum += data[i].weight;
+		}
+		double Average = sum / wsum;
+		double wAverage = wsum / N;
 		//2. Standard error (Cochran)
-			double sum1=0.0,sum2=0.0,sum3=0.0;
-			for(unsigned int i=0;i<data.size();i++)
-			{
-				sum1+=pow((data[i].weight*data[i].value-Average*wAverage),2.0);
-				sum2+=(data[i].weight-wAverage)*(data[i].weight*data[i].value-Average*wAverage);
-				sum3+=pow(data[i].weight-wAverage,2.0);
-			}
-			double SE=N/(N-1.0)/wsum/wsum*(sum1-2.0*Average*sum2+pow(Average,2.0)*sum3);
+		double sum1 = 0.0, sum2 = 0.0, sum3 = 0.0;
+		for(unsigned int i = 0; i < data.size(); i++)
+		{
+			sum1 += pow((data[i].weight*data[i].value-Average*wAverage),2.0);
+			sum2 += (data[i].weight-wAverage)*(data[i].weight*data[i].value-Average*wAverage);
+			sum3 += pow(data[i].weight-wAverage,2.0);
+		}
+		double SE = N / (N-1.0) / wsum / wsum * (sum1 - 2.0 * Average * sum2 + pow(Average,2.0) * sum3);
 		//3. Return result
-			return std::vector<double> {Average,sqrt(SE)};
+		return std::vector<double> {Average,sqrt(SE)};
 	}
 
 //6. Kernel density estimation
@@ -381,55 +393,52 @@
 	Interpolation Perform_KDE(std::vector<DataPoint> data,double xMin,double xMax,double bw)
 	{
 		unsigned int N_Data = data.size();
-		double Weight_Sum=0.0;
+		double Weight_Sum = 0.0;
 
 		//Count the weights
-		for(unsigned int i = 0 ; i<N_Data ; i++) Weight_Sum += data[i].weight;
+		for(unsigned int i = 0; i < N_Data; i++)
+			Weight_Sum += data[i].weight;
 
 		//1. Bandwidth selection:
 		//If the bandwidth is not set manually, we find it here.
-			if(bw==0)
+			if(bw == 0)
 			{
 				//1.1 Average.
-					double AverageSum=0.0;
-					for(unsigned int i = 0 ; i<N_Data ; i++)
-					{
-						AverageSum+=data[i].weight*data[i].value;
-					}
+					double AverageSum = 0.0;
+					for(unsigned int i = 0; i<N_Data; i++)
+						AverageSum += data[i].weight * data[i].value;
 					double Average = AverageSum/Weight_Sum;
 				//1.2 Standard deviation
-					double Variance=0.0;
-					for(unsigned int i = 0 ; i<N_Data ; i++)
-					{
+					double Variance = 0.0;
+					for(unsigned int i = 0; i < N_Data; i++)
 						Variance += data[i].weight * pow(data[i].value - Average,2.0) / Weight_Sum;
-					}
 				//1.3 Bandwidth with rule-of-thumb estimator
-					bw = sqrt(Variance)*pow(4.0/3.0/N_Data,0.2) ;
+					bw = sqrt(Variance) * pow(4.0/3.0/N_Data,0.2);
 			}
 		
 		//Sort data:
 		std::sort(data.begin(), data.end());
 		// Pseudo data
-		unsigned int N_PseudoData = N_Data/3.0;
+		unsigned int N_PseudoData = N_Data / 3.0;
 		
 		//2. Perform and tabulate the KDE
 			int points = 150;
-			double dx = (xMax-xMin)/(points-1);
+			double dx = (xMax-xMin) / (points-1);
 			std::vector<std::vector<double>> Interpol_List;
-			for(int j =0;j<points;j++)
+			for(int j = 0; j < points; j++)
 			{
 				double x = xMin + j*dx;
-				double kde=0.0;
-				for(unsigned int i = 0;i<N_Data;i++)
+				double kde = 0.0;
+				for(unsigned int i = 0; i<N_Data; i++)
 				{
 					//Vanilla Gauss KDE
-						kde+= data[i].weight*Gaussian_Kernel((x-data[i].value)/bw);
+						kde += data[i].weight * Gaussian_Kernel((x-data[i].value)/bw);
 					//Cowling and Hall pseudo data method 1
-						if(i<N_PseudoData)
+						if(i < N_PseudoData)
 						{
 							double xPseudo = 4.0*xMin-6.0*data[i].value+4.0*data[2*i].value-data[3*i].value;
 							double wPseudo = (data[i].weight+data[2*i].weight+data[3*i].weight)/3.0;
-							kde+= wPseudo*Gaussian_Kernel((x-xPseudo)/bw);
+							kde += wPseudo*Gaussian_Kernel((x-xPseudo)/bw);
 						}
 
 					//Local kernel normalization close to the boundary
@@ -463,7 +472,7 @@
 						// double xRefl = 2.0 * xMin - data[i].value;
 						// kde+=data[i].weight*Gaussian_Kernel((x-xRefl)/bw);
 				}				
-				kde/= bw*Weight_Sum;
+				kde /= bw*Weight_Sum;
 				Interpol_List.push_back( std::vector<double> {x,kde});
 			}
 
