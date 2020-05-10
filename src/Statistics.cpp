@@ -350,7 +350,7 @@
 		{
 			variance += (data[i] - mean) * (data[i] - mean);
 		}
-		variance = 1.0 * variance / data.size();
+		variance = 1.0 * variance / (data.size() - 1.0);
 		return variance;
 	}
 
