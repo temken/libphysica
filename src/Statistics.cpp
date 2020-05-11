@@ -40,13 +40,23 @@
 	}
 
 	//1.3 Binomial distribution
-	double PMF_Binomial(int trials, double p, int x)
+	double PMF_Binomial(unsigned int trials, double p, unsigned int x)
 	{
+		if( p < 0.0 || p > 1.0 )
+		{
+			std::cerr <<"Error in PMF_Binomial(): Parameter p is out of bound (p="<<p<<")."<<std::endl;
+			std::exit(EXIT_FAILURE);
+		}
 		return Binomial_Coefficient(trials, x) * pow(p, x) * pow(1.0-p, (trials-x));
 	}
 
-	double CDF_Binomial(int trials, double p, int x)
+	double CDF_Binomial(unsigned int trials, double p, unsigned int x)
 	{
+		if( p < 0.0 || p > 1.0 )
+		{
+			std::cerr <<"Error in CDF_Binomial(): Parameter p is out of bound (p="<<p<<")."<<std::endl;
+			std::exit(EXIT_FAILURE);
+		}
 		double cdf = 0.0;
 		for(int i = 0; i <= x; i++)
 			cdf += PMF_Binomial(trials, p, i);
@@ -56,7 +66,12 @@
 	//1.4 Poission distribution
 	double PMF_Poisson(double expected_events, unsigned int events)
 	{
-		if(expected_events == 0 && events == 0)
+		if(expected_events < 0 || events < 0)
+		{
+			std::cerr <<"Error in PMF_Poisson(): Input parameter negative."<<std::endl;
+			std::exit(EXIT_FAILURE);
+		}
+		else if(expected_events == 0 && events == 0)
 			return 1.0;
 		else if(expected_events == 0 && events > 0)
 			return 0.0;
@@ -70,18 +85,32 @@
 		}
 	}
 
-	double CDF_Poisson(double expectation_value,unsigned int observed_events)
+	double CDF_Poisson(double expectation_value, unsigned int observed_events)
 	{
-		double gq = GammaQ(expectation_value, observed_events + 1);
-		if(gq >= 0)
-			return gq;
+		if(expectation_value < 0 || observed_events < 0)
+		{
+			std::cerr <<"Error in CDF_Poisson(): Input parameter negative."<<std::endl;
+			std::exit(EXIT_FAILURE);
+		}
 		else
-			return 0.0;
+		{
+			double gq = GammaQ(expectation_value, observed_events + 1);
+			if(gq >= 0)
+				return gq;
+			else
+				return 0.0;
+		}
+
 	}
 
 	double Inv_CDF_Poisson(unsigned int observed_events, double cdf)
 	{
-		if(observed_events == 0)
+		if(cdf < 0.0 || cdf > 1.0)
+		{
+			std::cerr <<"Error in Inv_CDF_Poisson(): CDF value is out of bound (cdf=" <<cdf <<")."<<std::endl;
+			std::exit(EXIT_FAILURE);
+		}
+		else if(observed_events == 0)
 			return (-1.0) * log(cdf);
 		else
 			return Inv_GammaQ(cdf,observed_events+1); 
@@ -90,11 +119,8 @@
 	//1.5 Chi-square distribution
 	double PDF_Chi_Square(double x, double dof)
 	{
-		if(x < 0)
-		{
-			std::cerr <<"Error in PDF_Chi_Square(double, double): Negative x value: x = "<<x<<"."<<std::endl;
-			std::exit(EXIT_FAILURE);
-		}
+		if(x <= 0 || dof < 1.0e-6)
+			return 0.0;
 		else
 			return 1.0/ pow(2.0,dof/2.0) / Gamma(dof/2.0) * pow(x,dof/2.0-1.0) * exp(-x/2.0);
 	}
@@ -102,10 +128,7 @@
 	double CDF_Chi_Square(double x, double dof)
 	{
 		if(x < 0)
-		{
-			std::cerr <<"Error in CDF_Chi_Square(double, double): Negative x value: x = "<<x<<"."<<std::endl;
-			std::exit(EXIT_FAILURE);
-		}
+			return 0.0;
 		else if(fabs(dof) < 1e-6)
 			return 1.0;
 		else 
@@ -114,11 +137,8 @@
 
 	double PDF_Chi_Bar_Square(double x, std::vector<double> weights)
 	{
-		if(x < 0)
-		{
-			std::cerr <<"Error in PDF_Chi_Bar_Square(double, std::vector<double>): Negative x value: x = "<<x<<"."<<std::endl;
-			std::exit(EXIT_FAILURE);
-		}
+		if(x <= 0)
+			return 0.0;
 		else
 		{
 			double pdf = 0.0;
@@ -133,16 +153,11 @@
 	double CDF_Chi_Bar_Square(double x, std::vector<double> weights)
 	{
 		if(x < 0)
-		{
-			std::cerr <<"Error in CDF_Chi_Bar_Square(double, std::vector<double>): Negative x value: x = "<<x<<"."<<std::endl;
-			std::exit(EXIT_FAILURE);
-		}
-		else if(x == 0)
 			return 0.0;
 		else
 		{
-			double cdf = weights[0];
-			for(unsigned int dof = 1; dof < weights.size(); dof++) //start at 1 because of dof = 0
+			double cdf = 0.0;
+			for(unsigned int dof = 0; dof < weights.size(); dof++)
 				cdf += weights[dof] * CDF_Chi_Square(x,dof);
 			if(cdf > 1.0)
 			{
@@ -157,12 +172,28 @@
 	//1.6 Exponential distribution
 	double PDF_Exponential(double x, double mean)
 	{
-		return 1.0 / mean * exp(-1.0 / mean * x);
+		if(mean <= 0.0)
+		{
+			std::cerr <<"Error in PDF_Exponential(): Mean value is not positive (mean="<<mean<<")."<<std::endl;
+			std::exit(EXIT_FAILURE);
+		}
+		else if(x < 0)
+			return 0.0;
+		else
+			return 1.0 / mean * exp(-1.0 / mean * x);
 	}
 
 	double CDF_Exponential(double x, double mean)
 	{
-		return 1.0 - exp(-1.0 / mean * x);
+		if(mean <= 0.0)
+		{
+			std::cerr <<"Error in CDF_Exponential(): Mean value is not positive (mean="<<mean<<")."<<std::endl;
+			std::exit(EXIT_FAILURE);
+		}
+		else if(x < 0)
+			return 0.0;
+		else
+			return 1.0 - exp(-1.0 / mean * x);
 	}
 
 //2. Likelihoods
@@ -402,20 +433,20 @@
 
 		//1. Bandwidth selection:
 		//If the bandwidth is not set manually, we find it here.
-			if(bw == 0)
-			{
-				//1.1 Average.
-					double AverageSum = 0.0;
-					for(unsigned int i = 0; i<N_Data; i++)
-						AverageSum += data[i].weight * data[i].value;
-					double Average = AverageSum/Weight_Sum;
-				//1.2 Standard deviation
-					double Variance = 0.0;
-					for(unsigned int i = 0; i < N_Data; i++)
-						Variance += data[i].weight * pow(data[i].value - Average,2.0) / Weight_Sum;
-				//1.3 Bandwidth with rule-of-thumb estimator
-					bw = sqrt(Variance) * pow(4.0/3.0/N_Data,0.2);
-			}
+		if(bw == 0)
+		{
+			//1.1 Average.
+				double AverageSum = 0.0;
+				for(unsigned int i = 0; i<N_Data; i++)
+					AverageSum += data[i].weight * data[i].value;
+				double Average = AverageSum/Weight_Sum;
+			//1.2 Standard deviation
+				double Variance = 0.0;
+				for(unsigned int i = 0; i < N_Data; i++)
+					Variance += data[i].weight * pow(data[i].value - Average,2.0) / Weight_Sum;
+			//1.3 Bandwidth with rule-of-thumb estimator
+				bw = sqrt(Variance) * pow(4.0/3.0/N_Data,0.2);
+		}
 		
 		//Sort data:
 		std::sort(data.begin(), data.end());
@@ -423,65 +454,65 @@
 		unsigned int N_PseudoData = N_Data / 3.0;
 		
 		//2. Perform and tabulate the KDE
-			int points = 150;
-			double dx = (xMax-xMin) / (points-1);
-			std::vector<std::vector<double>> Interpol_List;
-			for(int j = 0; j < points; j++)
+		int points = 150;
+		double dx = (xMax-xMin) / (points-1);
+		std::vector<std::vector<double>> Interpol_List;
+		for(int j = 0; j < points; j++)
+		{
+			double x = xMin + j*dx;
+			double kde = 0.0;
+			for(unsigned int i = 0; i<N_Data; i++)
 			{
-				double x = xMin + j*dx;
-				double kde = 0.0;
-				for(unsigned int i = 0; i<N_Data; i++)
-				{
-					//Vanilla Gauss KDE
-						kde += data[i].weight * Gaussian_Kernel((x-data[i].value)/bw);
-					//Cowling and Hall pseudo data method 1
-						if(i < N_PseudoData)
-						{
-							double xPseudo = 4.0*xMin-6.0*data[i].value+4.0*data[2*i].value-data[3*i].value;
-							double wPseudo = (data[i].weight+data[2*i].weight+data[3*i].weight)/3.0;
-							kde += wPseudo*Gaussian_Kernel((x-xPseudo)/bw);
-						}
+				//Vanilla Gauss KDE
+					kde += data[i].weight * Gaussian_Kernel((x-data[i].value)/bw);
+				//Cowling and Hall pseudo data method 1
+					if(i < N_PseudoData)
+					{
+						double xPseudo = 4.0*xMin-6.0*data[i].value+4.0*data[2*i].value-data[3*i].value;
+						double wPseudo = (data[i].weight+data[2*i].weight+data[3*i].weight)/3.0;
+						kde += wPseudo*Gaussian_Kernel((x-xPseudo)/bw);
+					}
 
-					//Local kernel normalization close to the boundary
-						// double data_point = data[i].value;
-						// if(data_point < xMin + 3.0* bw)
-						// {
-						// 	std::function<double(double)> integrand = [data_point,bw] (double x)
-						// 	{
-						// 		return Gaussian_Kernel((x-data_point)/bw) / bw;
-						// 	};
-						// 	double norm = Integrate(integrand,xMin, xMax,1e-5);
-						// 	kde+= data[i].weight*Gaussian_Kernel((x-data[i].value)/bw) / norm;
-						// 	std::cout <<x <<bw <<"\t" <<norm <<std::endl;
-						// }
-						// else kde+= data[i].weight*Gaussian_Kernel((x-data[i].value)/bw);
+				//Local kernel normalization close to the boundary
+					// double data_point = data[i].value;
+					// if(data_point < xMin + 3.0* bw)
+					// {
+					// 	std::function<double(double)> integrand = [data_point,bw] (double x)
+					// 	{
+					// 		return Gaussian_Kernel((x-data_point)/bw) / bw;
+					// 	};
+					// 	double norm = Integrate(integrand,xMin, xMax,1e-5);
+					// 	kde+= data[i].weight*Gaussian_Kernel((x-data[i].value)/bw) / norm;
+					// 	std::cout <<x <<bw <<"\t" <<norm <<std::endl;
+					// }
+					// else kde+= data[i].weight*Gaussian_Kernel((x-data[i].value)/bw);
 
-					//Cowling and Hall pseudo data method 2
-						// double xi3 = (i%3 == 0)? data[i/3].value : 2.0/3.0 * data[std::floor(i/3.0)].value + 1.0/3.0 * data[std::ceil(i/3.0)].value;
-						// double x2i3 = (i%3 == 0)? data[2*i/3].value : 1.0/3.0 * data[std::floor(i/3.0)].value + 2.0/3.0 * data[std::ceil(i/3.0)].value;
-						// double xi = data[i].value;
+				//Cowling and Hall pseudo data method 2
+					// double xi3 = (i%3 == 0)? data[i/3].value : 2.0/3.0 * data[std::floor(i/3.0)].value + 1.0/3.0 * data[std::ceil(i/3.0)].value;
+					// double x2i3 = (i%3 == 0)? data[2*i/3].value : 1.0/3.0 * data[std::floor(i/3.0)].value + 2.0/3.0 * data[std::ceil(i/3.0)].value;
+					// double xi = data[i].value;
 
-						// double wi3 = (i%3 == 0)? data[i/3].weight : 2.0/3.0 * data[std::floor(i/3.0)].weight + 1.0/3.0 * data[std::ceil(i/3.0)].weight;
-						// double w2i3 = (i%3 == 0)? data[2*i/3].weight : 1.0/3.0 * data[std::floor(i/3.0)].weight + 2.0/3.0 * data[std::ceil(i/3.0)].weight;
-						// double wi = data[i].weight;
+					// double wi3 = (i%3 == 0)? data[i/3].weight : 2.0/3.0 * data[std::floor(i/3.0)].weight + 1.0/3.0 * data[std::ceil(i/3.0)].weight;
+					// double w2i3 = (i%3 == 0)? data[2*i/3].weight : 1.0/3.0 * data[std::floor(i/3.0)].weight + 2.0/3.0 * data[std::ceil(i/3.0)].weight;
+					// double wi = data[i].weight;
 
-						// double xPseudo = 20.0/3.0 * xMin - 5.0* xi3 - 4.0 * x2i3 + 10.0/3.0 * xi;
-						// double wPseudo = (wi3 + w2i3 + wi)/3.0;
+					// double xPseudo = 20.0/3.0 * xMin - 5.0* xi3 - 4.0 * x2i3 + 10.0/3.0 * xi;
+					// double wPseudo = (wi3 + w2i3 + wi)/3.0;
 
-						// kde += wPseudo*Gaussian_Kernel((x-xPseudo)/bw);
-					//Reflection
-						// double xRefl = 2.0 * xMin - data[i].value;
-						// kde+=data[i].weight*Gaussian_Kernel((x-xRefl)/bw);
-				}				
-				kde /= bw*Weight_Sum;
-				Interpol_List.push_back( std::vector<double> {x,kde});
-			}
+					// kde += wPseudo*Gaussian_Kernel((x-xPseudo)/bw);
+				//Reflection
+					// double xRefl = 2.0 * xMin - data[i].value;
+					// kde+=data[i].weight*Gaussian_Kernel((x-xRefl)/bw);
+			}				
+			kde /= bw*Weight_Sum;
+			Interpol_List.push_back( std::vector<double> {x,kde});
+		}
 
 		Interpolation result(Interpol_List);
 
 		//3. Check normalization/ re-normalize.
-			double norm = Integrate(result,xMin,xMax,1e-5);
-			result.Multiply(1.0/norm);
+		double norm = Integrate(result,xMin,0.9999999999999*xMax,1e-8); //NEEDS TO BE FIXED IN THE INTERPOLATION CLASS AT SOME POINT
+		result.Multiply(1.0/norm);
 
-			return result;
+		return result;
 	}
