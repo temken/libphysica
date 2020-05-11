@@ -13,6 +13,9 @@ target_link_libraries(physica
 	PUBLIC coverage_config 
 	)
 
-target_include_directories(physica  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(physica
+	PUBLIC
+		${CMAKE_CURRENT_SOURCE_DIR}
+		${INCLUDE_DIR})
 
 install(TARGETS physica DESTINATION ${LIB_DIR})
