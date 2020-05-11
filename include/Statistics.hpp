@@ -17,8 +17,8 @@ extern double CDF_Gauss(double x, double mu, double sigma);
 extern double Quantile_Gauss(double p, double mu, double sigma);
 
 //1.3 Binomial distribution
-extern double PMF_Binomial(int mu, double p, int trials);
-extern double CDF_Binomial();
+extern double PMF_Binomial(unsigned int trials, double p, unsigned int x);
+extern double CDF_Binomial(unsigned int trials, double p, unsigned int x);
 
 //1.4 Poission distribution
 extern double PMF_Poisson(double expected_events, unsigned int events);

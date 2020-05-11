@@ -165,7 +165,7 @@
 		outputfile.close();
 	}
 
-	void Export_Function(std::string filepath, std::function<double(double)>& func, double xMin, double xMax, unsigned int steps, std::vector<double> dimensions,  bool logarithmic)
+	void Export_Function(std::string filepath, std::function<double(double)> func, double xMin, double xMax, unsigned int steps, std::vector<double> dimensions,  bool logarithmic)
 	{
 		std::vector<std::vector<double>> data(steps, std::vector<double>(2,0.0));
 		std::vector<double> arguments = (logarithmic)? Log_Space(xMin, xMax, steps) : Linear_Space(xMin, xMax, steps);

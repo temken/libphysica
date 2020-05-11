@@ -15,7 +15,7 @@
 
 	extern void Export_List(std::string filepath, std::vector<double> data, double dimension = 1.0);
 	extern void Export_Table(std::string filepath, const std::vector<std::vector<double>>& data, std::vector<double> dimensions = {});
-	extern void Export_Function(std::string filepath, std::function<double(double)>& func, double xMin, double xMax, unsigned int steps, std::vector<double> dimensions = {}, bool logarithmic = false);
+	extern void Export_Function(std::string filepath, std::function<double(double)> func, double xMin, double xMax, unsigned int steps, std::vector<double> dimensions = {}, bool logarithmic = false);
 
 //3. Create list with equi-distant numbers in log-space
 	extern std::vector<double> Linear_Space(double min, double max, unsigned int steps);

@@ -34,9 +34,10 @@
 	double Round(double N,unsigned int digits)
 	{
 		if(N == 0) return 0;
-		if(digits>5)
+		unsigned int digits_max = 7;
+		if(digits > digits_max)
 		{
-			std::cerr <<"Error in Round(): Significant digits > 5."<<std::endl;
+			std::cerr <<"Error in Round(): Significant digits > "<<digits_max <<"."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		//Make the argument a positive number.
@@ -226,9 +227,9 @@
 			std::cerr <<"Error in GammaQ("<<x<<","<<a<<"): Invalid arguments."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
-		else if(x == 0)return 1.0;
+		else if(x == 0) return 1.0;
 		else if (a > aMax) return GammaQint(x,a);
-		else if (x < a+1.0) return 1.0-GammaPser(x,a);
+		else if (x < a+1.0) return 1.0 - GammaPser(x,a);
 		else return GammaQcf(x,a);
 	}
 
@@ -296,7 +297,7 @@
 	}
 
 	//2.2 Other special functions
-	double Inv_erf(double p)
+	double Inv_Erf(double p)
 	{
 		// return inverfc(1.-p);
 		if(fabs(p-1.0) < 1e-16)
@@ -652,7 +653,23 @@
 	{
 		int j = Locate(x);
 		double x_j = TabulatedData[j][0];
-		return preFactor*(a[j]*pow(x-x_j,3.0)+b[j]*pow(x-x_j,2.0)+c[j]*(x-x_j)+d[j]);
+		return preFactor * (a[j] * pow((x-x_j), 3.0) + b[j] * pow((x-x_j), 2.0) + c[j] * (x-x_j) + d[j]);
+	}
+
+	double Interpolation::Derivative(double x, unsigned int derivation)
+	{
+		int j = Locate(x);
+		double x_j = TabulatedData[j][0];
+		if(derivation == 0)
+			return Interpolate(x);
+		else if(derivation == 1)
+			return preFactor * (3.0 * a[j] * pow((x-x_j), 2.0) + 2.0 * b[j] * (x-x_j) + c[j]);
+		else if(derivation == 2)
+			return preFactor * (6.0 * a[j] * (x-x_j) + 2.0 * b[j]);
+		else if(derivation == 3)
+			return preFactor * (6.0 * a[j]);
+		else
+			return 0.0;
 	}
 
 	void Interpolation::Multiply(double factor)
