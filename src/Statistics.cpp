@@ -40,15 +40,16 @@
 	}
 
 	//1.3 Binomial distribution
-	double PMF_Binomial(int mu, double p, int trials)
+	double PMF_Binomial(int trials, double p, int x)
 	{
-		return Binomial_Coefficient(mu,trials)*pow(p,trials)*pow(1.0-p,(mu-trials));;
+		return Binomial_Coefficient(trials, x) * pow(p, x) * pow(1.0-p, (trials-x));
 	}
 
-	double CDF_Binomial(int mu, double p, int trials)
+	double CDF_Binomial(int trials, double p, int x)
 	{
 		double cdf = 0.0;
-		for(int trial = 0; trial <= trials; trial++) cdf += PMF_Binomial(mu,p,trial);
+		for(int i = 0; i <= x; i++)
+			cdf += PMF_Binomial(trials, p, i);
 		return cdf;
 	}
 
