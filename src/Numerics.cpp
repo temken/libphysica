@@ -653,7 +653,23 @@
 	{
 		int j = Locate(x);
 		double x_j = TabulatedData[j][0];
-		return preFactor*(a[j]*pow(x-x_j,3.0)+b[j]*pow(x-x_j,2.0)+c[j]*(x-x_j)+d[j]);
+		return preFactor * (a[j] * pow((x-x_j), 3.0) + b[j] * pow((x-x_j), 2.0) + c[j] * (x-x_j) + d[j]);
+	}
+
+	double Interpolation::Derivative(double x, unsigned int derivation)
+	{
+		int j = Locate(x);
+		double x_j = TabulatedData[j][0];
+		if(derivation == 0)
+			return Interpolate(x);
+		else if(derivation == 1)
+			return preFactor * (3.0 * a[j] * pow((x-x_j), 2.0) + 2.0 * b[j] * (x-x_j) + c[j]);
+		else if(derivation == 2)
+			return preFactor * (6.0 * a[j] * (x-x_j) + 2.0 * b[j]);
+		else if(derivation == 3)
+			return preFactor * (6.0 * a[j]);
+		else
+			return 0.0;
 	}
 
 	void Interpolation::Multiply(double factor)

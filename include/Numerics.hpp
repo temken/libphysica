@@ -66,6 +66,7 @@
 				void Set_Prefactor(double factor);
 			//Interpolation
 				double Interpolate(double x);
+				double Derivative(double x, unsigned int deriv = 1);
 				double operator ()(double x)
 			    {
 			        return Interpolate(x);

@@ -218,6 +218,23 @@
 			ASSERT_DOUBLE_EQ( interpolation(data[i][0]+0.5), data[i][1]+0.5 );			
 	}
 
+	TEST(TestNumerics, TestInterpolation1DDerivative)
+	{
+		// ARRANGE
+		double offset = 2.0;
+		std::vector<std::vector<double>> data = {{-3.0, 9.0 + offset}, {-2.0, 4.0 + offset}, {-1.0, 1.0 + offset}, {0.0, offset}, {1.0, 1.0 + offset}, {2.0, 4.0 + offset}, {3.0, 9.0 + offset}};
+		double x = 1.5;
+		// ACT
+		Interpolation interpolation(data);
+		// ASSERT
+		EXPECT_DOUBLE_EQ( interpolation(x), x*x + offset);
+		EXPECT_DOUBLE_EQ( interpolation.Derivative(x, 0), x*x + offset);
+		EXPECT_DOUBLE_EQ( interpolation.Derivative(x), 2.0*x);
+		EXPECT_DOUBLE_EQ( interpolation.Derivative(x, 2), 2.0);
+		EXPECT_DOUBLE_EQ( interpolation.Derivative(x, 3), 0.0);
+		EXPECT_DOUBLE_EQ( interpolation.Derivative(x, 4), 0.0);
+				
+	}
 //5. Root finding
 	double find_root_func(double x) {return x*x - 2.0;}
 	TEST(TestNumerics, TestFindRoot)
