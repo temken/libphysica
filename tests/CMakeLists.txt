@@ -8,7 +8,7 @@ add_executable(tests
 
 target_link_libraries(tests 
 	PRIVATE
-		physica
+		libphysica
 		gtest_main	#contains the main function
 )
 # coverage_config is contained in module_library.

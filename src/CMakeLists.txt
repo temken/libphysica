@@ -1,5 +1,5 @@
 
-add_library(physica STATIC
+add_library(libphysica STATIC
     Linear_Algebra.cpp
     Natural_Units.cpp
     Numerics.cpp
@@ -7,15 +7,17 @@ add_library(physica STATIC
     Utilities.cpp
 )
 
-target_compile_options(physica PUBLIC -Wall -pedantic)
+set_target_properties(libphysica PROPERTIES PREFIX "")
 
-target_link_libraries(physica
+target_compile_options(libphysica PUBLIC -Wall -pedantic)
+
+target_link_libraries(libphysica
 	PUBLIC coverage_config 
 	)
 
-target_include_directories(physica
+target_include_directories(libphysica
 	PUBLIC
 		${CMAKE_CURRENT_SOURCE_DIR}
 		${INCLUDE_DIR})
 
-install(TARGETS physica DESTINATION ${LIB_DIR})
+install(TARGETS libphysica DESTINATION ${LIB_DIR})
