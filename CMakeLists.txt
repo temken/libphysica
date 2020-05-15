@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(libphysica)
+project(libphysica VERSION "0.1.0")
 
 # Use C++-11
 set(CMAKE_CXX_STANDARD 11)
@@ -9,12 +9,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Don't use e.g. GNU extension (like -std=gnu++11) for portability
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(GENERATED_DIR ${CMAKE_BINARY_DIR}/generated)
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set(LIB_DIR     ${PROJECT_SOURCE_DIR}/lib)
 set(SRC_DIR     ${PROJECT_SOURCE_DIR}/src)
 set(TESTS_DIR   ${PROJECT_SOURCE_DIR}/tests)
 set(EXTERNAL_DIR  ${PROJECT_SOURCE_DIR}/external)
 
+#External projects
 include(FetchContent)
 # Googletest
 set(GTEST_DIR   ${EXTERNAL_DIR}/googletest)
@@ -27,6 +29,24 @@ FetchContent_Declare(googletest
   BUILD_COMMAND     ""
   INSTALL_COMMAND   ""
   TEST_COMMAND      ""
+)
+
+# Version header
+execute_process( # Git commit hash
+  COMMAND git rev-parse --abbrev-ref HEAD
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE GIT_BRANCH
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+execute_process( # Git commit hash
+  COMMAND git log -1 --format=%h
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  OUTPUT_VARIABLE GIT_COMMIT_HASH
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+configure_file(
+  ${INCLUDE_DIR}/version.hpp.in
+  ${GENERATED_DIR}/version.hpp
 )
 
 # Source and include directories
