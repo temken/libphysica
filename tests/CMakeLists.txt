@@ -13,6 +13,8 @@ target_link_libraries(tests
 )
 # coverage_config is contained in module_library.
 
+target_include_directories(tests PRIVATE ${GENERATED_DIR} )
+
 target_compile_options(tests PUBLIC -Wall -pedantic)
 
 install(TARGETS tests DESTINATION ${TESTS_DIR})
