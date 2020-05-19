@@ -64,7 +64,7 @@ namespace libphysica
 	{
 		if(dimension != rhs.Size())
 		{
-			std::cerr <<"Error in Vector::Dot(): Vectors are of differing dimensions ("<<dimension<<" and "<<rhs.Size()<<")."<<std::endl;
+			std::cerr <<"Error in libphysica::Vector::Dot(): Vectors are of differing dimensions ("<<dimension<<" and "<<rhs.Size()<<")."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else
@@ -82,7 +82,7 @@ namespace libphysica
 	{
 		if(dimension != 3)
 		{
-			std::cerr <<"Error in Vector Vector::Cross(): Cross product only defined for 3 dimensions, not "<<dimension<<"."<<std::endl;
+			std::cerr <<"Error in libphysica::Vector Vector::Cross(): Cross product only defined for 3 dimensions, not "<<dimension<<"."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else
@@ -114,7 +114,7 @@ namespace libphysica
 	{
 		if(i<0 || i>=dimension)
 		{
-			std::cerr <<"Error in Vector::operator[]: Index "<<i<<" out of bound [" <<0<<","<<dimension-1<<"]."<<std::endl;
+			std::cerr <<"Error in libphysica::Vector::operator[]: Index "<<i<<" out of bound [" <<0<<","<<dimension-1<<"]."<<std::endl;
 			std::exit(EXIT_FAILURE);
 
 		}
@@ -124,7 +124,7 @@ namespace libphysica
 	{
 		if(i<0 || i>=dimension)
 		{
-			std::cerr <<"Error in Vector::operator[]: Index "<<i<<" out of bound [" <<0<<","<<dimension-1<<"]."<<std::endl;
+			std::cerr <<"Error in libphysica::Vector::operator[]: Index "<<i<<" out of bound [" <<0<<","<<dimension-1<<"]."<<std::endl;
 			std::exit(EXIT_FAILURE);
 
 		}
@@ -136,7 +136,7 @@ namespace libphysica
 	{
 		if(dimension != v.dimension)
 		{
-			std::cerr <<"Error in Vector::operator+(Vector v): Two vectors of dimensions "<<dimension<<" and " <<v.dimension<<" can not be added."<<std::endl;
+			std::cerr <<"Error in libphysica::Vector::operator+(Vector v): Two vectors of dimensions "<<dimension<<" and " <<v.dimension<<" can not be added."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else
@@ -152,7 +152,7 @@ namespace libphysica
 	{
 		if(dimension != v.dimension)
 		{
-			std::cerr <<"Error in Vector::operator-(Vector v): Two vectors of dimensions "<<dimension<<" and " <<v.dimension<<" can not be subtracted."<<std::endl;
+			std::cerr <<"Error in libphysica::Vector::operator-(Vector v): Two vectors of dimensions "<<dimension<<" and " <<v.dimension<<" can not be subtracted."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else
@@ -278,7 +278,7 @@ namespace libphysica
 		{
 			if(entries[i].size() != columns)
 			{
-				std::cerr <<"Error in Matrix::Matrix(): The input vector<vector<double>> has irregular shape."<<std::endl;
+				std::cerr <<"Error in libphysica::Matrix::Matrix(): The input vector<vector<double>> has irregular shape."<<std::endl;
 				std::exit(EXIT_FAILURE);
 			}
 		}
@@ -336,7 +336,7 @@ namespace libphysica
 	{
 		if(row < 0 || row >= rows)
 		{
-			std::cerr <<"Error in Matrix::Delete_Row(int): Row " <<row <<" of a "<<rows <<"x"<<columns <<" matrix does not exist.\n(Note: The index domain starts at 0)" <<std::endl;
+			std::cerr <<"Error in libphysica::Matrix::Delete_Row(int): Row " <<row <<" of a "<<rows <<"x"<<columns <<" matrix does not exist.\n(Note: The index domain starts at 0)" <<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else
@@ -350,7 +350,7 @@ namespace libphysica
 	{
 		if(column < 0 || column >= columns)
 		{
-			std::cerr <<"Error in Matrix::Delete_Column(int): Column " <<column <<" of a "<<rows <<"x"<<columns <<" matrix does not exist.\n(Note: The index domain starts at 0)" <<std::endl;
+			std::cerr <<"Error in libphysica::Matrix::Delete_Column(int): Column " <<column <<" of a "<<rows <<"x"<<columns <<" matrix does not exist.\n(Note: The index domain starts at 0)" <<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else
@@ -365,7 +365,7 @@ namespace libphysica
 	{
 		if( rows != M.Columns() || columns != M.Rows())
 		{
-			std::cerr<<"Error in Matrix::Plus(const Matrix&): The dimensions of the two matrices to be added do not match: ("<<rows<<"x"<<columns<<") + ("<<M.Rows()<<"x"<<M.Columns()<<")."<<std::endl;
+			std::cerr<<"Error in libphysica::Matrix::Plus(const Matrix&): The dimensions of the two matrices to be added do not match: ("<<rows<<"x"<<columns<<") + ("<<M.Rows()<<"x"<<M.Columns()<<")."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else
@@ -386,7 +386,7 @@ namespace libphysica
 	{
 		if( rows != M.Columns() || columns != M.Rows())
 		{
-			std::cerr<<"Error in Matrix::Minus(const Matrix&): The dimensions of the two matrices to be subtracted do not match: ("<<rows<<"x"<<columns<<") - ("<<M.Rows()<<"x"<<M.Columns()<<")."<<std::endl;
+			std::cerr<<"Error in libphysica::Matrix::Minus(const Matrix&): The dimensions of the two matrices to be subtracted do not match: ("<<rows<<"x"<<columns<<") - ("<<M.Rows()<<"x"<<M.Columns()<<")."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else
@@ -420,7 +420,7 @@ namespace libphysica
 	{
 		if(columns != M.Rows())
 		{
-			std::cerr <<"Error in Matrix::Product(const Matrix &M): # of columns of the lhs does not match # of rows of the rhs matrix: (" <<rows<<"x"<<columns<<")*("<<M.Rows()<<"x"<<M.Columns()<<")."<<std::endl;
+			std::cerr <<"Error in libphysica::Matrix::Product(const Matrix &M): # of columns of the lhs does not match # of rows of the rhs matrix: (" <<rows<<"x"<<columns<<")*("<<M.Rows()<<"x"<<M.Columns()<<")."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else
@@ -443,7 +443,7 @@ namespace libphysica
 	{
 		if(v_rhs.Size() != columns)
 		{
-			std::cerr<<"Error in Matrix::Product(const Vector&): The dimensions of the matrix and the vector do not match: (" <<rows<<"x"<<columns<<")*("<<v_rhs.Size()<<")."<<std::endl;
+			std::cerr<<"Error in libphysica::Matrix::Product(const Vector&): The dimensions of the matrix and the vector do not match: (" <<rows<<"x"<<columns<<")*("<<v_rhs.Size()<<")."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else
@@ -567,12 +567,12 @@ namespace libphysica
 	{
 		if(!Square())
 		{
-			std::cerr <<"Error in Matrix::Inverse(): Inverse matrix only defined for square matrices."<<std::endl;
+			std::cerr <<"Error in libphysica::Matrix::Inverse(): Inverse matrix only defined for square matrices."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else if (!Invertible())
 		{
-			std::cerr <<"Error in Matrix::Inverse(): Matrix is not invertible."<<std::endl;
+			std::cerr <<"Error in libphysica::Matrix::Inverse(): Matrix is not invertible."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		// Gauss Jordan inversion
@@ -596,7 +596,7 @@ namespace libphysica
 			{
 				if(A[i][i] == 0)
 				{
-					std::cerr<<"Error in Matrix::Inverse(): Diagonal element is zero."<<std::endl;
+					std::cerr<<"Error in libphysica::Matrix::Inverse(): Diagonal element is zero."<<std::endl;
 					std::exit(EXIT_FAILURE);
 				}
 				for(unsigned int j = 0; j<N; j++)
@@ -631,7 +631,7 @@ namespace libphysica
 	{
 		if(rows != columns)
 		{
-			std::cerr <<"Error in Matrix::Trace(): Trace only defined for square matrices."<<std::endl;
+			std::cerr <<"Error in libphysica::Matrix::Trace(): Trace only defined for square matrices."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else
@@ -646,7 +646,7 @@ namespace libphysica
 	{
 		if(!Square())
 		{
-			std::cerr <<"Error in Matrix::Determinant(): Determinant only defined for square matrices."<<std::endl;
+			std::cerr <<"Error in libphysica::Matrix::Determinant(): Determinant only defined for square matrices."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else if(rows == 1)
@@ -698,7 +698,7 @@ namespace libphysica
 	{
 		if(i < 0 || i > (rows-1))
 		{
-			std::cerr <<"Error in Matrix::operator[](): Index i="<<i<<" is out of bound ["<<0<<","<<(rows-1)<<"]."<<std::endl;
+			std::cerr <<"Error in libphysica::Matrix::operator[](): Index i="<<i<<" is out of bound ["<<0<<","<<(rows-1)<<"]."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else	return components[i];
@@ -707,7 +707,7 @@ namespace libphysica
 	{
 		if(i < 0 || i > (rows-1))
 		{
-			std::cerr <<"Error in Matrix::operator[](): Index i="<<i<<" is out of bound ["<<0<<","<<(rows-1)<<"]."<<std::endl;
+			std::cerr <<"Error in libphysica::Matrix::operator[](): Index i="<<i<<" is out of bound ["<<0<<","<<(rows-1)<<"]."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else	return components[i];
@@ -749,7 +749,7 @@ namespace libphysica
 	{
 		if( rows != M.Columns() || columns != M.Rows())
 		{
-			std::cerr<<"Error in Matrix::operator+=(): The dimensions of the two matrices to be added do not match."<<std::endl;
+			std::cerr<<"Error in libphysica::Matrix::operator+=(): The dimensions of the two matrices to be added do not match."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else
@@ -769,7 +769,7 @@ namespace libphysica
 	{
 		if( rows != M.Columns() || columns != M.Rows())
 		{
-			std::cerr<<"Error in Matrix::operator-=(): The dimensions of the two matrices to be subtracted do not match."<<std::endl;
+			std::cerr<<"Error in libphysica::Matrix::operator-=(): The dimensions of the two matrices to be subtracted do not match."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else
@@ -795,7 +795,7 @@ namespace libphysica
 	{
 		if(v_left.Size() != M.Rows())
 		{
-			std::cerr<<"Error in operator*(const Vector&,const Matrix&): The dimensions of the matrix and the vector do not match."<<std::endl;
+			std::cerr<<"Error in libphysica::operator*(const Vector&,const Matrix&): The dimensions of the matrix and the vector do not match."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else
@@ -871,7 +871,7 @@ namespace libphysica
 		{
 			if(axis.Size() != 3)
 			{
-				std::cerr<<"Error in Rotation_Matrix(): Rotation axis for 3D rotation is given via a "<<dim<<"D vector."<<std::endl;
+				std::cerr<<"Error in libphysica::Rotation_Matrix(): Rotation axis for 3D rotation is given via a "<<dim<<"D vector."<<std::endl;
 				std::exit(EXIT_FAILURE);
 			}
 			axis.Normalize();
@@ -888,7 +888,7 @@ namespace libphysica
 		}
 		else
 		{
-			std::cerr<<"Error in Rotation_Matrix(): Only 2D and 3D rotations are supported, not D = "<<dim<<"."<<std::endl;
+			std::cerr<<"Error in libphysica::Rotation_Matrix(): Only 2D and 3D rotations are supported, not D = "<<dim<<"."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 	}

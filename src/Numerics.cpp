@@ -40,7 +40,7 @@ namespace libphysica
 		unsigned int digits_max = 7;
 		if(digits > digits_max)
 		{
-			std::cerr <<"Error in Round(): Significant digits > "<<digits_max <<"."<<std::endl;
+			std::cerr <<"Error in libphysica::Round(): Significant digits > "<<digits_max <<"."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		//Make the argument a positive number.
@@ -78,7 +78,7 @@ namespace libphysica
 		if (n > 170)
 		{
 
-			std::cerr <<"Error in Factorial: Overflow for " <<n <<"!."<<std::endl;
+			std::cerr <<"Error in libphysica::Factorial: Overflow for " <<n <<"!."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else if(n < FactorialList.size()) return FactorialList[n];
@@ -96,7 +96,7 @@ namespace libphysica
 	{
 		if(k < 0 || n < 0)
 		{
-			std::cerr <<"Warning in BinomialCoefficient(): negative arguments. Return 0." <<std::endl;
+			std::cerr <<"Warning in libphysica::BinomialCoefficient(): negative arguments. Return 0." <<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else if(n < k)	return 0;
@@ -113,7 +113,7 @@ namespace libphysica
 		double cof[14] = {57.1562356658629235,-59.5979603554754912, 14.1360979747417471,-0.491913816097620199,.339946499848118887e-4, .465236289270485756e-4,-.983744753048795646e-4,.158088703224912494e-3, -.210264441724104883e-3,.217439618115212643e-3,-.164318106536763890e-3, .844182239838527433e-4,-.261908384015814087e-4,.368991826595316234e-5};
 		if(x <= 0)
 		{
-			std::cerr<<"Error in GammaLn(x): x<=0."<<std::endl;
+			std::cerr<<"Error in libphysica::GammaLn(x): x<=0."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		double sum = 0.999999999999997092;
@@ -227,7 +227,7 @@ namespace libphysica
 		double aMax = 100.0;
 		if(x < 0.0 || a <= 0.0)
 		{
-			std::cerr <<"Error in GammaQ("<<x<<","<<a<<"): Invalid arguments."<<std::endl;
+			std::cerr <<"Error in libphysica::GammaQ("<<x<<","<<a<<"): Invalid arguments."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else if(x == 0) return 1.0;
@@ -247,7 +247,7 @@ namespace libphysica
 		//Check the arguments
 		if(a <= 0.0)
 		{
-			std::cerr <<"Error in Inv_GammaP(): a must be positive."<<std::endl;
+			std::cerr <<"Error in libphysica::Inv_GammaP(): a must be positive."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		if(p >= 1.0) return std::max(100.0,a + 100.*sqrt(a));
@@ -305,12 +305,12 @@ namespace libphysica
 		// return inverfc(1.-p);
 		if(fabs(p-1.0) < 1e-16)
 		{
-			std::cerr <<"Warning in Inv_erf(double): The argument p = "<<p <<" is very close to 1.0. Return 10."<<std::endl;
+			std::cerr <<"Warning in libphysica::Inv_erf(double): The argument p = "<<p <<" is very close to 1.0. Return 10."<<std::endl;
 			return 10.0;
 		}
 		else if(fabs(p) >= 1.0)
 		{
-			std::cerr <<"Error in Inv_erf(): Invalid argument |p| = |"<<p <<"| > 1"<<std::endl;
+			std::cerr <<"Error in libphysica::Inv_erf(): Invalid argument |p| = |"<<p <<"| > 1"<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else
@@ -384,11 +384,11 @@ namespace libphysica
 			double result =   Adaptive_Simpson_Integration(func, a, b, fabs(epsilon), S, fa, fb, fc, maxRecursionDepth,warning); 
 			if(warning)   
 			{
-				std::cout <<"Warning in Integrate(): Numerical integration on the interval ("<<a<<","<<b<<") did not converge to the desired precision." <<std::endl;
+				std::cout <<"Warning in libphysica::Integrate(): Numerical integration on the interval ("<<a<<","<<b<<") did not converge to the desired precision." <<std::endl;
 				std::cout <<"\tDesired precision: " <<Round(fabs(epsilon)) <<" Result: " <<Round(result)<<std::endl;
 			}
-		if(std::isnan(result)) std::cout <<"Warning in Integrate(): Result is nan."<<std::endl;
-		else if(std::isinf(result)) std::cout <<"Warning in Integrate(): Result is inf."<<std::endl;
+		if(std::isnan(result)) std::cout <<"Warning in libphysica::Integrate(): Result is nan."<<std::endl;
+		else if(std::isinf(result)) std::cout <<"Warning in libphysica::Integrate(): Result is inf."<<std::endl;
 		return sign*result;
 	}
 
@@ -576,7 +576,7 @@ namespace libphysica
    		}
    		else
    		{
-        	std::cerr << "Error in Interpolation(" <<filename<<"): File does not exist."<<std::endl;
+        	std::cerr << "Error in libphysica::Interpolation(" <<filename<<"): File does not exist."<<std::endl;
     		std::exit(EXIT_FAILURE);
     	}
 		
@@ -712,7 +712,7 @@ namespace libphysica
 		//3. Check if xLeft and xRight bracket a root or already yield a root. Also check for NaN's.
 		if(std::isnan(fLeft)||std::isnan(fRight))
 		{
-			std::cerr <<"Error in Find_Root(): Function returns nan at the brackets."<<std::endl;
+			std::cerr <<"Error in libphysica::Find_Root(): Function returns nan at the brackets."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else if(fLeft*fRight>=0.0)
@@ -721,7 +721,7 @@ namespace libphysica
 			else if(fRight==0) return xRight;
 			else
 			{
-				std::cerr<<"Error in Find_Root(): f(xLeft)*f(xRight) = ("<<func(xLeft)<<")*("<<func(xRight) <<")>0.0"<<std::endl;
+				std::cerr<<"Error in libphysica::Find_Root(): f(xLeft)*f(xRight) = ("<<func(xLeft)<<")*("<<func(xRight) <<")>0.0"<<std::endl;
 				std::exit(EXIT_FAILURE);
 			}
 		}
@@ -771,11 +771,11 @@ namespace libphysica
 					}
 					else
 					{
-						std::cerr <<"Error in Find_Root(). Ridder's method does not reach the root."<<std::endl;
+						std::cerr <<"Error in libphysica::Find_Root(). Ridder's method does not reach the root."<<std::endl;
 						std::exit(EXIT_FAILURE);
 					}
 			}
-			std::cout <<"Warning in Find_Root(): Iterations exceed the maximum. Final value f("<<result<<")="<<func(result)<<std::endl;
+			std::cout <<"Warning in libphysica::Find_Root(): Iterations exceed the maximum. Final value f("<<result<<")="<<func(result)<<std::endl;
 			return result;
 		}
 	}
@@ -853,7 +853,7 @@ namespace libphysica
 			}
 			if (nfunc >= NMAX) 
 			{
-				std::cerr <<"Error in Minimization::minimize(): NMAX exceeded."<<std::endl;
+				std::cerr <<"Error in libphysica::Minimization::minimize(): NMAX exceeded."<<std::endl;
 				std::exit(EXIT_FAILURE);
 			}
 			nfunc += 2;

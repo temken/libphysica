@@ -213,7 +213,7 @@ namespace natural_units
 		{
 			if(quantities[i].size() != dimensions.size())
 			{
-				std::cerr <<"Error in In_Units(const std::vector<std::vector<double>>&,std::vector<double>): Dimensions of arrays are not consistent."<<std::endl;
+				std::cerr <<"Error in libphysica::natural_units::In_Units(const std::vector<std::vector<double>>&,std::vector<double>): Dimensions of arrays are not consistent."<<std::endl;
 				std::exit(EXIT_FAILURE);
 			}
 			else
