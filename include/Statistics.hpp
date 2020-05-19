@@ -6,6 +6,9 @@
 
 #include "Numerics.hpp"
 
+namespace libphysica
+{
+
 //1. Distributions
 //1.1. Uniform distribution
 extern double PDF_Uniform(double x, double x_min, double x_max);
@@ -75,5 +78,7 @@ extern std::vector<double> Weighted_Average(std::vector<DataPoint>& data);
 
 //6. Kernel density estimation
 extern Interpolation Perform_KDE(std::vector<DataPoint> data,double xMin,double xMax,double bw = 0);
+
+}	// namespace libphysica
 
 #endif

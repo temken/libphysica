@@ -2,6 +2,8 @@
 
 #include "Utilities.hpp"
 
+using namespace libphysica;
+
 //1. Progress bar
 
 //2. Import and export data from files

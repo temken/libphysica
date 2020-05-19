@@ -3,6 +3,10 @@
 
 #include "Linear_Algebra.hpp"
 
+namespace libphysica
+{
+namespace natural_units
+{
 // 1. SI-prefixes
 	extern const double yotta, zetta, exa, peta, tera, giga, mega, kilo, hecto, deca, deci, centi, milli, micro, nano, pico, femto, atto, zepto, yocto;
 
@@ -98,7 +102,12 @@
 	extern Vector In_Units(const Vector& quantities, double dimension);
 	extern Matrix In_Units(const Matrix& quantities, double dimension);
 
+
+
+}	// namespace natural_units
+
 //6. Simple physics functions
 	extern double Reduced_Mass(double m1, double m2);
-
+	
+}	// namespace libphysica
 #endif

@@ -2,6 +2,8 @@
 
 #include "Statistics.hpp"
 
+using namespace libphysica;
+
 //1. Distributions
 	//1.1. Uniform distribution
 	TEST(TestStatistics, TestPDFUniform)

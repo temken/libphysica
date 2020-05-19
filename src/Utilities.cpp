@@ -7,6 +7,10 @@
 #include "Numerics.hpp"
 #include "Natural_Units.hpp"
 
+namespace libphysica
+{
+	using namespace libphysica::natural_units;
+
 //1. Progress bar
 	void Print_Progress_Bar(double progress, int MPI_rank)
 	{
@@ -212,3 +216,5 @@
 		}
 		
 	}
+
+}	// namespace libphysica

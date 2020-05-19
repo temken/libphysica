@@ -4,6 +4,8 @@
 
 #include "Linear_Algebra.hpp"
 
+using namespace libphysica;
+
 // 1. Vector class
 	TEST(TestVector, TestSize)
 	{

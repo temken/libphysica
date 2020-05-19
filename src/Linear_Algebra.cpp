@@ -4,6 +4,9 @@
 
 #include "Numerics.hpp"
 
+namespace libphysica
+{
+
 // 1. Vector functions.
 	// Constructors
 	Vector::Vector()
@@ -845,47 +848,49 @@
 		}
 	}
 
-Matrix Unit_Matrix(unsigned int dim)
-{
-	std::vector<double> ones(dim,1.0);
-	return Matrix(ones);
-}
-
-Matrix Rotation_Matrix(double alpha, int dim, Vector axis)
-{
-	double cosa = cos(alpha);
-	double sina = sin(alpha);
-	if(dim == 2)
+	Matrix Unit_Matrix(unsigned int dim)
 	{
-		std::vector<std::vector<double>> components = 
-		{
-			{cosa, -sina},
-			{sina, cosa}
-		};
-		return Matrix(components);
+		std::vector<double> ones(dim,1.0);
+		return Matrix(ones);
 	}
-	else if(dim == 3)
+
+	Matrix Rotation_Matrix(double alpha, int dim, Vector axis)
 	{
-		if(axis.Size() != 3)
+		double cosa = cos(alpha);
+		double sina = sin(alpha);
+		if(dim == 2)
 		{
-			std::cerr<<"Error in Rotation_Matrix(): Rotation axis for 3D rotation is given via a "<<dim<<"D vector."<<std::endl;
+			std::vector<std::vector<double>> components = 
+			{
+				{cosa, -sina},
+				{sina, cosa}
+			};
+			return Matrix(components);
+		}
+		else if(dim == 3)
+		{
+			if(axis.Size() != 3)
+			{
+				std::cerr<<"Error in Rotation_Matrix(): Rotation axis for 3D rotation is given via a "<<dim<<"D vector."<<std::endl;
+				std::exit(EXIT_FAILURE);
+			}
+			axis.Normalize();
+			double n1 = axis[0];
+			double n2 = axis[1];
+			double n3 = axis[2];
+			std::vector<std::vector<double>> components = 
+			{
+				{cosa + n1*n1*(1.0-cosa), n1*n2*(1.0-cosa)-n3*sina, n1*n3*(1.0-cosa) + n2*sina},
+				{n1*n2*(1.0-cosa) + n3*sina, cosa + n2*n2*(1.0-cosa), n2*n3*(1.0-cosa) - n1*sina},
+				{n1*n3*(1.0-cosa) - n2*sina, n2*n3*(1.0-cosa) + n1*sina, cosa + n3*n3*(1.0-cosa)}
+			};
+			return Matrix(components);
+		}
+		else
+		{
+			std::cerr<<"Error in Rotation_Matrix(): Only 2D and 3D rotations are supported, not D = "<<dim<<"."<<std::endl;
 			std::exit(EXIT_FAILURE);
 		}
-		axis.Normalize();
-		double n1 = axis[0];
-		double n2 = axis[1];
-		double n3 = axis[2];
-		std::vector<std::vector<double>> components = 
-		{
-			{cosa + n1*n1*(1.0-cosa), n1*n2*(1.0-cosa)-n3*sina, n1*n3*(1.0-cosa) + n2*sina},
-			{n1*n2*(1.0-cosa) + n3*sina, cosa + n2*n2*(1.0-cosa), n2*n3*(1.0-cosa) - n1*sina},
-			{n1*n3*(1.0-cosa) - n2*sina, n2*n3*(1.0-cosa) + n1*sina, cosa + n3*n3*(1.0-cosa)}
-		};
-		return Matrix(components);
 	}
-	else
-	{
-		std::cerr<<"Error in Rotation_Matrix(): Only 2D and 3D rotations are supported, not D = "<<dim<<"."<<std::endl;
-		std::exit(EXIT_FAILURE);
-	}
-}
+
+}	// namespace libphysica

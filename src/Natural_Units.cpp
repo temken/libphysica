@@ -2,6 +2,11 @@
 
 #include <cmath>
 
+namespace libphysica
+{
+namespace natural_units
+{
+
 // 1. SI-prefixes
 	const double yotta	=	1.0e24;
 	const double zetta	=	1.0e21;
@@ -238,10 +243,12 @@
 		return 1.0/dimension * quantities;
 	}
 
+}	// namespace natural_units
 
 //6. Simple physics functions
 	double Reduced_Mass(double m1,double m2)
 	{
 		return m1*m2/(m1+m2);
 	}
-
+	
+}	// namespace libphysica

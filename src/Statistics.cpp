@@ -3,6 +3,9 @@
 #include <iostream>
 #include <algorithm>
 
+namespace libphysica
+{
+
 //1. Distributions
 	//1.1. Uniform distribution
 	double PDF_Uniform(double x, double x_min, double x_max)
@@ -516,3 +519,5 @@
 
 		return result;
 	}
+
+}	// namespace libphysica
