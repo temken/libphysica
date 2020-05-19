@@ -4,6 +4,10 @@
 
 #include "Natural_Units.hpp"
 
+
+using namespace libphysica;
+using namespace libphysica::natural_units;
+
 //2. Units
 	TEST(TestNaturalUnits, TestUnitsAngles)
 	{

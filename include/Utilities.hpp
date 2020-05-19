@@ -5,6 +5,9 @@
 #include <string>
 #include <functional>
 
+namespace libphysica
+{
+
 //1. Progress bar
 	extern void Print_Progress_Bar(double progress, int MPI_rang = 0);
 	extern void Print_Progress_Bar(double i, double iMax, int MPI_rang = 0);
@@ -21,5 +24,7 @@
 	extern std::vector<double> Linear_Space(double min, double max, unsigned int steps);
 	extern std::vector<double> Log_Space(double min, double max, unsigned int steps);
 
+
+}	// namespace libphysica
 
 #endif

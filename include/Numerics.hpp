@@ -4,6 +4,9 @@
 #include <vector>
 #include <functional>
 
+namespace libphysica
+{
+
 //1. Simple functions
 	extern int Sign(double arg);
 	extern double Sign(double x, double y); //Returns x with the sign of y.
@@ -105,5 +108,7 @@
 
 		double amotry(std::vector<std::vector<double>> &p, std::vector<double> &y, std::vector<double> &psum,const int ihi, const double fac, std::function<double(std::vector<double>)> func);
 	};
+
+}	// namespace libphysica
 
 #endif

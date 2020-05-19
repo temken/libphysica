@@ -4,7 +4,8 @@
 #include <iostream>
 #include <vector>
 
-
+namespace libphysica
+{
 // 1. Vector class
 class Vector
 {
@@ -123,5 +124,7 @@ bool operator ==(const Matrix& v1,const Matrix& v2);
 
 extern Matrix Unit_Matrix(unsigned int dim);
 extern Matrix Rotation_Matrix(double alpha, int dim, Vector axis = Vector({0,0,1}));
+
+}	// namespace libphysica
 
 #endif

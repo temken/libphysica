@@ -11,6 +11,9 @@
 #include <algorithm>
 #include <limits>       // std::numeric_limits
 
+namespace libphysica
+{
+
 //1. Simple functions
 	int Sign(double arg)
 	{
@@ -917,3 +920,4 @@
         return ytry;
 	}
 
+}	// namespace libphysica

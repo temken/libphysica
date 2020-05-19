@@ -5,6 +5,8 @@
 
 #include "Numerics.hpp"
 
+using namespace libphysica;
+
 //1. Simple functions
 	TEST(TestNumerics, TestSign)
 	{
