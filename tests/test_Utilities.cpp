@@ -62,7 +62,40 @@ TEST(TestUtilities, TestExportImportFunction)
 			ASSERT_DOUBLE_EQ(imported_values[i][j], correct_values[i][j]);
 	}
 }
+
 //3. Create list with equi-distant numbers in log-space
+TEST(TestUtilities, TestRangeMax)
+{
+	// ARRANGE
+	unsigned int max = 13;
+	// ACT & ASSERT
+	ASSERT_EQ(Range(max).size(), max);
+	for(unsigned int i = 0; i < max; i++)
+		ASSERT_EQ(Range(max)[i], i);
+}
+
+TEST(TestUtilities, TestRangeMinMax)
+{
+	// ARRANGE
+	unsigned int min = 6;
+	unsigned int max = 13;
+	// ACT & ASSERT
+	ASSERT_EQ(Range(min, max).size(), max - min);
+	for(unsigned int i = 0; i < Range(min, max).size(); i++)
+		ASSERT_EQ(Range(min, max)[i], min + i);
+}
+
+TEST(TestUtilities, TestRangeMaxMin)
+{
+	// ARRANGE
+	unsigned int min = 13;
+	unsigned int max = 6;
+	// ACT & ASSERT
+	ASSERT_EQ(Range(min, max).size(), min-max);
+	for(unsigned int i = 0; i < Range(min, max).size(); i++)
+		ASSERT_EQ(Range(min, max)[i], min - i);
+}
+
 TEST(TestUtilities, TestLinearSpace)
 {
 	// ARRANGE

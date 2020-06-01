@@ -179,7 +179,27 @@ void Export_Function(std::string filepath, std::function<double(double)> func, d
 	Export_Table(filepath, data, dimensions);
 }
 
-//3. Create list with equi-distant numbers in log-space
+//3. Create lists with equi-distant numbers
+std::vector<unsigned int> Range(unsigned int max)
+{
+	std::vector<unsigned int> range;
+	for(unsigned int i = 0; i < max; i++)
+		range.push_back(i);
+	return range;
+}
+
+std::vector<int> Range(int min, int max, int stepsize)
+{
+	std::vector<int> range;
+	if(min > max && stepsize > 0)
+		for(unsigned int i = min; i > max; i -= stepsize)
+			range.push_back(i);
+	else
+		for(unsigned int i = min; i < max; i += stepsize)
+			range.push_back(i);
+	return range;
+}
+
 std::vector<double> Linear_Space(double min, double max, unsigned int steps)
 {
 	if(steps < 2 || min == max)
