@@ -54,13 +54,15 @@ void Print_Progress_Bar(double i, double iMax, int MPI_rank)
 }
 
 //2. Import and export data from files
-std::vector<double> Import_List(std::string filepath, double dimension)
+std::vector<double> Import_List(std::string filepath, double dimension, unsigned int ignored_initial_lines)
 {
 	std::vector<double> data;
 	std::ifstream inputfile;
 	inputfile.open(filepath);
 	if(inputfile.good())
 	{
+		for(unsigned int i = 0; i < ignored_initial_lines; i++)
+			inputfile.ignore(10000, '\n');
 		double x;
 		while(inputfile >> x)
 			data.push_back(x * dimension);
@@ -88,19 +90,22 @@ unsigned int Count_Lines(std::string filepath)
 	}
 	return line_count;
 }
-std::vector<std::vector<double>> Import_Table(std::string filepath, std::vector<double> dimensions)
+
+std::vector<std::vector<double>> Import_Table(std::string filepath, std::vector<double> dimensions, unsigned int ignored_initial_lines)
 {
 	std::vector<double> data_aux = {};
 	std::ifstream inputfile;
 	inputfile.open(filepath);
 	if(inputfile.good())
 	{
+		for(unsigned int i = 0; i < ignored_initial_lines; i++)
+			inputfile.ignore(10000, '\n');
 		double x;
 		while(inputfile >> x)
 			data_aux.push_back(x);
 		inputfile.close();
 
-		unsigned int rows	 = Count_Lines(filepath);
+		unsigned int rows	 = Count_Lines(filepath) - ignored_initial_lines;
 		unsigned int columns = data_aux.size() / rows;
 		if(!dimensions.empty() && dimensions.size() != columns)
 		{

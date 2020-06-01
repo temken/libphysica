@@ -13,8 +13,8 @@ extern void Print_Progress_Bar(double progress, int MPI_rang = 0);
 extern void Print_Progress_Bar(double i, double iMax, int MPI_rang = 0);
 
 //2. Import and export data from files
-extern std::vector<double> Import_List(std::string filepath, double dimension = 1.0);
-extern std::vector<std::vector<double>> Import_Table(std::string filepath, std::vector<double> dimensions = {});
+extern std::vector<double> Import_List(std::string filepath, double dimension = 1.0, unsigned int ignored_initial_lines = 0);
+extern std::vector<std::vector<double>> Import_Table(std::string filepath, std::vector<double> dimensions = {}, unsigned int ignored_initial_lines = 0);
 
 extern void Export_List(std::string filepath, std::vector<double> data, double dimension = 1.0);
 extern void Export_Table(std::string filepath, const std::vector<std::vector<double>>& data, std::vector<double> dimensions = {});
