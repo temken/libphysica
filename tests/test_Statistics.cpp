@@ -188,6 +188,30 @@ TEST(TestStatistics, TestCDFExponential)
 	ASSERT_DOUBLE_EQ(CDF_Exponential(-1.0, mean), 0.0);
 }
 
+//1.6 Exponential distribution
+TEST(TestStatistics, TestPDFMaxwellBoltzmann)
+{
+	// ARRANGE
+	double a = 1.5;
+	double x = 3.0;
+	// ACT & ASSERT
+	ASSERT_DOUBLE_EQ(PDF_Maxwell_Boltzmann(x, a), 8.0 * sqrt(2.0 / M_PI) / 3.0 * exp(-2.0));
+	ASSERT_DOUBLE_EQ(PDF_Maxwell_Boltzmann(-1.0, a), 0.0);
+	ASSERT_DOUBLE_EQ(PDF_Maxwell_Boltzmann(0.0, a), 0.0);
+}
+
+TEST(TestStatistics, TestCDFMaxwellBoltzmann)
+{
+	// ARRANGE
+	double a = 1.5;
+	double x = 3.0;
+	// ACT & ASSERT
+	ASSERT_DOUBLE_EQ(CDF_Maxwell_Boltzmann(x, a), erf(sqrt(2)) - 2.0 * sqrt(2.0 / M_PI) * exp(-2.0));
+	ASSERT_DOUBLE_EQ(CDF_Maxwell_Boltzmann(-1.0, a), 0.0);
+	ASSERT_DOUBLE_EQ(CDF_Maxwell_Boltzmann(0.0, a), 0.0);
+	ASSERT_DOUBLE_EQ(CDF_Maxwell_Boltzmann(100. * a, a), 1.0);
+}
+
 //2. Likelihoods
 // extern double Likelihood_Poisson(double N_prediction, unsigned long int N_observed, double expected_background = 0.0);
 TEST(TestStatistics, TestLikelihoodPoisson)

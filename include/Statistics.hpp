@@ -38,6 +38,10 @@ extern double CDF_Chi_Bar_Square(double x, std::vector<double> weights);
 extern double PDF_Exponential(double x, double mean);
 extern double CDF_Exponential(double x, double mean);
 
+//1.7 Maxwell-Boltzmann distribution
+extern double PDF_Maxwell_Boltzmann(double x, double a);
+extern double CDF_Maxwell_Boltzmann(double x, double a);
+
 //2. Likelihoods
 extern double Likelihood_Poisson(double N_prediction, unsigned long int N_observed, double expected_background = 0.0);
 extern double Log_Likelihood_Poisson(double N_prediction, unsigned long int N_observed, double expected_background = 0.0);

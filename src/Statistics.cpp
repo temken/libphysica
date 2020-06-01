@@ -196,6 +196,33 @@ double CDF_Exponential(double x, double mean)
 		return 1.0 - exp(-1.0 / mean * x);
 }
 
+//1.7 Maxwell-Boltzmann distribution
+double PDF_Maxwell_Boltzmann(double x, double a)
+{
+	if(a <= 0.0)
+	{
+		std::cerr << "Error in libphysica::PDF_Maxwell_Boltzmann(): Parameter a is not positive. (a=" << a << ")." << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+	else if(x < 0)
+		return 0.0;
+	else
+		return sqrt(2.0 / M_PI) * x * x / a / a / a * exp(-x * x / 2.0 / a / a);
+}
+
+double CDF_Maxwell_Boltzmann(double x, double a)
+{
+	if(a <= 0.0)
+	{
+		std::cerr << "Error in libphysica::CDF_Maxwell_Boltzmann(): Parameter a is not positive. (a=" << a << ")." << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+	else if(x < 0)
+		return 0.0;
+	else
+		return erf(x / sqrt(2.0) / a) - sqrt(2.0 / M_PI) * x / a * exp(-x * x / 2.0 / a / a);
+}
+
 //2. Likelihoods
 double Log_Likelihood_Poisson(double N_prediction, unsigned long int N_observed, double expected_background)
 {
