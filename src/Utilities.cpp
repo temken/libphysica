@@ -192,10 +192,10 @@ std::vector<int> Range(int min, int max, int stepsize)
 {
 	std::vector<int> range;
 	if(min > max && stepsize > 0)
-		for(unsigned int i = min; i > max; i -= stepsize)
+		for(int i = min; i > max; i -= stepsize)
 			range.push_back(i);
 	else
-		for(unsigned int i = min; i < max; i += stepsize)
+		for(int i = min; i < max; i += stepsize)
 			range.push_back(i);
 	return range;
 }

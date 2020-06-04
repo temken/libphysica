@@ -61,7 +61,7 @@ double CDF_Binomial(unsigned int trials, double p, unsigned int x)
 		std::exit(EXIT_FAILURE);
 	}
 	double cdf = 0.0;
-	for(int i = 0; i <= x; i++)
+	for(unsigned int i = 0; i <= x; i++)
 		cdf += PMF_Binomial(trials, p, i);
 	return cdf;
 }
