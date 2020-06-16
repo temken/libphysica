@@ -70,7 +70,7 @@ std::vector<double> Import_List(std::string filepath, double dimension, unsigned
 	}
 	else
 	{
-		std::cerr << "Error in Import_Data(" << filepath << "): File does not exist." << std::endl;
+		std::cerr << "Error in libphysica::Import_Data(" << filepath << "): File does not exist." << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
 
@@ -109,7 +109,7 @@ std::vector<std::vector<double>> Import_Table(std::string filepath, std::vector<
 		unsigned int columns = data_aux.size() / rows;
 		if(!dimensions.empty() && dimensions.size() != columns)
 		{
-			std::cerr << "Error in Import_Data(): Column length and dimension length do not match." << std::endl;
+			std::cerr << "Error in libphysica::Import_Data(): Column length and dimension length do not match." << std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		std::vector<std::vector<double>> data(rows, std::vector<double>(columns, 0.0));
@@ -127,7 +127,7 @@ std::vector<std::vector<double>> Import_Table(std::string filepath, std::vector<
 	}
 	else
 	{
-		std::cerr << "Error in Import_Data(" << filepath << "): File does not exist." << std::endl;
+		std::cerr << "Error in libphysica::Import_Data(" << filepath << "): File does not exist." << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
 }
@@ -151,7 +151,7 @@ void Export_Table(std::string filepath, const std::vector<std::vector<double>>& 
 		unsigned int columns = data[line].size();
 		if(!dimensions.empty() && dimensions.size() != columns)
 		{
-			std::cerr << "Error in Export_Data(): Column length and dimension length do not match." << std::endl;
+			std::cerr << "Error in libphysica::Export_Data(): Column length and dimension length do not match." << std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		for(unsigned int column = 0; column < columns; column++)

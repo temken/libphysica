@@ -47,7 +47,7 @@ double PMF_Binomial(unsigned int trials, double p, unsigned int x)
 {
 	if(p < 0.0 || p > 1.0)
 	{
-		std::cerr << "Error in PMF_Binomial(): Parameter p is out of bound (p=" << p << ")." << std::endl;
+		std::cerr << "Error in libphysica::PMF_Binomial(): Parameter p is out of bound (p=" << p << ")." << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
 	return Binomial_Coefficient(trials, x) * pow(p, x) * pow(1.0 - p, (trials - x));
@@ -57,7 +57,7 @@ double CDF_Binomial(unsigned int trials, double p, unsigned int x)
 {
 	if(p < 0.0 || p > 1.0)
 	{
-		std::cerr << "Error in CDF_Binomial(): Parameter p is out of bound (p=" << p << ")." << std::endl;
+		std::cerr << "Error in libphysica::CDF_Binomial(): Parameter p is out of bound (p=" << p << ")." << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
 	double cdf = 0.0;
@@ -71,7 +71,7 @@ double PMF_Poisson(double expected_events, unsigned int events)
 {
 	if(expected_events < 0 || events < 0)
 	{
-		std::cerr << "Error in PMF_Poisson(): Input parameter negative." << std::endl;
+		std::cerr << "Error in libphysica::PMF_Poisson(): Input parameter negative." << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
 	else if(expected_events == 0 && events == 0)
@@ -92,7 +92,7 @@ double CDF_Poisson(double expectation_value, unsigned int observed_events)
 {
 	if(expectation_value < 0 || observed_events < 0)
 	{
-		std::cerr << "Error in CDF_Poisson(): Input parameter negative." << std::endl;
+		std::cerr << "Error in libphysica::CDF_Poisson(): Input parameter negative." << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
 	else
@@ -109,7 +109,7 @@ double Inv_CDF_Poisson(unsigned int observed_events, double cdf)
 {
 	if(cdf < 0.0 || cdf > 1.0)
 	{
-		std::cerr << "Error in Inv_CDF_Poisson(): CDF value is out of bound (cdf=" << cdf << ")." << std::endl;
+		std::cerr << "Error in libphysica::Inv_CDF_Poisson(): CDF value is out of bound (cdf=" << cdf << ")." << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
 	else if(observed_events == 0)
@@ -161,7 +161,7 @@ double CDF_Chi_Bar_Square(double x, std::vector<double> weights)
 			cdf += weights[dof] * CDF_Chi_Square(x, dof);
 		if(cdf > 1.0)
 		{
-			std::cerr << "Warning in CDF_Chi_Bar_Square(double,std::vector<double>): 1-CDF = " << (1.0 - cdf) << "< 0. Return 1." << std::endl;
+			std::cerr << "Warning in libphysica::CDF_Chi_Bar_Square(double,std::vector<double>): 1-CDF = " << (1.0 - cdf) << "< 0. Return 1." << std::endl;
 			return 1.0;
 		}
 		else
@@ -174,7 +174,7 @@ double PDF_Exponential(double x, double mean)
 {
 	if(mean <= 0.0)
 	{
-		std::cerr << "Error in PDF_Exponential(): Mean value is not positive (mean=" << mean << ")." << std::endl;
+		std::cerr << "Error in libphysica::PDF_Exponential(): Mean value is not positive (mean=" << mean << ")." << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
 	else if(x < 0)
@@ -187,7 +187,7 @@ double CDF_Exponential(double x, double mean)
 {
 	if(mean <= 0.0)
 	{
-		std::cerr << "Error in CDF_Exponential(): Mean value is not positive (mean=" << mean << ")." << std::endl;
+		std::cerr << "Error in libphysica::CDF_Exponential(): Mean value is not positive (mean=" << mean << ")." << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
 	else if(x < 0)
@@ -201,7 +201,7 @@ double PDF_Maxwell_Boltzmann(double x, double a)
 {
 	if(a <= 0.0)
 	{
-		std::cerr << "Error in libphysica::PDF_Maxwell_Boltzmann(): Parameter a is not positive. (a=" << a << ")." << std::endl;
+		std::cerr << "Error in libphysica::libphysica::PDF_Maxwell_Boltzmann(): Parameter a is not positive. (a=" << a << ")." << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
 	else if(x < 0)
@@ -214,7 +214,7 @@ double CDF_Maxwell_Boltzmann(double x, double a)
 {
 	if(a <= 0.0)
 	{
-		std::cerr << "Error in libphysica::CDF_Maxwell_Boltzmann(): Parameter a is not positive. (a=" << a << ")." << std::endl;
+		std::cerr << "Error in libphysica::libphysica::CDF_Maxwell_Boltzmann(): Parameter a is not positive. (a=" << a << ")." << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
 	else if(x < 0)
@@ -245,7 +245,7 @@ double Log_Likelihood_Poisson_Binned(const std::vector<double>& N_prediction_bin
 		expected_background_binned = std::vector<double>(N_bins, 0.0);
 	if(N_observed_binned.size() != N_bins || expected_background_binned.size() != N_bins)
 	{
-		std::cerr << "Error in Log_Likelihood_Poisson_Binned(): Predicted signals, observed events, and/or expected background are not of equal size." << std::endl;
+		std::cerr << "Error in libphysica::Log_Likelihood_Poisson_Binned(): Predicted signals, observed events, and/or expected background are not of equal size." << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
 	else
@@ -315,19 +315,19 @@ double Rejection_Sampling(const std::function<double(double)>& PDF, double xMin,
 	{
 		count++;
 		if(count % 1000 == 0)
-			std::cout << "Warning in Rejection_Sampling(): Very inefficient sampling with N=" << count << "." << std::endl;
+			std::cout << "Warning in libphysica::Rejection_Sampling(): Very inefficient sampling with N=" << count << "." << std::endl;
 
 		x		   = xMin + Sample_Xi(PRNG) * (xMax - xMin);
 		double y   = Sample_Xi(PRNG) * yMax;
 		double pdf = PDF(x);
 		if(pdf < 0.0)
 		{
-			std::cerr << "Error in Rejection_Sampling(): PDF is negative -> f(" << x << ")=" << pdf << std::endl;
+			std::cerr << "Error in libphysica::Rejection_Sampling(): PDF is negative -> f(" << x << ")=" << pdf << std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else if(pdf > yMax)
 		{
-			std::cout << "Warning in Rejection_Sampling(): PDF>yMax, yMax is set to PDF." << std::endl;
+			std::cout << "Warning in libphysica::Rejection_Sampling(): PDF>yMax, yMax is set to PDF." << std::endl;
 			return Rejection_Sampling(PDF, xMin, xMax, pdf, PRNG);
 		}
 		else if(y <= pdf)
@@ -438,7 +438,7 @@ std::vector<double> Weighted_Average(std::vector<DataPoint>& data)
 	}
 	double SE = N / (N - 1.0) / wsum / wsum * (sum1 - 2.0 * Average * sum2 + pow(Average, 2.0) * sum3);
 	//3. Return result
-	return std::vector<double>{Average, sqrt(SE)};
+	return std::vector<double> {Average, sqrt(SE)};
 }
 
 //6. Kernel density estimation
@@ -529,7 +529,7 @@ Interpolation Perform_KDE(std::vector<DataPoint> data, double xMin, double xMax,
 			// kde+=data[i].weight*Gaussian_Kernel((x-xRefl)/bw);
 		}
 		kde /= bw * Weight_Sum;
-		Interpol_List.push_back(std::vector<double>{x, kde});
+		Interpol_List.push_back(std::vector<double> {x, kde});
 	}
 
 	Interpolation result(Interpol_List);
