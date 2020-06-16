@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/temken/libphysica.svg?branch=master)](https://travis-ci.com/temken/libphysica)
+[![Build Status](https://github.com/temken/libphysica/workflows/Build%20Status/badge.svg)](https://github.com/temken/libphysica/actions)
 [![codecov](https://codecov.io/gh/temken/libphysica/branch/master/graph/badge.svg)](https://codecov.io/gh/temken/libphysica)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
@@ -36,5 +36,4 @@ Cambridge University Press, (2007)
 
 ## TO DO
 
-- [ ] Many more unit tests.  
 - [ ] *Linear_Algebra*: Eigen values and vector functions.
