@@ -1,8 +1,8 @@
 #ifndef __Statistics_hpp_
 #define __Statistics_hpp_
 
-#include <vector>
 #include <random>
+#include <vector>
 
 #include "Numerics.hpp"
 
@@ -25,8 +25,8 @@ extern double CDF_Binomial(unsigned int trials, double p, unsigned int x);
 
 //1.4 Poission distribution
 extern double PMF_Poisson(double expected_events, unsigned int events);
-extern double CDF_Poisson(double expectation_value,unsigned int observed_events);
-extern double Inv_CDF_Poisson(unsigned int observed_events, double cdf); //Solves the CDF = cdf for mu
+extern double CDF_Poisson(double expectation_value, unsigned int observed_events);
+extern double Inv_CDF_Poisson(unsigned int observed_events, double cdf);   //Solves the CDF = cdf for mu
 
 //1.5 Chi-square distribution
 extern double PDF_Chi_Square(double x, double dof);
@@ -50,10 +50,8 @@ extern double Sample_Uniform(std::mt19937& PRNG, double x_min = 0.0, double x_ma
 extern int Sample_Poisson(std::mt19937& PRNG, double expectation_value);
 
 //3.2 General sampling algorithms
-extern double Rejection_Sampling(const std::function<double(double)>& PDF,double xMin,double xMax,double yMax,std::mt19937& PRNG);
-extern double Inverse_Transform_Sampling(const std::function<double(double)>& cdf,double xMin,double xMax,std::mt19937& PRNG);
-
-
+extern double Rejection_Sampling(const std::function<double(double)>& PDF, double xMin, double xMax, double yMax, std::mt19937& PRNG);
+extern double Inverse_Transform_Sampling(const std::function<double(double)>& cdf, double xMin, double xMax, std::mt19937& PRNG);
 
 //4. Data point with statistical weight
 struct DataPoint
@@ -61,13 +59,12 @@ struct DataPoint
 	double value;
 	double weight;
 	//Constructors:
-	DataPoint(double v = 0.0,double w = 1.0);
-
+	DataPoint(double v = 0.0, double w = 1.0);
 };
-bool operator <(const DataPoint& lhs,const DataPoint& rhs);
-bool operator >(const DataPoint& lhs,const DataPoint& rhs);
-bool operator ==(const DataPoint& lhs,const DataPoint& rhs);
-std::ostream& operator <<(std::ostream &output,const DataPoint& dp);
+bool operator<(const DataPoint& lhs, const DataPoint& rhs);
+bool operator>(const DataPoint& lhs, const DataPoint& rhs);
+bool operator==(const DataPoint& lhs, const DataPoint& rhs);
+std::ostream& operator<<(std::ostream& output, const DataPoint& dp);
 
 //5. Basic data analysis
 extern double Arithmetic_Mean(const std::vector<double>& data);
@@ -77,7 +74,7 @@ extern double Standard_Deviation(const std::vector<double>& data);
 extern std::vector<double> Weighted_Average(std::vector<DataPoint>& data);
 
 //6. Kernel density estimation
-extern Interpolation Perform_KDE(std::vector<DataPoint> data,double xMin,double xMax,double bw = 0);
+extern Interpolation Perform_KDE(std::vector<DataPoint> data, double xMin, double xMax, double bw = 0);
 
 }	// namespace libphysica
 
