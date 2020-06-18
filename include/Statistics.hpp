@@ -51,7 +51,8 @@ extern double Log_Likelihood_Poisson_Binned(const std::vector<double>& N_predict
 //3. Sampling random numbers
 //3.1 Sample from specific distribution
 extern double Sample_Uniform(std::mt19937& PRNG, double x_min = 0.0, double x_max = 1.0);
-extern int Sample_Poisson(std::mt19937& PRNG, double expectation_value);
+extern unsigned int Sample_Poisson(std::mt19937& PRNG, double expectation_value);
+extern std::vector<unsigned int> Sample_Poisson(std::mt19937& PRNG, const std::vector<double>& expectation_values);
 
 //3.2 General sampling algorithms
 extern double Rejection_Sampling(const std::function<double(double)>& PDF, double xMin, double xMax, double yMax, std::mt19937& PRNG);

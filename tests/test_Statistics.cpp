@@ -277,7 +277,7 @@ TEST(TestStatistics, SampleUniform)
 }
 
 // extern int Sample_Poisson(std::mt19937& PRNG, double expectation_value);
-TEST(TestStatistics, TestSamplePoisson)
+TEST(TestStatistics, TestSamplePoisson1)
 {
 	// ARRANGE
 	std::random_device rd;
@@ -286,6 +286,22 @@ TEST(TestStatistics, TestSamplePoisson)
 	// ACT & ASSERT
 	for(int i = 0; i < 10; i++)
 		ASSERT_GE(Sample_Poisson(PRNG, mu), 0.0);
+}
+
+TEST(TestStatistics, TestSamplePoisson2)
+{
+	// ARRANGE
+	unsigned int fixed_seed = 15;
+	std::mt19937 PRNG(fixed_seed);
+	std::vector<unsigned int> result = {10, 14, 12};
+
+	std::vector<double> expectation_values = {10.3, 12.5, 8.7};
+	// ACT
+	std::vector<unsigned int> samples = Sample_Poisson(PRNG, expectation_values);
+	// ASSERT
+	ASSERT_EQ(samples.size(), expectation_values.size());
+	for(unsigned int i = 0; i < samples.size(); i++)
+		EXPECT_EQ(samples[i], result[i]);
 }
 
 //3.2 General sampling algorithms

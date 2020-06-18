@@ -277,7 +277,7 @@ double Sample_Uniform(std::mt19937& PRNG, double x_min, double x_max)
 	return x_min + Sample_Xi(PRNG) * (x_max - x_min);
 }
 
-int Sample_Poisson(std::mt19937& PRNG, double expectation_value)   //Algorithm from https://en.wikipedia.org/wiki/Poisson_distribution
+unsigned int Sample_Poisson(std::mt19937& PRNG, double expectation_value)	//Algorithm from https://en.wikipedia.org/wiki/Poisson_distribution
 {
 	double STEP		   = 500;
 	double lambda_left = expectation_value;
@@ -303,6 +303,14 @@ int Sample_Poisson(std::mt19937& PRNG, double expectation_value)   //Algorithm f
 		}
 	} while(p > 1);
 	return (k - 1);
+}
+
+std::vector<unsigned int> Sample_Poisson(std::mt19937& PRNG, const std::vector<double>& expectation_values)
+{
+	std::vector<unsigned int> samples;
+	for(auto& expectation_value : expectation_values)
+		samples.push_back(Sample_Poisson(PRNG, expectation_value));
+	return samples;
 }
 
 //3.2 General sampling algorithms
