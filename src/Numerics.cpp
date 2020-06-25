@@ -434,8 +434,6 @@ void Interpolation::Compute_Steffen_Coefficients()
 	c.clear();
 	d.clear();
 
-	// unsigned int N = x_values.size();
-
 	//Compute the Steffen coefficients for the interpolation
 	//1. h and s.
 	std::vector<double> h(N - 1), s(N - 1);
@@ -668,6 +666,125 @@ void Interpolation::Save_Function(std::string filename, unsigned int points)
 	std::vector<double> x_points = Linear_Space(domain[0], domain[1], points);
 	for(auto& x : x_points)
 		f << x << "\t" << Interpolate(x) << std::endl;
+	f.close();
+}
+
+//4.2 Two-dimensional interpolation (bilinear interpolation)
+Interpolation_2D::Interpolation_2D()
+{
+	std::vector<double> x_val = {-1.0, 0.0, 1.0};
+	std::vector<double> y_val = {-1.0, 0.0, 1.0};
+	std::vector<std::vector<double>> f_val(3, std::vector<double>(3, 0.0));
+
+	*this = Interpolation_2D(x_val, y_val, f_val);
+}
+
+Interpolation_2D::Interpolation_2D(std::vector<double> x_val, std::vector<double> y_val, std::vector<std::vector<double>> func_values, double x_dim, double y_dim, double f_dim)
+: N_x(x_val.size()), N_y(y_val.size()), x_values(x_val), y_values(y_val), function_values(func_values), prefactor(1.0)
+{
+	// Transform units
+	if(x_dim > 0.0)
+		for(unsigned int i = 0; i < N_x; i++)
+			x_values[i] *= x_dim;
+	if(y_dim > 0.0)
+		for(unsigned int i = 0; i < N_y; i++)
+			y_values[i] *= y_dim;
+	if(f_dim > 0.0)
+		for(unsigned int i = 0; i < N_x; i++)
+			for(unsigned int j = 0; j < N_y; j++)
+				function_values[i][j] *= f_dim;
+
+	// Create dummy 1D interpolations to use for index location.
+	std::vector<double> dummy_x(N_x, 0.0);
+	std::vector<double> dummy_y(N_y, 0.0);
+	x_int = Interpolation(x_values, std::vector<double>(N_x, 0.0));
+	y_int = Interpolation(y_values, std::vector<double>(N_y, 0.0));
+
+	domain = {x_int.domain, y_int.domain};
+}
+
+Interpolation_2D::Interpolation_2D(std::vector<std::vector<double>> data_table, double x_dim, double y_dim, double f_dim)
+{
+	std::vector<double> x;
+	std::vector<double> y;
+
+	for(unsigned int i = 0; i < data_table.size(); i++)
+	{
+		if(data_table[i].size() != 3)
+		{
+			std::cerr << "Error in libphysica::Interpolation_2D::Interpolation_2D(): Data table is has faulty dimensions (" << data_table[i].size() << ")" << std::endl;
+			std::exit(EXIT_FAILURE);
+		}
+		x.push_back(data_table[i][0]);
+		y.push_back(data_table[i][1]);
+	}
+
+	// Delete dublicates in x and y list and sort
+	std::sort(x.begin(), x.end());
+	std::sort(y.begin(), y.end());
+	x.erase(unique(x.begin(), x.end()), x.end());
+	y.erase(unique(y.begin(), y.end()), y.end());
+
+	if(x.size() * y.size() != data_table.size())
+	{
+		std::cerr << "Error in libphysica::Interpolation_2D::Interpolation_2D(): List lenghts do not fit." << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+
+	std::vector<std::vector<double>> f(x.size(), std::vector<double>(y.size()));
+	unsigned int i = 0;
+	for(unsigned int i_x = 0; i_x < x.size(); i_x++)
+		for(unsigned int i_y = 0; i_y < y.size(); i_y++)
+		{
+			if(x[i_x] != data_table[i][0] || y[i_y] != data_table[i][1])
+			{
+				std::cerr << "Error in libphysica::Interpolation_2D::Interpolation_2D(): Data table was not in right format." << std::endl;
+				std::exit(EXIT_FAILURE);
+			}
+			f[i_x][i_y] = data_table[i][2];
+			i++;
+		}
+
+	*this = Interpolation_2D(x, y, f, x_dim, y_dim, f_dim);
+}
+
+double Interpolation_2D::Interpolate(double x, double y)
+{
+	unsigned int i = x_int.Locate(x);
+	unsigned int j = y_int.Locate(y);
+
+	double t = (x - x_values[i]) / (x_values[i + 1] - x_values[i]);
+	double u = (y - y_values[j]) / (y_values[j + 1] - y_values[j]);
+
+	double f0 = function_values[i][j];
+	double f1 = function_values[i + 1][j];
+	double f2 = function_values[i + 1][j + 1];
+	double f3 = function_values[i][j + 1];
+
+	return (1.0 - t) * (1.0 - u) * f0 + t * (1.0 - u) * f1 + t * u * f2 + (1.0 - t) * u * f3;
+}
+
+void Interpolation_2D::Set_Prefactor(double factor)
+{
+	prefactor = factor;
+}
+
+void Interpolation_2D::Multiply(double factor)
+{
+	prefactor *= factor;
+}
+
+void Interpolation_2D::Save_Function(std::string filename, unsigned int x_points, unsigned int y_points)
+{
+	std::ofstream f;
+	f.open(filename);
+	if(y_points == 0)
+		y_points = x_points;
+	std::vector<double> x_list = Linear_Space(domain[0][0], domain[0][1], x_points);
+	std::vector<double> y_list = Linear_Space(domain[1][0], domain[1][1], y_points);
+	for(auto& x : x_list)
+		for(auto& y : y_list)
+			f << x << "\t" << y << "\t" << Interpolate(x, y) << std::endl;
 	f.close();
 }
 

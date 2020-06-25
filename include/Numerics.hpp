@@ -55,10 +55,11 @@ class Interpolation
 	bool correlated_calls;	 // if successive calls are correlated, then the hunt method can be faster.
 	unsigned int Bisection(double x, int jLeft, int jRight);
 	unsigned int Hunt(double x);
-	unsigned int Locate(double x);
 
   public:
 	std::vector<double> domain;
+
+	unsigned int Locate(double x);
 
 	//Constructors
 	Interpolation();
@@ -76,6 +77,36 @@ class Interpolation
 	};
 
 	void Save_Function(std::string filename, unsigned int points);
+};
+
+//4.2 Two-dimensional interpolation (bilinear interpolation)
+class Interpolation_2D
+{
+  private:
+	unsigned int N_x, N_y;
+	std::vector<double> x_values;
+	std::vector<double> y_values;
+	std::vector<std::vector<double>> function_values;
+	double prefactor;
+	Interpolation x_int, y_int;	  //Dummy 1D interpolations, necessary for the Locate() functionality.
+
+  public:
+	std::vector<std::vector<double>> domain;
+	Interpolation_2D();
+	Interpolation_2D(std::vector<double> x_val, std::vector<double> y_val, std::vector<std::vector<double>> func_values, double x_dim = -1.0, double y_dim = -1.0, double f_dim = -1.0);
+	Interpolation_2D(std::vector<std::vector<double>> data_table, double x_dim = -1.0, double y_dim = -1.0, double f_dim = -1.0);
+
+	double Interpolate(double x, double y);
+
+	double operator()(double x, double y)
+	{
+		return Interpolate(x, y);
+	};
+
+	void Set_Prefactor(double factor);
+	void Multiply(double factor);
+
+	void Save_Function(std::string filename, unsigned int x_points, unsigned int y_points = 0);
 };
 
 //5. Root finding
