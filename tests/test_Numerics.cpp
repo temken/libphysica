@@ -193,9 +193,13 @@ TEST(TestNumerics, TestInvErf)
 TEST(TestNumerics, TestIntegrate)
 {
 	// ARRANGE
-	double tolerance					= 1.0e-8;
-	std::function<double(double)> func	= [](double x) { return 1.0 / x; };
-	std::function<double(double)> func2 = [](double x) { return sin(x); };
+	double tolerance				   = 1.0e-8;
+	std::function<double(double)> func = [](double x) {
+		return 1.0 / x;
+	};
+	std::function<double(double)> func2 = [](double x) {
+		return sin(x);
+	};
 	// ACT & ASSERT
 	ASSERT_NEAR(Integrate(func, 2.0, 3.0, tolerance), log(3.0 / 2.0), tolerance);
 	ASSERT_NEAR(Integrate(func2, -1.0, 1.0, tolerance), 0.0, tolerance);
@@ -203,7 +207,21 @@ TEST(TestNumerics, TestIntegrate)
 
 //4. Interpolation
 //4.1 One-dimensional interpolation
-TEST(TestNumerics, TestInterpolation1D)
+TEST(TestNumerics, TestInterpolation1D1)
+{
+	// ARRANGE
+	std::vector<double> x = {0.0, 1.0, 2.0, 3.0};
+	std::vector<double> f = {0.0, 1.0, 2.0, 3.0};
+	// ACT
+	Interpolation interpolation(x, f);
+	// ASSERT
+	for(unsigned int i = 0; i < x.size(); i++)
+		ASSERT_DOUBLE_EQ(interpolation(x[i]), f[i]);
+	for(unsigned int i = 0; i < x.size() - 1; i++)
+		ASSERT_DOUBLE_EQ(interpolation(x[i] + 0.5), f[i] + 0.5);
+}
+
+TEST(TestNumerics, TestInterpolation1D2)
 {
 	// ARRANGE
 	std::vector<std::vector<double>> data = {{0.0, 0.0}, {1.0, 1.0}, {2.0, 2.0}, {3.0, 3.0}};

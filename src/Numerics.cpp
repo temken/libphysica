@@ -11,6 +11,8 @@
 #include <iostream>
 #include <limits>	// std::numeric_limits
 
+#include "Utilities.hpp"
+
 namespace libphysica
 {
 
@@ -425,27 +427,25 @@ double Integrate(std::function<double(double)> func, double a, double b, double 
 
 //4. Interpolation
 //4.1 One-dimensional interpolation
-void Interpolation::Compute_Steffen_Coefficients(std::vector<std::vector<double>>& data, std::vector<double>& a, std::vector<double>& b, std::vector<double>& c, std::vector<double>& d)
+void Interpolation::Compute_Steffen_Coefficients()
 {
-	unsigned int N = data.size();
+	a.clear();
+	b.clear();
+	c.clear();
+	d.clear();
+
+	// unsigned int N = x_values.size();
 
 	//Compute the Steffen coefficients for the interpolation
 	//1. h and s.
-	// double h[N-1],s[N-1];
 	std::vector<double> h(N - 1), s(N - 1);
 	for(unsigned int i = 0; i < N - 1; i++)
 	{
-		double x_i	 = data[i][0];
-		double x_ip1 = data[i + 1][0];
-
-		double y_i	 = data[i][1];
-		double y_ip1 = data[i + 1][1];
-		h[i]		 = x_ip1 - x_i;
-		s[i]		 = (y_ip1 - y_i) / h[i];
+		h[i] = x_values[i + 1] - x_values[i];
+		s[i] = (function_values[i + 1] - function_values[i]) / h[i];
 	}
 
 	//2. p and dy
-	// double dy[N],p[N];
 	std::vector<double> dy(N), p(N);
 	for(unsigned int i = 0; i < N; i++)
 	{
@@ -475,9 +475,9 @@ void Interpolation::Compute_Steffen_Coefficients(std::vector<std::vector<double>
 		a.push_back((dy[i] + dy[i + 1] - 2.0 * s[i]) / pow(h[i], 2.0));
 		b.push_back((3.0 * s[i] - 2.0 * dy[i] - dy[i + 1]) / h[i]);
 		c.push_back(dy[i]);
-		d.push_back(data[i][1]);
+		d.push_back(function_values[i]);
 		if(std::isnan(a.back()) || std::isnan(b.back()) || std::isnan(c.back()) || std::isnan(d.back()))
-			std::cout << "Warning: Steffen coefficients in interpolation are NAN." << std::endl;
+			std::cout << "Warning in libphysica::Interpolation::Compute_Steffen_Coefficients(): Steffen coefficients in interpolation are NAN." << std::endl;
 	}
 }
 
@@ -486,7 +486,7 @@ unsigned int Interpolation::Bisection(double x, int jLeft, int jRight)
 	while((jRight - jLeft) > 1)
 	{
 		int jm = (jRight + jLeft) >> 1;
-		if(x >= TabulatedData[jm][0])
+		if(x >= x_values[jm])
 			jLeft = jm;
 		else
 			jRight = jm;
@@ -496,23 +496,24 @@ unsigned int Interpolation::Bisection(double x, int jLeft, int jRight)
 
 unsigned int Interpolation::Hunt(double x)
 {
+
 	// 1. Hunting phase returns jd,ju which bracket j
 	int dj = 1;
 	int jd;
 	unsigned int ju;
 	//Hunt up
-	if(x > TabulatedData[jLast][0])
+	if(x > x_values[jLast])
 	{
 		jd = jLast;
 		ju = jd + dj;
-		while(x > TabulatedData[ju][0])
+		while(x > x_values[ju])
 		{
 			jd = ju;
 			ju += dj;
 			//Check if we ran off the range:
-			if(ju > N_Data - 1)
+			if(ju > N - 1)
 			{
-				ju = N_Data - 1;
+				ju = N - 1;
 				break;
 			}
 			else
@@ -520,11 +521,11 @@ unsigned int Interpolation::Hunt(double x)
 		}
 	}
 	//Hunt down
-	else if(x < TabulatedData[jLast][0])
+	else if(x < x_values[jLast])
 	{
 		ju = jLast;
 		jd = ju - dj;
-		while(x < TabulatedData[jd][0])
+		while(x < x_values[jd])
 		{
 			ju = jd;
 			jd -= dj;
@@ -553,19 +554,20 @@ unsigned int Interpolation::Hunt(double x)
 // Find j such that list[j]<x<list[j+1]
 unsigned int Interpolation::Locate(double x)
 {
-	if(((xDomain[0] - x) > 0.0) || ((x - xDomain[1]) > 0.0))
+	if(((domain[0] - x) > 0.0) || ((x - domain[1]) > 0.0))
 	{
-		printf("\nError in Interpolation::Locate(): x = %e lies outside the domain [%e,%e].\n\n", x, xDomain[0], xDomain[1]);
+		printf("\nError in libphysica::Interpolation::Locate(): x = %e lies outside the domain [%e,%e].\n\n", x, domain[0], domain[1]);
 		std::exit(EXIT_FAILURE);
 	}
 	else
 	{
-		//Use Bisection() or the Hunt method, depending of the last calls were correlated.
-		unsigned int j = corr ? Hunt(x) : Bisection(x, 0, N_Data - 1);
-		//Check if the points are still correlated.
-		corr = (fabs((j - jLast)) < 10);
 
-		jLast = j;
+		//Use Bisection() or the Hunt method, depending of the last calls were correlated.
+		unsigned int j = correlated_calls ? Hunt(x) : Bisection(x, 0, N - 1);
+		//Check if the points are still correlated.
+		correlated_calls = (fabs((j - jLast)) < 10);
+		jLast			 = j;
+
 		return j;
 	}
 }
@@ -573,157 +575,99 @@ unsigned int Interpolation::Locate(double x)
 //Constructors
 Interpolation::Interpolation()
 {
-	//Generate some data to interpolate zero
-	std::vector<std::vector<double>> data;
-	data.push_back(std::vector<double> {-1.0, 0.0});
-	data.push_back(std::vector<double> {0.0, 0.0});
-	data.push_back(std::vector<double> {+1.0, 0.0});
+	std::vector<double> x_val = {-1.0, 0.0, 1.0};
+	std::vector<double> y_val = {0.0, 0.0, 0.0};
 
-	//Define members
-	preFactor	  = 1.0;
-	TabulatedData = data;
-	N_Data		  = data.size();
-	xDomain		  = {-1.0, 1.0};
-	jLast		  = 0;
-	corr		  = false;
-
-	//Compute coefficients
-	Compute_Steffen_Coefficients(data, a, b, c, d);
+	*this = Interpolation(x_val, y_val);
 }
 
-Interpolation::Interpolation(const std::string& filename, double dim1, double dim2)
+Interpolation::Interpolation(const std::vector<double>& arg_values, const std::vector<double>& func_values, double x_dim, double f_dim)
+: N(arg_values.size()), x_values(arg_values), function_values(func_values), prefactor(1.0), jLast(0), correlated_calls(false)
 {
-	//1. Import data.
-	std::ifstream inputfile;
-	inputfile.open(filename);
-	if(inputfile.good())
+	// Some initial checks
+	if(x_values.size() != function_values.size())
 	{
-		while(!inputfile.eof())
-		{
-			double x, y;
-			inputfile >> x;
-			inputfile >> y;
-			TabulatedData.push_back(std::vector<double> {x * dim1, y * dim2});
-		}
-		inputfile.close();
-	}
-	else
-	{
-		std::cerr << "Error in libphysica::Interpolation(" << filename << "): File does not exist." << std::endl;
+		std::cerr << "Error in libphysica::Interpolation::Interpolation(): Unequal length of argument and function lists: " << x_values.size() << " vs " << function_values.size() << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
+	for(unsigned int i = 1; i < N; i++)
+	{
+		if(x_values[i] <= x_values[i - 1])
+		{
+			std::cerr << "Error in libphysica::Interpolation::Interpolation(): Argument list not strictly increasing." << std::endl;
+			std::exit(EXIT_FAILURE);
+		}
+	}
+	// Transform units
+	if(x_dim > 0.0)
+		for(unsigned int i = 0; i < N; i++)
+			x_values[i] *= x_dim;
+	if(f_dim > 0.0)
+		for(unsigned int i = 0; i < N; i++)
+			function_values[i] *= f_dim;
 
-	//2. Sort data.
-	std::sort(TabulatedData.begin(), TabulatedData.end());
-
-	//3. Interpolate data.
-	preFactor = 1.0;
-	N_Data	  = TabulatedData.size();
-	jLast	  = 0;
-	corr	  = false;
-
-	//3.1 Find the function's domain:
-	std::vector<double> x;
-	for(unsigned i = 0; i < TabulatedData.size(); i++)
-		x.push_back(TabulatedData[i][0]);
-	xDomain.push_back(*min_element(x.begin(), x.end()));
-	xDomain.push_back(*max_element(x.begin(), x.end()));
-
-	//3.2 Compute the Steffen coefficients for the interpolation
-	Compute_Steffen_Coefficients(TabulatedData, a, b, c, d);
+	domain = {x_values[0], x_values[N - 1]};
+	Compute_Steffen_Coefficients();
 }
-Interpolation::Interpolation(const std::vector<std::vector<double>>& data, double dim1, double dim2)
+
+Interpolation::Interpolation(const std::vector<std::vector<double>>& data, double x_dim, double f_dim)
 {
-	preFactor = 1.0;
+	std::vector<double> x;
+	std::vector<double> f;
 	for(unsigned int i = 0; i < data.size(); i++)
 	{
-		std::vector<double> aux = {data[i][0] * dim1, data[i][1] * dim2};
-		TabulatedData.push_back(aux);
+		if(data[i].size() != 2)
+		{
+			std::cerr << "Error in libphysica::Interpolation::Interpolation(): Data table is has faulty dimensions (" << data[i].size() << ")" << std::endl;
+			std::exit(EXIT_FAILURE);
+		}
+		x.push_back(data[i][0]);
+		f.push_back(data[i][1]);
 	}
-	N_Data = TabulatedData.size();
-	jLast  = 0;
-	corr   = false;
-
-	//Find the function's domain:
-	std::vector<double> x;
-	for(unsigned i = 0; i < TabulatedData.size(); i++)
-		x.push_back(TabulatedData[i][0]);
-	xDomain.push_back(*min_element(x.begin(), x.end()));
-	xDomain.push_back(*max_element(x.begin(), x.end()));
-
-	//Compute the Steffen coefficients for the interpolation
-	Compute_Steffen_Coefficients(TabulatedData, a, b, c, d);
-}
-
-std::vector<std::vector<double>> Interpolation::Return_Data()
-{
-	return TabulatedData;
-}
-
-std::vector<double> Interpolation::Return_Domain()
-{
-	return xDomain;
-}
-
-double Interpolation::Return_Prefactor()
-{
-	return preFactor;
-}
-
-std::vector<std::vector<double>> Interpolation::Return_Coefficients()
-{
-	std::vector<std::vector<double>> output;
-	for(unsigned i = 0; i < a.size(); i++)
-	{
-		std::vector<double> aux {a[i], b[i], c[i], d[i]};
-		output.push_back(aux);
-	}
-	return output;
+	*this = Interpolation(x, f, x_dim, f_dim);
 }
 
 void Interpolation::Set_Prefactor(double factor)
 {
-	preFactor = factor;
+	prefactor = factor;
 }
 
 double Interpolation::Interpolate(double x)
 {
-	int j	   = Locate(x);
-	double x_j = TabulatedData[j][0];
-	return preFactor * (a[j] * pow((x - x_j), 3.0) + b[j] * pow((x - x_j), 2.0) + c[j] * (x - x_j) + d[j]);
+	int j		= Locate(x);
+	double x_j	= x_values[j];
+	double inte = prefactor * (a[j] * pow((x - x_j), 3.0) + b[j] * pow((x - x_j), 2.0) + c[j] * (x - x_j) + d[j]);
+	return inte;
+}
+
+void Interpolation::Multiply(double factor)
+{
+	prefactor *= factor;
 }
 
 double Interpolation::Derivative(double x, unsigned int derivation)
 {
 	int j	   = Locate(x);
-	double x_j = TabulatedData[j][0];
+	double x_j = x_values[j];
 	if(derivation == 0)
 		return Interpolate(x);
 	else if(derivation == 1)
-		return preFactor * (3.0 * a[j] * pow((x - x_j), 2.0) + 2.0 * b[j] * (x - x_j) + c[j]);
+		return prefactor * (3.0 * a[j] * pow((x - x_j), 2.0) + 2.0 * b[j] * (x - x_j) + c[j]);
 	else if(derivation == 2)
-		return preFactor * (6.0 * a[j] * (x - x_j) + 2.0 * b[j]);
+		return prefactor * (6.0 * a[j] * (x - x_j) + 2.0 * b[j]);
 	else if(derivation == 3)
-		return preFactor * (6.0 * a[j]);
+		return prefactor * (6.0 * a[j]);
 	else
 		return 0.0;
-}
-
-void Interpolation::Multiply(double factor)
-{
-	preFactor *= factor;
 }
 
 void Interpolation::Save_Function(std::string filename, unsigned int points)
 {
 	std::ofstream f;
 	f.open(filename);
-	double dx = (xDomain[1] - xDomain[0]) / (points - 1);
-	for(unsigned int i = 0; i < points; i++)
-	{
-		double x = xDomain[0] + i * dx;
+	std::vector<double> x_points = Linear_Space(domain[0], domain[1], points);
+	for(auto& x : x_points)
 		f << x << "\t" << Interpolate(x) << std::endl;
-	}
 	f.close();
 }
 
