@@ -10,7 +10,6 @@ namespace libphysica
 
 //1. Progress bar
 extern void Print_Progress_Bar(double progress, unsigned int MPI_rang = 0, unsigned int bar_length = 50);
-extern void Print_Progress_Bar(double i, double iMax, unsigned int MPI_rang = 0, unsigned int bar_length = 50);
 
 //2. Import and export data from files
 extern std::vector<double> Import_List(std::string filepath, double dimension = 1.0, unsigned int ignored_initial_lines = 0);

@@ -12,44 +12,36 @@ namespace libphysica
 using namespace libphysica::natural_units;
 
 //1. Progress bar
-void Print_Progress_Bar(double progress, int MPI_rank, unsigned int bar_length)
+void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar_length)
 {
-	if(MPI_rank == 0)
+	if(MPI_rank == 0 && progress >= 0.0 && progress < 0.999)
 	{
 		std::cout << "\r";
-		for(int j = 0; j < 3 * bar_length; j++)
+		for(unsigned int j = 0; j < 3 * bar_length; j++)
 			std::cout << " ";
 		std::cout << "\r";
-		if(progress >= 0.0 && progress < 0.999)
+		for(unsigned int i = 0; i < bar_length; i++)
 		{
-			for(int i = 0; i < bar_length; i++)
+			if(i == bar_length / 2)
 			{
-				if(i == bar_length / 2)
+				if(progress < 0.1)
 				{
-					if(progress < 0.1)
-					{
-						std::cout << Round(100.0 * progress, 1) << "%" << std::flush;
-						i += (progress < 0.01) ? 3 : 1;
-					}
-					else
-					{
-						std::cout << Round(100.0 * progress, 2) << "%" << std::flush;
-						i += 2;
-					}
+					std::cout << Round(100.0 * progress, 1) << "%" << std::flush;
+					i += (progress < 0.01) ? 3 : 1;
 				}
-				else if(progress > 1.0 * i / bar_length)
-					std::cout << "=" << std::flush;
 				else
-					std::cout << " " << std::flush;
+				{
+					std::cout << Round(100.0 * progress, 2) << "%" << std::flush;
+					i += 2;
+				}
 			}
-			std::cout << "|";	//<<std::flush;
+			else if(progress > 1.0 * i / bar_length)
+				std::cout << "=" << std::flush;
+			else
+				std::cout << " " << std::flush;
 		}
+		std::cout << "|";	//<<std::flush;
 	}
-}
-
-void Print_Progress_Bar(double i, double iMax, int MPI_rank, unsigned int bar_length)
-{
-	Print_Progress_Bar(1.0 * i / iMax, MPI_rank, bar_length);
 }
 
 //2. Import and export data from files
