@@ -27,7 +27,7 @@ extern const double cm, mm, meter, km, fm, inch, foot, yard, mile, Angstrom, Boh
 extern const double barn, pb, acre, hectare;
 
 //2.6 Time
-extern const double sec, ms, ns, minute, hr, day, week, yr;
+extern const double sec, ms, ns, minute, hr, day, week, year;
 
 //2.7 Frequency
 extern const double Hz;

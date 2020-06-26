@@ -50,7 +50,7 @@ TEST(TestNaturalUnits, TestUnitsTime)
 	ASSERT_DOUBLE_EQ(minute, 60.0 * sec);
 	ASSERT_DOUBLE_EQ(hr, 60.0 * minute);
 	ASSERT_DOUBLE_EQ(day, 60.0 * 24.0 * minute);
-	ASSERT_DOUBLE_EQ(yr, 365.25 * 60.0 * 24.0 * minute);
+	ASSERT_DOUBLE_EQ(year, 365.25 * 60.0 * 24.0 * minute);
 }
 
 TEST(TestNaturalUnits, TestUnitsForce)

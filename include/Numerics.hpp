@@ -37,50 +37,78 @@ extern double Find_Epsilon(std::function<double(double)> func, double a, double 
 extern double Integrate(std::function<double(double)> func, double a, double b, double epsilon, int maxRecursionDepth = 20);
 
 //4. Interpolation
-//4.1 One-dimensional interpolation
+//4.1 One-dimensional interpolation (Steffen splines)
 class Interpolation
 {
   private:
-	std::vector<std::vector<double>> TabulatedData;
-	unsigned int N_Data;
-	std::vector<double> xDomain;
+	unsigned int N;
+	std::vector<double> x_values;
+	std::vector<double> function_values;
+	double prefactor;
+
 	//Steffen coefficients
 	std::vector<double> a, b, c, d;
-	//Pre-factor
-	double preFactor;
-	//compute Steffen coefficients
-	void Compute_Steffen_Coefficients(std::vector<std::vector<double>>& data, std::vector<double>& a, std::vector<double>& b, std::vector<double>& c, std::vector<double>& d);
+	void Compute_Steffen_Coefficients();
+
 	//Locate j in array such that x[j]<x<x[j+1].
 	unsigned int jLast;
-	bool corr;	 // if successive calls are correlated, then the hunt method can be faster.
+	bool correlated_calls;	 // if successive calls are correlated, then the hunt method can be faster.
 	unsigned int Bisection(double x, int jLeft, int jRight);
 	unsigned int Hunt(double x);
-	unsigned int Locate(double x);
 
   public:
-	//Constructor from data or a data file
+	std::vector<double> domain;
+
+	unsigned int Locate(double x);
+
+	//Constructors
 	Interpolation();
-	explicit Interpolation(const std::vector<std::vector<double>>& data, double dim1 = 1.0, double dim2 = 1.0);
-	explicit Interpolation(const std::string& filename, double dim1 = 1.0, double dim2 = 1.0);
-	//Return values
-	std::vector<std::vector<double>> Return_Data();
-	std::vector<double> Return_Domain();
-	double Return_Prefactor();
-	std::vector<std::vector<double>> Return_Coefficients();
-	//Set values
+	explicit Interpolation(const std::vector<double>& arg_values, const std::vector<double>& func_values, double x_dim = -1.0, double f_dim = -1.0);
+	explicit Interpolation(const std::vector<std::vector<double>>& data, double x_dim = -1.0, double f_dim = -1.0);
+
 	void Set_Prefactor(double factor);
-	//Interpolation
+	void Multiply(double factor);
+
 	double Interpolate(double x);
 	double Derivative(double x, unsigned int deriv = 1);
 	double operator()(double x)
 	{
 		return Interpolate(x);
 	};
-	//Multiply by a constant
-	void Multiply(double factor);
-	//Save function in a file
+
 	void Save_Function(std::string filename, unsigned int points);
 };
+
+//4.2 Two-dimensional interpolation (bilinear interpolation)
+class Interpolation_2D
+{
+  private:
+	unsigned int N_x, N_y;
+	std::vector<double> x_values;
+	std::vector<double> y_values;
+	std::vector<std::vector<double>> function_values;
+	double prefactor;
+	Interpolation x_int, y_int;	  //Dummy 1D interpolations, necessary for the Locate() functionality.
+
+  public:
+	std::vector<std::vector<double>> domain;
+	Interpolation_2D();
+	Interpolation_2D(std::vector<double> x_val, std::vector<double> y_val, std::vector<std::vector<double>> func_values, double x_dim = -1.0, double y_dim = -1.0, double f_dim = -1.0);
+	Interpolation_2D(std::vector<std::vector<double>> data_table, double x_dim = -1.0, double y_dim = -1.0, double f_dim = -1.0);
+
+	double Interpolate(double x, double y);
+
+	double operator()(double x, double y)
+	{
+		return Interpolate(x, y);
+	};
+
+	void Set_Prefactor(double factor);
+	void Multiply(double factor);
+
+	void Save_Function(std::string filename, unsigned int x_points, unsigned int y_points = 0);
+};
+
 //5. Root finding
 extern double Find_Root(std::function<double(double)> func, double xLeft, double xRight, double epsilon);
 

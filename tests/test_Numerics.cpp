@@ -2,8 +2,10 @@
 
 #include <cmath>
 #include <functional>
+#include <random>
 
 #include "Numerics.hpp"
+#include "Statistics.hpp"
 
 using namespace libphysica;
 
@@ -193,9 +195,13 @@ TEST(TestNumerics, TestInvErf)
 TEST(TestNumerics, TestIntegrate)
 {
 	// ARRANGE
-	double tolerance					= 1.0e-8;
-	std::function<double(double)> func	= [](double x) { return 1.0 / x; };
-	std::function<double(double)> func2 = [](double x) { return sin(x); };
+	double tolerance				   = 1.0e-8;
+	std::function<double(double)> func = [](double x) {
+		return 1.0 / x;
+	};
+	std::function<double(double)> func2 = [](double x) {
+		return sin(x);
+	};
 	// ACT & ASSERT
 	ASSERT_NEAR(Integrate(func, 2.0, 3.0, tolerance), log(3.0 / 2.0), tolerance);
 	ASSERT_NEAR(Integrate(func2, -1.0, 1.0, tolerance), 0.0, tolerance);
@@ -203,7 +209,21 @@ TEST(TestNumerics, TestIntegrate)
 
 //4. Interpolation
 //4.1 One-dimensional interpolation
-TEST(TestNumerics, TestInterpolation1D)
+TEST(TestNumerics, TestInterpolation1D1)
+{
+	// ARRANGE
+	std::vector<double> x = {0.0, 1.0, 2.0, 3.0};
+	std::vector<double> f = {0.0, 1.0, 2.0, 3.0};
+	// ACT
+	Interpolation interpolation(x, f);
+	// ASSERT
+	for(unsigned int i = 0; i < x.size(); i++)
+		ASSERT_DOUBLE_EQ(interpolation(x[i]), f[i]);
+	for(unsigned int i = 0; i < x.size() - 1; i++)
+		ASSERT_DOUBLE_EQ(interpolation(x[i] + 0.5), f[i] + 0.5);
+}
+
+TEST(TestNumerics, TestInterpolation1D2)
 {
 	// ARRANGE
 	std::vector<std::vector<double>> data = {{0.0, 0.0}, {1.0, 1.0}, {2.0, 2.0}, {3.0, 3.0}};
@@ -232,6 +252,103 @@ TEST(TestNumerics, TestInterpolation1DDerivative)
 	EXPECT_DOUBLE_EQ(interpolation.Derivative(x, 3), 0.0);
 	EXPECT_DOUBLE_EQ(interpolation.Derivative(x, 4), 0.0);
 }
+
+//4.2 Two-dimensional interpolation (bilinear interpolation)
+TEST(TestNumerics, TestInterpolation2dDefaultConstructor)
+{
+	// ARRANGE
+	std::random_device rd;
+	std::mt19937 PRNG(rd());
+	unsigned int trials = 100;
+	// ACT
+	Interpolation_2D interpolation;
+	// ASSERT
+	for(unsigned int i = 0; i < trials; i++)
+	{
+		double x = Sample_Uniform(PRNG, -1.0, 1.0);
+		double y = Sample_Uniform(PRNG, -1.0, 1.0);
+		ASSERT_DOUBLE_EQ(interpolation(x, y), 0.0);
+	}
+}
+
+TEST(TestNumerics, TestInterpolation2dListConstructor)
+{
+	// ARRANGE
+	std::vector<double> x_list				 = {-5.0, 0.0, 5.0};
+	std::vector<double> y_list				 = {-5.0, 0.0, 5.0};
+	std::vector<std::vector<double>> f_table = {{-5.0, 0.0, 5.0}, {-5.0, 0.0, 5.0}, {-5.0, 0.0, 5.0}};
+
+	std::random_device rd;
+	std::mt19937 PRNG(rd());
+	unsigned int trials = 100;
+	double tolerance	= 1.0e-8;
+	// ACT
+	Interpolation_2D interpolation(x_list, y_list, f_table);
+	// ASSERT
+	for(unsigned int i = 0; i < trials; i++)
+	{
+		double x = Sample_Uniform(PRNG, interpolation.domain[0][0], interpolation.domain[0][1]);
+		double y = Sample_Uniform(PRNG, interpolation.domain[1][0], interpolation.domain[1][1]);
+		double f = y;
+		ASSERT_NEAR(interpolation(x, y), f, tolerance);
+	}
+}
+
+TEST(TestNumerics, TestInterpolation2dTableConstructor)
+{
+	// ARRANGE
+	std::vector<std::vector<double>> data_table = {
+		{-5.0, -5.0, -5.0},
+		{-5.0, 0.0, 0.0},
+		{-5.0, 5.0, 5.0},
+		{0.0, -5.0, -5.0},
+		{0.0, 0.0, 0.0},
+		{0.0, 5.0, 5.0},
+		{5.0, -5.0, -5.0},
+		{5.0, 0.0, 0.0},
+		{5.0, 5.0, 5.0}};
+
+	std::random_device rd;
+	std::mt19937 PRNG(rd());
+	unsigned int trials = 100;
+	double tolerance	= 1.0e-8;
+	// ACT
+	Interpolation_2D interpolation(data_table);
+	// ASSERT
+	for(unsigned int i = 0; i < trials; i++)
+	{
+		double x = Sample_Uniform(PRNG, interpolation.domain[0][0], interpolation.domain[0][1]);
+		double y = Sample_Uniform(PRNG, interpolation.domain[1][0], interpolation.domain[1][1]);
+		double f = y;
+		ASSERT_NEAR(interpolation(x, y), f, tolerance);
+	}
+}
+
+TEST(TestNumerics, TestInterpolation2dUnits)
+{
+	// ARRANGE
+	std::vector<double> x_list				 = {-5.0, 0.0, 5.0};
+	std::vector<double> y_list				 = {-5.0, 0.0, 5.0};
+	std::vector<std::vector<double>> f_table = {{-5.0, 0.0, 5.0}, {-5.0, 0.0, 5.0}, {-5.0, 0.0, 5.0}};
+	double dim_x							 = 3;
+	double dim_y							 = 5;
+	double dim_f							 = 7;
+	std::random_device rd;
+	std::mt19937 PRNG(rd());
+	unsigned int trials = 100;
+	double tolerance	= 1.0e-8;
+	// ACT
+	Interpolation_2D interpolation(x_list, y_list, f_table, dim_x, dim_y, dim_f);
+	// ASSERT
+	for(unsigned int i = 0; i < trials; i++)
+	{
+		double x = Sample_Uniform(PRNG, -5.0, 5.0);
+		double y = Sample_Uniform(PRNG, -5.0, 5.0);
+		double f = y;
+		ASSERT_NEAR(interpolation(x * dim_x, y * dim_y), f * dim_f, tolerance);
+	}
+}
+
 //5. Root finding
 double find_root_func(double x)
 {

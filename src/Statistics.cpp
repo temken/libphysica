@@ -264,17 +264,12 @@ double Likelihood_Poisson_Binned(const std::vector<double>& N_prediction_binned,
 }
 
 //3. Sampling random numbers
-// Real random number which is used as a seed for the PRNG:
-std::random_device rd;
-//The PRNG:
-std::mt19937 generator(rd());
-//Propability:
-std::uniform_real_distribution<double> Sample_Xi(0, 1);
 
 //3.1 Sample from specific distribution
 double Sample_Uniform(std::mt19937& PRNG, double x_min, double x_max)
 {
-	return x_min + Sample_Xi(PRNG) * (x_max - x_min);
+	std::uniform_real_distribution<double> dis(x_min, x_max);
+	return dis(PRNG);
 }
 
 unsigned int Sample_Poisson(std::mt19937& PRNG, double expectation_value)	//Algorithm from https://en.wikipedia.org/wiki/Poisson_distribution
@@ -286,7 +281,7 @@ unsigned int Sample_Poisson(std::mt19937& PRNG, double expectation_value)	//Algo
 	do
 	{
 		k++;
-		double u = Sample_Xi(PRNG);
+		double u = Sample_Uniform(PRNG, 0.0, 1.0);
 		p		 = p * u;
 		while(p < 1.0 && lambda_left > 0.0)
 		{
@@ -325,8 +320,8 @@ double Rejection_Sampling(const std::function<double(double)>& PDF, double xMin,
 		if(count % 1000 == 0)
 			std::cout << "Warning in libphysica::Rejection_Sampling(): Very inefficient sampling with N=" << count << "." << std::endl;
 
-		x		   = xMin + Sample_Xi(PRNG) * (xMax - xMin);
-		double y   = Sample_Xi(PRNG) * yMax;
+		x		   = xMin + Sample_Uniform(PRNG, 0.0, 1.0) * (xMax - xMin);
+		double y   = Sample_Uniform(PRNG, 0.0, 1.0) * yMax;
 		double pdf = PDF(x);
 		if(pdf < 0.0)
 		{
@@ -345,7 +340,7 @@ double Rejection_Sampling(const std::function<double(double)>& PDF, double xMin,
 }
 double Inverse_Transform_Sampling(const std::function<double(double)>& cdf, double xMin, double xMax, std::mt19937& PRNG)
 {
-	double xi						  = Sample_Xi(PRNG);
+	double xi						  = Sample_Uniform(PRNG, 0.0, 1.0);
 	std::function<double(double)> fct = [&cdf, xi](double x) {
 		return xi - cdf(x);
 	};

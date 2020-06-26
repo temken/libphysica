@@ -12,20 +12,19 @@ namespace libphysica
 using namespace libphysica::natural_units;
 
 //1. Progress bar
-void Print_Progress_Bar(double progress, int MPI_rank)
+void Print_Progress_Bar(double progress, int MPI_rank, unsigned int bar_length)
 {
 	if(MPI_rank == 0)
 	{
-		int BarLength = 50;
 		std::cout << "\r";
-		for(int j = 0; j < 3 * BarLength; j++)
+		for(int j = 0; j < 3 * bar_length; j++)
 			std::cout << " ";
 		std::cout << "\r";
 		if(progress >= 0.0 && progress < 0.999)
 		{
-			for(int i = 0; i < BarLength; i++)
+			for(int i = 0; i < bar_length; i++)
 			{
-				if(i == BarLength / 2)
+				if(i == bar_length / 2)
 				{
 					if(progress < 0.1)
 					{
@@ -38,7 +37,7 @@ void Print_Progress_Bar(double progress, int MPI_rank)
 						i += 2;
 					}
 				}
-				else if(progress > 1.0 * i / BarLength)
+				else if(progress > 1.0 * i / bar_length)
 					std::cout << "=" << std::flush;
 				else
 					std::cout << " " << std::flush;
@@ -48,9 +47,9 @@ void Print_Progress_Bar(double progress, int MPI_rank)
 	}
 }
 
-void Print_Progress_Bar(double i, double iMax, int MPI_rank)
+void Print_Progress_Bar(double i, double iMax, int MPI_rank, unsigned int bar_length)
 {
-	Print_Progress_Bar(1.0 * i / iMax, MPI_rank);
+	Print_Progress_Bar(1.0 * i / iMax, MPI_rank, bar_length);
 }
 
 //2. Import and export data from files
