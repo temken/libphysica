@@ -83,7 +83,7 @@ const double minute = 60.0 * sec;
 const double hr		= 60 * minute;
 const double day	= 24 * hr;
 const double week	= 7 * day;
-const double yr		= 365.25 * day;
+const double year	= 365.25 * day;
 
 //2.7 Frequency
 const double Hz = 1.0 / sec;
