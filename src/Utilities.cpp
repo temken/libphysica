@@ -17,7 +17,7 @@ void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar
 	if(MPI_rank == 0 && progress >= 0.0 && progress < 0.999)
 	{
 		std::cout << "\r";
-		for(unsigned int j = 0; j < 3 * bar_length; j++)
+		for(unsigned int j = 0; j < 2 * bar_length; j++)
 			std::cout << " ";
 		std::cout << "\r";
 		for(unsigned int i = 0; i < bar_length; i++)
