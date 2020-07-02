@@ -12,7 +12,7 @@ namespace libphysica
 using namespace libphysica::natural_units;
 
 //1. Progress bar
-void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar_length)
+void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar_length, double time)
 {
 	if(MPI_rank == 0 && progress >= 0.0 && progress < 0.999)
 	{
@@ -40,7 +40,9 @@ void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar
 			else
 				std::cout << " " << std::flush;
 		}
-		std::cout << "|";	//<<std::flush;
+		std::cout << "|" << std::flush;
+		if(time > 0.0)
+			std::cout << " Remaining time ~ " << Round((1.0 - progress) * time) << "s" << std::flush;
 	}
 }
 
