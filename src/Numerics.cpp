@@ -552,22 +552,31 @@ unsigned int Interpolation::Hunt(double x)
 // Find j such that list[j]<x<list[j+1]
 unsigned int Interpolation::Locate(double x)
 {
-	if(((domain[0] - x) > 0.0) || ((x - domain[1]) > 0.0))
+	unsigned int j;
+	// Check if we are inside the domain, but allow a bit of extrapolation outside it.
+	if(x < domain[0] || x > domain[1])
 	{
-		printf("\nError in libphysica::Interpolation::Locate(): x = %e lies outside the domain [%e,%e].\n\n", x, domain[0], domain[1]);
-		std::exit(EXIT_FAILURE);
+		double boundary_tolerance_left	= 1e-2 * (x_values[1] - x_values[0]);
+		double boundary_tolerance_right = 1e-2 * (x_values[N - 1] - x_values[N - 2]);
+		if(fabs(x - domain[0]) < boundary_tolerance_left)
+			j = 0;
+		else if(fabs(x - domain[1]) < boundary_tolerance_right)
+			j = N - 2;
+		else
+		{
+			printf("\nError in libphysica::Interpolation::Locate(): x = %e lies outside the domain [%e,%e].\n\n", x, domain[0], domain[1]);
+			std::exit(EXIT_FAILURE);
+		}
 	}
 	else
 	{
-
 		//Use Bisection() or the Hunt method, depending of the last calls were correlated.
-		unsigned int j = correlated_calls ? Hunt(x) : Bisection(x, 0, N - 1);
-		//Check if the points are still correlated.
-		correlated_calls = (fabs((j - jLast)) < 10);
-		jLast			 = j;
-
-		return j;
+		j = correlated_calls ? Hunt(x) : Bisection(x, 0, N - 1);
 	}
+	//Check if the points are still correlated.
+	correlated_calls = (fabs(j - jLast) < 10);
+	jLast			 = j;
+	return j;
 }
 
 //Constructors
@@ -657,6 +666,30 @@ double Interpolation::Derivative(double x, unsigned int derivation)
 		return prefactor * (6.0 * a[j]);
 	else
 		return 0.0;
+}
+
+double Interpolation::Integrate(double x_1, double x_2)
+{
+	double sign = +1.0;
+	if(x_1 > x_2)
+	{
+		std::swap(x_1, x_2);
+		sign = -1.0;
+	}
+	int i_1			= Locate(x_1);
+	int i_2			= Locate(x_2);
+	double integral = 0;
+	for(int i = 0; i < (i_2 - i_1 + 1); i++)
+	{
+		int j				  = i_1 + i;
+		double x_j			  = x_values[j];
+		double x_left		  = (i == 0) ? x_1 : x_j;
+		double x_right		  = (i == (i_2 - i_1)) ? x_2 : x_values[j + 1];
+		double stemfunc_left  = prefactor * (a[j] / 4.0 * pow((x_left - x_j), 4.0) + b[j] / 3.0 * pow((x_left - x_j), 3.0) + c[j] / 2.0 * pow((x_left - x_j), 2.0) + d[j] * x_left);
+		double stemfunc_right = prefactor * (a[j] / 4.0 * pow((x_right - x_j), 4.0) + b[j] / 3.0 * pow((x_right - x_j), 3.0) + c[j] / 2.0 * pow((x_right - x_j), 2.0) + d[j] * x_right);
+		integral += stemfunc_right - stemfunc_left;
+	}
+	return sign * integral;
 }
 
 void Interpolation::Save_Function(std::string filename, unsigned int points)

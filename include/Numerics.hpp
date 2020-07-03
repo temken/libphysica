@@ -71,6 +71,7 @@ class Interpolation
 
 	double Interpolate(double x);
 	double Derivative(double x, unsigned int deriv = 1);
+	double Integrate(double x_1, double x_2);
 	double operator()(double x)
 	{
 		return Interpolate(x);

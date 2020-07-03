@@ -6,6 +6,7 @@
 
 #include "Numerics.hpp"
 #include "Statistics.hpp"
+#include "Utilities.hpp"
 
 using namespace libphysica;
 
@@ -236,6 +237,17 @@ TEST(TestNumerics, TestInterpolation1D2)
 		ASSERT_DOUBLE_EQ(interpolation(data[i][0] + 0.5), data[i][1] + 0.5);
 }
 
+TEST(TestNumerics, TestInterpolation1DDomainExtrapolation)
+{
+	// ARRANGE
+	std::vector<std::vector<double>> data = {{0.0, 0.0}, {1.0, 1.0}, {2.0, 2.0}, {3.0, 3.0}};
+	// ACT
+	Interpolation interpolation(data);
+	// ASSERT
+	ASSERT_GT(interpolation(3.001), 0.0);
+	ASSERT_LT(interpolation(-0.005), 0.0);
+}
+
 TEST(TestNumerics, TestInterpolation1DDerivative)
 {
 	// ARRANGE
@@ -251,6 +263,22 @@ TEST(TestNumerics, TestInterpolation1DDerivative)
 	EXPECT_DOUBLE_EQ(interpolation.Derivative(x, 2), 2.0);
 	EXPECT_DOUBLE_EQ(interpolation.Derivative(x, 3), 0.0);
 	EXPECT_DOUBLE_EQ(interpolation.Derivative(x, 4), 0.0);
+}
+
+TEST(TestNumerics, TestInterpolation1DIntegrate)
+{
+	// ARRANGE
+	std::vector<double> x_values = Linear_Space(-5, 5, 100);
+	std::vector<double> y_values;
+	for(auto& x : x_values)
+		y_values.push_back(x * x * x);
+	Interpolation interpol(x_values, y_values);
+	double tol = 1.0e-5;
+	// ACT & ASSERT
+	ASSERT_NEAR(interpol.Integrate(-4.4, 4.4), 0.0, tol);
+	ASSERT_NEAR(interpol.Integrate(1, 3.5), 2385.0 / 64, tol);
+	ASSERT_NEAR(interpol.Integrate(3.5, 1), -2385.0 / 64, tol);
+	ASSERT_NEAR(interpol.Integrate(0, M_PI), M_PI * M_PI * M_PI * M_PI / 4.0, tol);
 }
 
 //4.2 Two-dimensional interpolation (bilinear interpolation)

@@ -9,6 +9,7 @@ namespace libphysica
 {
 
 //1. Progress bar
+extern std::string Time_Display(double seconds);
 extern void Print_Progress_Bar(double progress, unsigned int MPI_rang = 0, unsigned int bar_length = 50, double time = 0.0);
 
 //2. Import and export data from files
