@@ -12,6 +12,30 @@ namespace libphysica
 using namespace libphysica::natural_units;
 
 //1. Progress bar
+std::string Time_Display(double seconds_total)
+{
+	std::vector<std::string> units_strings = {"y", "w", "d", "h", "m", "s", "ms"};
+	std::vector<double> units			   = {year, week, day, hr, minute, sec, milli * sec};
+	std::vector<int> times;
+	std::vector<std::string> time_strings;
+	for(unsigned int i = 0; i < units.size(); i++)
+	{
+		times.push_back(std::floor(seconds_total * sec / units[i]));
+		seconds_total -= std::floor(times.back() * units[i] / sec);
+		time_strings.push_back(std::to_string(times.back()));
+		if(time_strings.back().length() == 1)
+			time_strings.back() = "0" + time_strings.back();
+		if(time_strings.back().length() == 2 && i == units.size() - 1)
+			time_strings.back() = "0" + time_strings.back();
+	}
+	unsigned int i;
+	for(i = 0; i < 4; i++)
+		if(times[i] > 0)
+			break;
+	std::string separator = ":";
+	return "[" + time_strings[i] + units_strings[i] + separator + time_strings[i + 1] + units_strings[i + 1] + separator + time_strings[i + 2] + units_strings[i + 2] + "]";
+}
+
 void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar_length, double time)
 {
 	if(MPI_rank == 0 && progress >= 0.0 && progress < 0.999)
@@ -19,7 +43,7 @@ void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar
 		std::cout << "\r";
 		for(unsigned int j = 0; j < 2 * bar_length; j++)
 			std::cout << " ";
-		std::cout << "\r";
+		std::cout << "\r|";
 		for(unsigned int i = 0; i < bar_length; i++)
 		{
 			if(i == bar_length / 2)
@@ -42,7 +66,7 @@ void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar
 		}
 		std::cout << "|" << std::flush;
 		if(time > 0.0)
-			std::cout << " Remaining time ~ " << Round((1.0 - progress) * time / progress, 2) << "s" << std::flush;
+			std::cout << " " << Time_Display((1.0 - progress) * time / progress) << std::flush;
 	}
 }
 

@@ -1,11 +1,25 @@
 #include "gtest/gtest.h"
 
+#include <cmath>
+
 #include "Utilities.hpp"
 
 using namespace libphysica;
 
 //1. Progress bar
-
+TEST(TestUtilities, TestTimeDisplay)
+{
+	// ARRANGE
+	// ACT
+	std::vector<std::string> results = {"[00m:00s:001ms]", "[00m:00s:010ms]", "[00m:00s:100ms]", "[00m:01s:000ms]", "[00m:10s:000ms]", "[01m:40s:000ms]", "[16m:40s:000ms]", "[02h:46m:40s]", "[01d:03h:46m]", "[01w:04d:13h]", "[16w:03d:17h]", "[03y:08w:05d]", "[31y:35w:06d]", "[316y:45w:06d]"};
+	// ACT & ASSERT
+	for(int i = -3; i < 11; i++)
+		EXPECT_EQ(Time_Display(pow(10.0, i)), results[i + 3]);
+}
+TEST(TestUtilities, TestPrintProgressBar)
+{
+	Print_Progress_Bar(0.4, 12);
+}
 //2. Import and export data from files
 TEST(TestUtilities, TestExportImportList)
 {
@@ -91,7 +105,7 @@ TEST(TestUtilities, TestRangeMaxMin)
 	unsigned int min = 13;
 	unsigned int max = 6;
 	// ACT & ASSERT
-	ASSERT_EQ(Range(min, max).size(), min-max);
+	ASSERT_EQ(Range(min, max).size(), min - max);
 	for(unsigned int i = 0; i < Range(min, max).size(); i++)
 		ASSERT_EQ(Range(min, max)[i], min - i);
 }
