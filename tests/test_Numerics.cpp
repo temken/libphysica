@@ -237,6 +237,17 @@ TEST(TestNumerics, TestInterpolation1D2)
 		ASSERT_DOUBLE_EQ(interpolation(data[i][0] + 0.5), data[i][1] + 0.5);
 }
 
+TEST(TestNumerics, TestInterpolation1DDomainExtrapolation)
+{
+	// ARRANGE
+	std::vector<std::vector<double>> data = {{0.0, 0.0}, {1.0, 1.0}, {2.0, 2.0}, {3.0, 3.0}};
+	// ACT
+	Interpolation interpolation(data);
+	// ASSERT
+	ASSERT_GT(interpolation(3.001), 0.0);
+	ASSERT_LT(interpolation(-0.005), 0.0);
+}
+
 TEST(TestNumerics, TestInterpolation1DDerivative)
 {
 	// ARRANGE

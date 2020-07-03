@@ -552,22 +552,31 @@ unsigned int Interpolation::Hunt(double x)
 // Find j such that list[j]<x<list[j+1]
 unsigned int Interpolation::Locate(double x)
 {
-	if(((domain[0] - x) > 0.0) || ((x - domain[1]) > 0.0))
+	unsigned int j;
+	// Check if we are inside the domain, but allow a bit of extrapolation outside it.
+	if(x < domain[0] || x > domain[1])
 	{
-		printf("\nError in libphysica::Interpolation::Locate(): x = %e lies outside the domain [%e,%e].\n\n", x, domain[0], domain[1]);
-		std::exit(EXIT_FAILURE);
+		double boundary_tolerance_left	= 1e-2 * (x_values[1] - x_values[0]);
+		double boundary_tolerance_right = 1e-2 * (x_values[N - 1] - x_values[N - 2]);
+		if(fabs(x - domain[0]) < boundary_tolerance_left)
+			j = 0;
+		else if(fabs(x - domain[1]) < boundary_tolerance_right)
+			j = N - 2;
+		else
+		{
+			printf("\nError in libphysica::Interpolation::Locate(): x = %e lies outside the domain [%e,%e].\n\n", x, domain[0], domain[1]);
+			std::exit(EXIT_FAILURE);
+		}
 	}
 	else
 	{
-
 		//Use Bisection() or the Hunt method, depending of the last calls were correlated.
-		unsigned int j = correlated_calls ? Hunt(x) : Bisection(x, 0, N - 1);
-		//Check if the points are still correlated.
-		correlated_calls = (fabs((j - jLast)) < 10);
-		jLast			 = j;
-
-		return j;
+		j = correlated_calls ? Hunt(x) : Bisection(x, 0, N - 1);
 	}
+	//Check if the points are still correlated.
+	correlated_calls = (fabs(j - jLast) < 10);
+	jLast			 = j;
+	return j;
 }
 
 //Constructors

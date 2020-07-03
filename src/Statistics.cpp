@@ -538,7 +538,7 @@ Interpolation Perform_KDE(std::vector<DataPoint> data, double xMin, double xMax,
 	Interpolation result(Interpol_List);
 
 	//3. Check normalization/ re-normalize.
-	double norm = Integrate(result, xMin, 0.9999999999999 * xMax, 1e-8);   //NEEDS TO BE FIXED IN THE INTERPOLATION CLASS AT SOME POINT
+	double norm = Integrate(result, xMin, xMax, 1e-8);
 	result.Multiply(1.0 / norm);
 
 	return result;
