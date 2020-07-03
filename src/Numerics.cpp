@@ -659,6 +659,31 @@ double Interpolation::Derivative(double x, unsigned int derivation)
 		return 0.0;
 }
 
+double Interpolation::Integrate(double x_1, double x_2)
+{
+	double sign = +1.0;
+	if(x_1 > x_2)
+	{
+		std::swap(x_1, x_2);
+		sign = -1.0;
+	}
+	int i_1			= Locate(x_1);
+	int i_2			= Locate(x_2);
+	double integral = 0;
+	for(int i = 0; i < (i_2 - i_1 + 1); i++)
+	{
+		int j				  = i_1 + i;
+		double x_j			  = x_values[j];
+		double x_left		  = (i == 0) ? x_1 : x_j;
+		double x_right		  = (i == (i_2 - i_1)) ? x_2 : x_values[j + 1];
+		double stemfunc_left  = prefactor * (a[j] / 4.0 * pow((x_left - x_j), 4.0) + b[j] / 3.0 * pow((x_left - x_j), 3.0) + c[j] / 2.0 * pow((x_left - x_j), 2.0) + d[j] * x_left);
+		double stemfunc_right = prefactor * (a[j] / 4.0 * pow((x_right - x_j), 4.0) + b[j] / 3.0 * pow((x_right - x_j), 3.0) + c[j] / 2.0 * pow((x_right - x_j), 2.0) + d[j] * x_right);
+		integral += stemfunc_right - stemfunc_left;
+	}
+	std::cout << sign << std::endl;
+	return sign * integral;
+}
+
 void Interpolation::Save_Function(std::string filename, unsigned int points)
 {
 	std::ofstream f;
