@@ -238,7 +238,7 @@ TEST(TestMatrix, TestPlus)
 {
 	// ARRANGE
 	Matrix M1({{1, 1, 1}, {2, 2, 2}, {3, 3, 3}});
-	Matrix M2 = Unit_Matrix(3);
+	Matrix M2 = Identity_Matrix(3);
 	Matrix M1_plus_M2({{2, 1, 1}, {2, 3, 2}, {3, 3, 4}});
 	unsigned int rows	 = 3;
 	unsigned int columns = 3;
@@ -256,7 +256,7 @@ TEST(TestMatrix, TestMinus)
 {
 	// ARRANGE
 	Matrix M1({{1, 1, 1}, {2, 2, 2}, {3, 3, 3}});
-	Matrix M2 = Unit_Matrix(3);
+	Matrix M2 = Identity_Matrix(3);
 	Matrix M1_minus_M2({{0, 1, 1}, {2, 1, 2}, {3, 3, 2}});
 	unsigned int rows	 = 3;
 	unsigned int columns = 3;
@@ -328,7 +328,7 @@ TEST(TestMatrix, TestDivision)
 TEST(TestMatrix, TestSquare)
 {
 	// ARRANGE
-	Matrix M1 = Unit_Matrix(3);
+	Matrix M1 = Identity_Matrix(3);
 	Matrix M2(3, 2);
 	// ACT & ASSERT
 	ASSERT_TRUE(M1.Square());
@@ -518,7 +518,7 @@ TEST(TestMatrix, TestUnitMatrix)
 	Matrix unit_matrix_4({{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}});
 	// ACT
 	Matrix M1;
-	Matrix M2 = Unit_Matrix(4);
+	Matrix M2 = Identity_Matrix(4);
 	// ASSERT
 	for(unsigned int i = 0; i < unit_matrix_3.Rows(); i++)
 		for(unsigned int j = 0; j < unit_matrix_3.Columns(); j++)
