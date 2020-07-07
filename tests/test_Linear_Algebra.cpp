@@ -238,7 +238,7 @@ TEST(TestMatrix, TestPlus)
 {
 	// ARRANGE
 	Matrix M1({{1, 1, 1}, {2, 2, 2}, {3, 3, 3}});
-	Matrix M2 = Unit_Matrix(3);
+	Matrix M2 = Identity_Matrix(3);
 	Matrix M1_plus_M2({{2, 1, 1}, {2, 3, 2}, {3, 3, 4}});
 	unsigned int rows	 = 3;
 	unsigned int columns = 3;
@@ -256,7 +256,7 @@ TEST(TestMatrix, TestMinus)
 {
 	// ARRANGE
 	Matrix M1({{1, 1, 1}, {2, 2, 2}, {3, 3, 3}});
-	Matrix M2 = Unit_Matrix(3);
+	Matrix M2 = Identity_Matrix(3);
 	Matrix M1_minus_M2({{0, 1, 1}, {2, 1, 2}, {3, 3, 2}});
 	unsigned int rows	 = 3;
 	unsigned int columns = 3;
@@ -328,7 +328,7 @@ TEST(TestMatrix, TestDivision)
 TEST(TestMatrix, TestSquare)
 {
 	// ARRANGE
-	Matrix M1 = Unit_Matrix(3);
+	Matrix M1 = Identity_Matrix(3);
 	Matrix M2(3, 2);
 	// ACT & ASSERT
 	ASSERT_TRUE(M1.Square());
@@ -518,7 +518,7 @@ TEST(TestMatrix, TestUnitMatrix)
 	Matrix unit_matrix_4({{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}});
 	// ACT
 	Matrix M1;
-	Matrix M2 = Unit_Matrix(4);
+	Matrix M2 = Identity_Matrix(4);
 	// ASSERT
 	for(unsigned int i = 0; i < unit_matrix_3.Rows(); i++)
 		for(unsigned int j = 0; j < unit_matrix_3.Columns(); j++)
@@ -538,4 +538,51 @@ TEST(TestMatrix, TestRotationMatrix)
 	for(unsigned int i = 0; i < rotation_matrix.Rows(); i++)
 		for(unsigned int j = 0; j < rotation_matrix.Columns(); j++)
 			ASSERT_DOUBLE_EQ(M[i][j], rotation_matrix[i][j]);
+}
+
+TEST(TestEigen, TestQRDecomposition)
+{
+	// ARRANGE
+	Matrix M({{12.0, -51.0, 4.0}, {6.0, 167.0, -68.0}, {-4.0, 24.0, -41.0}});
+	Matrix I   = Identity_Matrix(M.Rows());
+	double tol = 1e-10;
+	// ACT
+	auto QR			  = QR_Decomposition(M);
+	Matrix Q_times_R  = QR.first * QR.second;
+	Matrix Q_times_QT = QR.first * QR.first.Transpose();
+
+	// ASSERT
+	for(unsigned int i = 0; i < M.Rows(); i++)
+		for(unsigned int j = i + 1; j < M.Columns(); j++)
+			ASSERT_NEAR(QR.second[j][i], 0.0, tol);
+	for(unsigned int i = 0; i < M.Rows(); i++)
+		for(unsigned int j = 0; j < M.Columns(); j++)
+			ASSERT_NEAR(Q_times_R[i][j], M[i][j], tol);
+	for(unsigned int i = 0; i < M.Rows(); i++)
+		for(unsigned int j = 0; j < M.Columns(); j++)
+			ASSERT_NEAR(Q_times_QT[i][j], I[i][j], tol);
+}
+
+TEST(TestEigen, TestEigenvalues)
+{
+	// ARRANGE
+	Matrix M({{12.0, -51.0, 4.0}, {6.0, 167.0, -68.0}, {-4.0, 24.0, -41.0}});
+	std::vector<double> eigenvalues = {156.137, -34.1967, 16.06};
+	double tol						= 1.0e-3;
+	// ACT & ASSERT
+	for(unsigned int i = 0; i < eigenvalues.size(); i++)
+		ASSERT_NEAR(Eigenvalues(M)[i], eigenvalues[i], tol);
+}
+
+TEST(TestEigen, TestEigensystem)
+{
+	// ARRANGE
+	Matrix M({{12.0, -51.0, 4.0}, {6.0, 167.0, -68.0}, {-4.0, 24.0, -41.0}});
+	double tol = 1.0e-10;
+	// ACT
+	auto eigensystem = Eigensystem(M);
+	// ASSERT
+	for(unsigned int i = 0; i < eigensystem.first.size(); i++)
+		for(unsigned j = 0; j < eigensystem.second[i].Size(); j++)
+			ASSERT_NEAR((M * eigensystem.second[i])[j], (eigensystem.first[i] * eigensystem.second[i])[j], tol);
 }

@@ -1,6 +1,7 @@
 #include "Linear_Algebra.hpp"
 
 #include <cmath>
+#include <numeric>
 
 #include "Numerics.hpp"
 
@@ -54,11 +55,6 @@ void Vector::Assign(unsigned int dim, double entry)
 	components.assign(dim, entry);
 }
 
-double Vector::Norm() const
-{
-	return sqrt(Dot(*this));
-}
-
 double Vector::Dot(const Vector& rhs) const
 {
 	if(dimension != rhs.Size())
@@ -92,6 +88,11 @@ Vector Vector::Cross(const Vector& rhs) const
 		result[2] = components[0] * rhs[1] - components[1] * rhs[0];
 		return Vector(result);
 	}
+}
+
+double Vector::Norm() const
+{
+	return sqrt(Dot(*this));
 }
 
 void Vector::Normalize()
@@ -306,6 +307,44 @@ Matrix::Matrix(std::vector<double> diagonal_entries)
 		components[i][i] = diagonal_entries[i];
 }
 
+Matrix::Matrix(std::vector<std::vector<Matrix>> block_matrices)
+{
+	// 1. Check dimensions of block matrices
+	bool valid_dimension = true;
+	for(unsigned int row = 0; row < block_matrices.size(); row++)
+		for(unsigned int col = 0; col < block_matrices[row].size(); col++)
+		{
+			if(row != 0 && block_matrices[row][col].Columns() != block_matrices[row - 1][col].Columns())
+				valid_dimension = false;
+			if(col != 0 && block_matrices[row][col].Rows() != block_matrices[row][col - 1].Rows())
+				valid_dimension = false;
+		}
+	if(!valid_dimension)
+	{
+		std::cerr << "Error in Matrix(): Block matrices do not have valid dimensions." << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+	std::vector<unsigned int> block_rows, block_columns;
+	for(unsigned int row = 0; row < block_matrices.size(); row++)
+		block_rows.push_back(block_matrices[row][0].Rows());
+	for(unsigned int col = 0; col < block_matrices[0].size(); col++)
+		block_columns.push_back(block_matrices[0][col].Columns());
+
+	// 2. Assign components
+	rows	   = std::accumulate(block_rows.begin(), block_rows.end(), 0);
+	columns	   = std::accumulate(block_columns.begin(), block_columns.end(), 0);
+	components = std::vector<std::vector<double>>(rows, std::vector<double>(columns, 0.0));
+	for(unsigned int row = 0; row < block_matrices.size(); row++)
+		for(unsigned int col = 0; col < block_matrices[row].size(); col++)
+		{
+			unsigned int i_offset = std::accumulate(block_rows.begin(), block_rows.begin() + row, 0);
+			unsigned int j_offset = std::accumulate(block_columns.begin(), block_columns.begin() + col, 0);
+			for(unsigned int i = 0; i < block_matrices[row][col].Rows(); i++)
+				for(unsigned int j = 0; j < block_matrices[row][col].Columns(); j++)
+					components[i_offset + i][j_offset + j] = block_matrices[row][col][i][j];
+		}
+}
+
 // Functions
 // Size and components
 unsigned int Matrix::Rows() const
@@ -369,6 +408,29 @@ void Matrix::Delete_Column(unsigned int column)
 			components[i].erase(components[i].begin() + column);
 	}
 }
+
+Vector Matrix::Return_Row(unsigned int row) const
+{
+	if(row < 0 || row >= rows)
+	{
+		std::cerr << "Error in libphysica::Matrix::Return_Row(int): Row " << row << " of a " << rows << "x" << columns << " matrix does not exist.\n(Note: The index domain starts at 0)" << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+	else
+		return Vector(components[row]);
+}
+
+Vector Matrix::Return_Column(unsigned int column) const
+{
+	if(column < 0 || column >= columns)
+	{
+		std::cerr << "Error in libphysica::Matrix::Return_Column(int): Column " << column << " of a " << rows << "x" << columns << " matrix does not exist.\n(Note: The index domain starts at 0)" << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+	else
+		return Transpose().Return_Row(column);
+}
+
 //Binary operations
 Matrix Matrix::Plus(const Matrix& M) const
 {
@@ -881,7 +943,7 @@ bool operator==(const Matrix& M1, const Matrix& M2)
 	}
 }
 
-Matrix Unit_Matrix(unsigned int dim)
+Matrix Identity_Matrix(unsigned int dim)
 {
 	std::vector<double> ones(dim, 1.0);
 	return Matrix(ones);
@@ -922,6 +984,125 @@ Matrix Rotation_Matrix(double alpha, int dim, Vector axis)
 		std::cerr << "Error in libphysica::Rotation_Matrix(): Only 2D and 3D rotations are supported, not D = " << dim << "." << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
+}
+
+Matrix Outer_Vector_Product(const Vector& lhs, const Vector& rhs)
+{
+	Matrix M(lhs.Size(), rhs.Size());
+	for(unsigned int i = 0; i < M.Rows(); i++)
+		for(unsigned int j = 0; j < M.Columns(); j++)
+			M[i][j] = lhs[i] * rhs[j];
+	return M;
+}
+
+// Eigen systems
+Matrix Householder_Matrix(const Matrix& M)
+{
+	Vector x	 = M.Return_Column(0);
+	double alpha = Sign(x.Norm(), -x[0]);
+	Vector e1(x.Size(), 0.0);
+	e1[0]	 = 1.0;
+	Vector u = x - alpha * e1;
+	u.Normalize();
+	Matrix Q = Identity_Matrix(x.Size()) - 2.0 * Outer_Vector_Product(u, u);
+	return Q;
+}
+
+std::pair<Matrix, Matrix> QR_Decomposition(const Matrix& M)
+{
+	// M is an mxn matrix
+	int m = M.Rows();
+	int n = M.Columns();
+
+	Matrix I		   = Identity_Matrix(m);
+	Matrix Q		   = I;
+	Matrix R		   = M;
+	Matrix R_submatrix = M;
+
+	for(unsigned int i = 0; i < n; i++)
+	{
+		Matrix P_submatrix = Householder_Matrix(R_submatrix);
+		R_submatrix		   = P_submatrix * R_submatrix;
+		R_submatrix		   = R_submatrix.Sub_Matrix(0, 0);
+
+		Matrix Zero_1(i, n - i, 0.0);
+		Matrix Zero_2(n - i, i, 0.0);
+		Matrix P = Matrix({{Identity_Matrix(i), Zero_1}, {Zero_2, P_submatrix}});
+
+		R = P * R;
+		Q = Q * P;
+		for(unsigned j = i + 1; j < m; j++)
+			R[j][i] = 0.0;
+	}
+	return {Q, R};
+}
+
+std::vector<double> Eigenvalues(const Matrix& M)
+{
+	Matrix A(M);
+	// Matrix U  = Identity_Matrix(A.Rows());
+	int i_max = 200;
+	for(int i = 0; i < i_max; i++)
+	{
+		std::pair<Matrix, Matrix> qr = QR_Decomposition(A);
+
+		A = qr.second * qr.first;
+		// U = U * qr.first;
+
+		//Check for convergence
+		if(i > 10)
+		{
+			double eigenvalues_sum	= 0.0;
+			double off_diagonal_sum = 0.0;
+			for(unsigned int j = 0; j < A.Rows(); j++)
+			{
+				eigenvalues_sum += fabs(A[j][j]);
+				for(unsigned int k = j + 1; k < A.Rows(); k++)
+					off_diagonal_sum += fabs(A[k][j]);
+			}
+			if(off_diagonal_sum / eigenvalues_sum < 1.0e-12)
+			{
+				std::vector<double> eigenvalues(A.Rows());
+				for(unsigned int j = 0; j < eigenvalues.size(); j++)
+					eigenvalues[j] = A[j][j];
+				return eigenvalues;
+			}
+		}
+	}
+	std::cerr << "Error in Eigenvalues(): The QR algorithm did not converge in " << i_max << " steps." << std::endl;
+	std::exit(EXIT_FAILURE);
+}
+
+Vector Find_Eigenvector_Rayleigh(Matrix& M, double& eigenvalue)
+{
+	Vector b(M.Rows(), 1.0);
+	Matrix I	   = Identity_Matrix(M.Rows());
+	double epsilon = 1.0;
+	while(epsilon > 1.0e-10)
+	{
+		Vector b_before = b;
+		b				= (M - (eigenvalue * I)).Inverse() * b;
+		b.Normalize();
+		eigenvalue = b * (M * b);
+		epsilon	   = 0.0;
+		for(unsigned int i = 0; i < b.Size(); i++)
+			epsilon += Relative_Difference(fabs(b[i]), fabs(b_before[i]));
+	}
+	return b;
+}
+
+std::pair<std::vector<double>, std::vector<Vector>> Eigensystem(Matrix& M)
+{
+	std::vector<double> eigenvalues = Eigenvalues(M);
+	std::vector<Vector> eigenvectors;
+	for(auto& eigenvalue : eigenvalues)
+		eigenvectors.push_back(Find_Eigenvector_Rayleigh(M, eigenvalue));
+	return {eigenvalues, eigenvectors};
+}
+
+std::vector<Vector> Eigenvectors(Matrix& M)
+{
+	return Eigensystem(M).second;
 }
 
 }	// namespace libphysica

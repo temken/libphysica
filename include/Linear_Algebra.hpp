@@ -20,18 +20,25 @@ class Vector
 	Vector(unsigned int dim, double entry);
 	Vector(std::vector<double> entries);
 	Vector(const Vector& rhs);
-	// Functions
+
+	// Size functions
 	unsigned int Size() const;
 	void Resize(unsigned int dim);
 	void Assign(unsigned int dim, double entry);
-	double Norm() const;
+
+	// Products
 	double Dot(const Vector& rhs) const;
 	Vector Cross(const Vector& rhs) const;
+
+	// Norm functions
+	double Norm() const;
 	void Normalize();
 	Vector Normalized() const;
+
 	// Overloading brackets
 	double& operator[](const unsigned int i);
 	const double& operator[](const unsigned int i) const;
+
 	// Overloading operators
 	Vector operator+(Vector v);
 	Vector operator-(Vector v);
@@ -66,6 +73,7 @@ class Matrix
 	Matrix(std::vector<std::vector<double>> entries);
 	Matrix(const Matrix& rhs);
 	Matrix(std::vector<double> diagonal_entries);
+	Matrix(std::vector<std::vector<Matrix>> block_matrices);
 	// Functions
 	// Size and components
 	unsigned int Rows() const;
@@ -74,6 +82,8 @@ class Matrix
 	void Assign(int row, int col, double entry);
 	void Delete_Row(unsigned int row);
 	void Delete_Column(unsigned int column);
+	Vector Return_Row(unsigned int row) const;
+	Vector Return_Column(unsigned int column) const;
 
 	//Binary operations
 	Matrix Plus(const Matrix& M) const;
@@ -122,8 +132,15 @@ Vector operator*(const Vector& v_left, const Matrix& M);
 std::ostream& operator<<(std::ostream& output, const Matrix& v);
 bool operator==(const Matrix& v1, const Matrix& v2);
 
-extern Matrix Unit_Matrix(unsigned int dim);
+extern Matrix Identity_Matrix(unsigned int dim);
 extern Matrix Rotation_Matrix(double alpha, int dim, Vector axis = Vector({0, 0, 1}));
+extern Matrix Outer_Vector_Product(const Vector& lhs, const Vector& rhs);
+
+// Eigen systems
+extern std::pair<Matrix, Matrix> QR_Decomposition(const Matrix& M);
+extern std::vector<double> Eigenvalues(const Matrix& M);
+extern std::vector<Vector> Eigenvectors(Matrix& M);
+extern std::pair<std::vector<double>, std::vector<Vector>> Eigensystem(Matrix& M);
 
 }	// namespace libphysica
 

@@ -33,7 +33,3 @@ A number of functions in the *Numerics* module use implementations from this boo
 - [*Numerical Recipes 3rd Edition -  The Art of Scientific Computing*](https://en.wikipedia.org/wiki/Numerical_Recipes)  
 W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery   
 Cambridge University Press, (2007)
-
-## TO DO
-
-- [ ] *Linear_Algebra*: Eigen values and vector functions.
