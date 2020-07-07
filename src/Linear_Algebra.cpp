@@ -1008,101 +1008,101 @@ Matrix Householder_Matrix(const Matrix& M)
 	return Q;
 }
 
-std::vector<Matrix> QR_Decomposition(const Matrix& M)
+std::pair<Matrix, Matrix> QR_Decomposition(const Matrix& M)
 {
 	// M is an mxn matrix
 	int m = M.Rows();
 	int n = M.Columns();
 
-	Matrix I	  = Identity_Matrix(m);
-	Matrix Q	  = I;
-	Matrix R	  = M;
-	Matrix R_copy = M;
+	Matrix I		   = Identity_Matrix(m);
+	Matrix Q		   = I;
+	Matrix R		   = M;
+	Matrix R_submatrix = M;
 
 	for(unsigned int i = 0; i < n; i++)
 	{
-		Matrix P_submatrix = Householder_Matrix(R_copy);
-		R_copy			   = P_submatrix * R_copy;
-		R_copy			   = R_copy.Sub_Matrix(0, 0);
+		Matrix P_submatrix = Householder_Matrix(R_submatrix);
+		R_submatrix		   = P_submatrix * R_submatrix;
+		R_submatrix		   = R_submatrix.Sub_Matrix(0, 0);
 
-		Matrix Zero_1(i, n - i, 0);
-		Matrix Zero_2(n - i, i, 0);
+		Matrix Zero_1(i, n - i, 0.0);
+		Matrix Zero_2(n - i, i, 0.0);
 		Matrix P = Matrix({{Identity_Matrix(i), Zero_1}, {Zero_2, P_submatrix}});
 
 		R = P * R;
 		Q = Q * P;
+		for(unsigned j = i + 1; j < m; j++)
+			R[j][i] = 0.0;
 	}
 	return {Q, R};
 }
 
-// std::vector<double> Eigenvalues(const Matrix& M)
-// {
-// 	Matrix A(M);
-// 	int i_max = 200;
-// 	for(int i = 0; i < i_max; i++)
-// 	{
-// 		std::vector<Matrix> qr = QR_Decomposition(A);
-// 		A					   = qr[1] * qr[0];
-// 		//Check for convergence
-// 		if(i > 10)
-// 		{
-// 			double eigenvalues_sum	= 0.0;
-// 			double off_diagonal_sum = 0.0;
-// 			for(unsigned int j = 0; j < A.Rows(); j++)
-// 			{
-// 				eigenvalues_sum += fabs(A[j][j]);
-// 				for(unsigned int k = j + 1; k < A.Rows(); k++)
-// 					off_diagonal_sum += fabs(A[k][j]);
-// 			}
-// 			if(off_diagonal_sum / eigenvalues_sum < 1.0e-12)
-// 			{
-// 				std::vector<double> eigenvalues(A.Rows());
-// 				for(unsigned int i = 0; i < eigenvalues.size(); i++)
-// 					eigenvalues[i] = A[i][i];
-// 				return eigenvalues;
-// 			}
-// 		}
-// 	}
-// 	std::cerr << "Error in Eigenvalues(): The QR algorithm did not converge in " << i_max << " steps." << std::endl;
-// 	std::exit(EXIT_FAILURE);
-// }
+std::vector<double> Eigenvalues(const Matrix& M)
+{
+	Matrix A(M);
+	// Matrix U  = Identity_Matrix(A.Rows());
+	int i_max = 200;
+	for(int i = 0; i < i_max; i++)
+	{
+		std::pair<Matrix, Matrix> qr = QR_Decomposition(A);
 
-// std::vector<Vector> Eigenvectors(const Matrix& M)
-// {
-// 	Matrix A(M);
-// 	Matrix U  = Identity_Matrix(A.Rows());
-// 	int i_max = 200;
-// 	for(int i = 0; i < i_max; i++)
-// 	{
-// 		std::vector<Matrix> qr = QR_Decomposition(A);
+		A = qr.second * qr.first;
+		// U = U * qr.first;
 
-// 		A = qr[1] * qr[0];
-// 		U = U * qr[0];
-// 		std::cout << qr[0] * qr[1] << std::endl
-// 				  << std::endl;
+		//Check for convergence
+		if(i > 10)
+		{
+			double eigenvalues_sum	= 0.0;
+			double off_diagonal_sum = 0.0;
+			for(unsigned int j = 0; j < A.Rows(); j++)
+			{
+				eigenvalues_sum += fabs(A[j][j]);
+				for(unsigned int k = j + 1; k < A.Rows(); k++)
+					off_diagonal_sum += fabs(A[k][j]);
+			}
+			if(off_diagonal_sum / eigenvalues_sum < 1.0e-12)
+			{
+				std::vector<double> eigenvalues(A.Rows());
+				for(unsigned int j = 0; j < eigenvalues.size(); j++)
+					eigenvalues[j] = A[j][j];
+				return eigenvalues;
+			}
+		}
+	}
+	std::cerr << "Error in Eigenvalues(): The QR algorithm did not converge in " << i_max << " steps." << std::endl;
+	std::exit(EXIT_FAILURE);
+}
 
-// 		//Check for convergence
-// 		if(i > 100)
-// 		{
-// 			double eigenvalues_sum	= 0.0;
-// 			double off_diagonal_sum = 0.0;
-// 			for(unsigned int j = 0; j < A.Rows(); j++)
-// 			{
-// 				eigenvalues_sum += fabs(A[j][j]);
-// 				for(unsigned int k = j + 1; k < A.Rows(); k++)
-// 					off_diagonal_sum += fabs(A[k][j]);
-// 			}
-// 			if(off_diagonal_sum / eigenvalues_sum < 1.0e-12)
-// 			{
-// 				std::vector<Vector> eigenvectors(A.Rows());
-// 				for(unsigned int j = 0; j < eigenvectors.size(); j++)
-// 					eigenvectors[j] = U.Return_Column(j);
-// 				return eigenvectors;
-// 			}
-// 		}
-// 	}
-// 	std::cerr << "Error in Eigenvectors(): The QR algorithm did not converge in " << i_max << " steps." << std::endl;
-// 	std::exit(EXIT_FAILURE);
-// }
+Vector Find_Eigenvector_Rayleigh(Matrix& M, double& eigenvalue)
+{
+	Vector b(M.Rows(), 1.0);
+	Matrix I	   = Identity_Matrix(M.Rows());
+	double epsilon = 1.0;
+	while(epsilon > 1.0e-10)
+	{
+		Vector b_before = b;
+		b				= (M - (eigenvalue * I)).Inverse() * b;
+		b.Normalize();
+		eigenvalue = b * (M * b);
+		epsilon	   = 0.0;
+		for(unsigned int i = 0; i < b.Size(); i++)
+			epsilon += Relative_Difference(fabs(b[i]), fabs(b_before[i]));
+	}
+	return b;
+}
+
+std::pair<std::vector<double>, std::vector<Vector>> Eigensystem(Matrix& M)
+{
+	std::vector<double> eigenvalues = Eigenvalues(M);
+	std::vector<Vector> eigenvectors;
+	for(auto& eigenvalue : eigenvalues)
+		eigenvectors.push_back(Find_Eigenvector_Rayleigh(M, eigenvalue));
+	return {eigenvalues, eigenvectors};
+}
+
+std::vector<Vector> Eigenvectors(Matrix& M)
+{
+	return Eigensystem(M).second;
+}
 
 }	// namespace libphysica

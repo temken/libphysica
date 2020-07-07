@@ -137,10 +137,10 @@ extern Matrix Rotation_Matrix(double alpha, int dim, Vector axis = Vector({0, 0,
 extern Matrix Outer_Vector_Product(const Vector& lhs, const Vector& rhs);
 
 // Eigen systems
-Matrix Householder_Matrix(const Matrix& M);
-std::vector<Matrix> QR_Decomposition(const Matrix& M);
-// std::vector<double> Eigenvalues(const Matrix& M);
-// std::vector<Vector> Eigenvectors(const Matrix& M);
+extern std::pair<Matrix, Matrix> QR_Decomposition(const Matrix& M);
+extern std::vector<double> Eigenvalues(const Matrix& M);
+extern std::vector<Vector> Eigenvectors(Matrix& M);
+extern std::pair<std::vector<double>, std::vector<Vector>> Eigensystem(Matrix& M);
 
 }	// namespace libphysica
 
