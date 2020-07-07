@@ -1011,8 +1011,8 @@ Matrix Householder_Matrix(const Matrix& M)
 std::pair<Matrix, Matrix> QR_Decomposition(const Matrix& M)
 {
 	// M is an mxn matrix
-	int m = M.Rows();
-	int n = M.Columns();
+	unsigned int m = M.Rows();
+	unsigned int n = M.Columns();
 
 	Matrix I		   = Identity_Matrix(m);
 	Matrix Q		   = I;
@@ -1031,7 +1031,7 @@ std::pair<Matrix, Matrix> QR_Decomposition(const Matrix& M)
 
 		R = P * R;
 		Q = Q * P;
-		for(unsigned j = i + 1; j < m; j++)
+		for(unsigned int j = i + 1; j < m; j++)
 			R[j][i] = 0.0;
 	}
 	return {Q, R};
