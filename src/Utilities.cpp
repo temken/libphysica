@@ -21,7 +21,7 @@ std::string Time_Display(double seconds_total)
 	for(unsigned int i = 0; i < units.size(); i++)
 	{
 		times.push_back(std::floor(seconds_total * sec / units[i]));
-		seconds_total -= std::floor(times.back() * units[i] / sec);
+		seconds_total -= 1.0 * times.back() * units[i] / sec;
 		time_strings.push_back(std::to_string(times.back()));
 		if(time_strings.back().length() == 1)
 			time_strings.back() = "0" + time_strings.back();
