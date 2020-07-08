@@ -18,10 +18,11 @@ extern std::vector<std::vector<double>> Import_Table(std::string filepath, std::
 
 extern void Export_List(std::string filepath, std::vector<double> data, double dimension = 1.0);
 extern void Export_Table(std::string filepath, const std::vector<std::vector<double>>& data, std::vector<double> dimensions = {});
+extern void Export_Function(std::string filepath, std::function<double(double)> func, const std::vector<double>& x_list, std::vector<double> dimensions = {});
 extern void Export_Function(std::string filepath, std::function<double(double)> func, double xMin, double xMax, unsigned int steps, std::vector<double> dimensions = {}, bool logarithmic = false);
 
 //3. Create lists with equi-distant numbers
-extern std::vector<unsigned int> Range(unsigned int max);
+extern std::vector<int> Range(int max);
 extern std::vector<int> Range(int min, int max, int stepsize = 1);
 extern std::vector<double> Linear_Space(double min, double max, unsigned int steps);
 extern std::vector<double> Log_Space(double min, double max, unsigned int steps);

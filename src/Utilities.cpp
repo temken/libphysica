@@ -184,25 +184,24 @@ void Export_Table(std::string filepath, const std::vector<std::vector<double>>& 
 	outputfile.close();
 }
 
-void Export_Function(std::string filepath, std::function<double(double)> func, double xMin, double xMax, unsigned int steps, std::vector<double> dimensions, bool logarithmic)
+void Export_Function(std::string filepath, std::function<double(double)> func, const std::vector<double>& x_list, std::vector<double> dimensions)
 {
-	std::vector<std::vector<double>> data(steps, std::vector<double>(2, 0.0));
-	std::vector<double> arguments = (logarithmic) ? Log_Space(xMin, xMax, steps) : Linear_Space(xMin, xMax, steps);
-	for(unsigned int i = 0; i < arguments.size(); i++)
-	{
-		data[i][0] = arguments[i];
-		data[i][1] = func(arguments[i]);
-	}
+	std::vector<std::vector<double>> data;
+	for(auto& x : x_list)
+		data.push_back({x, func(x)});
 	Export_Table(filepath, data, dimensions);
 }
 
-//3. Create lists with equi-distant numbers
-std::vector<unsigned int> Range(unsigned int max)
+void Export_Function(std::string filepath, std::function<double(double)> func, double xMin, double xMax, unsigned int steps, std::vector<double> dimensions, bool logarithmic)
 {
-	std::vector<unsigned int> range;
-	for(unsigned int i = 0; i < max; i++)
-		range.push_back(i);
-	return range;
+	std::vector<double> x_list = (logarithmic) ? Log_Space(xMin, xMax, steps) : Linear_Space(xMin, xMax, steps);
+	Export_Function(filepath, func, x_list, dimensions);
+}
+
+//3. Create lists with equi-distant numbers
+std::vector<int> Range(int max)
+{
+	return Range(0, max, 1);
 }
 
 std::vector<int> Range(int min, int max, int stepsize)
@@ -225,7 +224,6 @@ std::vector<double> Linear_Space(double min, double max, unsigned int steps)
 	{
 		std::vector<double> result;
 		double step = (max - min) / (steps - 1.0);
-
 		for(unsigned int i = 0; i < steps; i++)
 			result.push_back(min + i * step);
 		return result;
@@ -241,7 +239,6 @@ std::vector<double> Log_Space(double min, double max, unsigned int steps)
 		std::vector<double> result;
 		double logmin = log(min);
 		double dlog	  = log(max / min) / (steps - 1.0);
-
 		for(unsigned int i = 0; i < steps; i++)
 			result.push_back(exp(logmin + i * dlog));
 		return result;
