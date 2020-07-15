@@ -65,7 +65,7 @@ void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar
 				std::cout << " " << std::flush;
 		}
 		std::cout << "|" << std::flush;
-		if(time > 0.0)
+		if(time > 0.0 & progress > 1.0e-3)
 			std::cout << " " << Time_Display((1.0 - progress) * time / progress) << std::flush;
 	}
 }
