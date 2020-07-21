@@ -38,7 +38,7 @@ std::string Time_Display(double seconds_total)
 
 void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar_length, double time)
 {
-	if(MPI_rank == 0 && progress >= 0.0 && progress < 0.999)
+	if(MPI_rank == 0 && progress >= 0.0 && progress <= 1.0)
 	{
 		std::cout << "\r";
 		for(unsigned int j = 0; j < 2 * bar_length; j++)
@@ -64,8 +64,11 @@ void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar
 			else
 				std::cout << "░" << std::flush;
 		}
-		if(time > 0.0 & progress > 1.0e-3)
-			std::cout << " " << Time_Display((1.0 - progress) * time / progress) << std::flush;
+		if(time > 0.0 && progress > 1.0e-3)
+		{
+			double t = (progress > 0.9999) ? time : (1.0 - progress) * time / progress;
+			std::cout << " " << Time_Display(t) << std::flush;
+		}
 	}
 }
 
