@@ -11,7 +11,7 @@ namespace libphysica
 {
 using namespace libphysica::natural_units;
 
-//1. Progress bar
+//1. Terminal output
 std::string Time_Display(double seconds_total)
 {
 	std::vector<std::string> units_strings = {"y", "w", "d", "h", "m", "s", "ms"};
@@ -43,7 +43,7 @@ void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar
 		std::cout << "\r";
 		for(unsigned int j = 0; j < 2 * bar_length; j++)
 			std::cout << " ";
-		std::cout << "\r|";
+		std::cout << "\r";
 		for(unsigned int i = 0; i < bar_length; i++)
 		{
 			if(i == bar_length / 2)
@@ -60,13 +60,35 @@ void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar
 				}
 			}
 			else if(progress > 1.0 * i / bar_length)
-				std::cout << "=" << std::flush;
+				std::cout << "█" << std::flush;
 			else
-				std::cout << " " << std::flush;
+				std::cout << "░" << std::flush;
 		}
-		std::cout << "|" << std::flush;
 		if(time > 0.0 & progress > 1.0e-3)
 			std::cout << " " << Time_Display((1.0 - progress) * time / progress) << std::flush;
+	}
+}
+
+void Print_Box(std::string str, unsigned int tabs, int mpi_rank)
+{
+	if(mpi_rank == 0)
+	{
+		int length = str.length() + 2;
+		for(int i = 0; i < tabs; i++)
+			std::cout << "\t";
+		std::cout << "╔";
+		for(int i = 0; i < length; i++)
+			std::cout << "═";
+		std::cout << "╗" << std::endl;
+		for(int i = 0; i < tabs; i++)
+			std::cout << "\t";
+		std::cout << "║ " << str << " ║" << std::endl;
+		for(int i = 0; i < tabs; i++)
+			std::cout << "\t";
+		std::cout << "╚";
+		for(int i = 0; i < length; i++)
+			std::cout << "═";
+		std::cout << "╝" << std::endl;
 	}
 }
 
