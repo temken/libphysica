@@ -76,20 +76,20 @@ void Print_Box(std::string str, unsigned int tabs, int mpi_rank)
 {
 	if(mpi_rank == 0)
 	{
-		int length = str.length() + 2;
-		for(int i = 0; i < tabs; i++)
+		unsigned int length = str.length() + 2;
+		for(unsigned int i = 0; i < tabs; i++)
 			std::cout << "\t";
 		std::cout << "╔";
-		for(int i = 0; i < length; i++)
+		for(unsigned int i = 0; i < length; i++)
 			std::cout << "═";
 		std::cout << "╗" << std::endl;
-		for(int i = 0; i < tabs; i++)
+		for(unsigned int i = 0; i < tabs; i++)
 			std::cout << "\t";
 		std::cout << "║ " << str << " ║" << std::endl;
-		for(int i = 0; i < tabs; i++)
+		for(unsigned int i = 0; i < tabs; i++)
 			std::cout << "\t";
 		std::cout << "╚";
-		for(int i = 0; i < length; i++)
+		for(unsigned int i = 0; i < length; i++)
 			std::cout << "═";
 		std::cout << "╝" << std::endl;
 	}
