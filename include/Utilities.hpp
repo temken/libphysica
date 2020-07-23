@@ -14,6 +14,8 @@ extern void Print_Progress_Bar(double progress, unsigned int MPI_rang = 0, unsig
 extern void Print_Box(std::string str, unsigned int tabs = 0, int mpi_rank = 0);
 
 //2. Import and export data from files
+extern bool File_Exists(const std::string& file_path);
+
 extern std::vector<double> Import_List(std::string filepath, double dimension = 1.0, unsigned int ignored_initial_lines = 0);
 extern std::vector<std::vector<double>> Import_Table(std::string filepath, std::vector<double> dimensions = {}, unsigned int ignored_initial_lines = 0);
 

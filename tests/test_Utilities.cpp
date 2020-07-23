@@ -1,6 +1,9 @@
 #include "gtest/gtest.h"
 
 #include <cmath>
+#include <cstdio>
+#include <fstream>
+#include <iostream>
 
 #include "Utilities.hpp"
 
@@ -16,23 +19,46 @@ TEST(TestUtilities, TestTimeDisplay)
 	for(int i = -3; i < 11; i++)
 		EXPECT_EQ(Time_Display(pow(10.0, i)), results[i + 3]);
 }
+
 TEST(TestUtilities, TestPrintProgressBar)
 {
 	Print_Progress_Bar(0.4, 12);
 }
+
+TEST(TestUtilities, TestPrintBox)
+{
+	Print_Box("Hello", 1, 0);
+}
+
 //2. Import and export data from files
+TEST(TestUtilities, TestFileExists)
+{
+	// ARRANGE
+	std::string file_name = "file_exists_test.txt";
+	// ACT & ASSERT
+	EXPECT_FALSE(File_Exists(file_name));
+	std::ofstream f;
+	f.open(file_name);
+	f.close();
+	EXPECT_TRUE(File_Exists(file_name));
+	std::remove(file_name.c_str());
+	EXPECT_FALSE(File_Exists(file_name));
+}
+
 TEST(TestUtilities, TestExportImportList)
 {
 	// ARRANGE
 	double unit				 = 2.3;
 	std::vector<double> list = {1.0 * unit, 2.0 * unit, 3.0 * unit, 4.0 * unit, 5.0 * unit};
+	std::string file_name	 = "test_list.txt";
 	// ACT
-	Export_List("test_list.txt", list, unit);
-	std::vector<double> imported_list = Import_List("test_list.txt", unit);
+	Export_List(file_name, list, unit);
+	std::vector<double> imported_list = Import_List(file_name, unit);
 	// ASSERT
 	ASSERT_EQ(imported_list.size(), list.size());
 	for(unsigned int i = 0; i < list.size(); i++)
 		ASSERT_DOUBLE_EQ(imported_list[i], list[i]);
+	std::remove(file_name.c_str());
 }
 
 TEST(TestUtilities, TestExportImportTable)
@@ -40,9 +66,10 @@ TEST(TestUtilities, TestExportImportTable)
 	// ARRANGE
 	std::vector<double> units			   = {2.3, 3.1};
 	std::vector<std::vector<double>> table = {{11.0 * units[0], 12.0 * units[1]}, {21.0 * units[0], 22.0 * units[1]}};
+	std::string file_name				   = "test_table.txt";
 	// ACT
-	Export_Table("test_table.txt", table, units);
-	std::vector<std::vector<double>> imported_table = Import_Table("test_table.txt", units);
+	Export_Table(file_name, table, units);
+	std::vector<std::vector<double>> imported_table = Import_Table(file_name, units);
 	// ASSERT
 	ASSERT_EQ(imported_table.size(), table.size());
 	for(unsigned int i = 0; i < table.size(); i++)
@@ -51,6 +78,7 @@ TEST(TestUtilities, TestExportImportTable)
 		for(unsigned int j = 0; j < table[i].size(); j++)
 			ASSERT_DOUBLE_EQ(imported_table[i][j], table[i][j]);
 	}
+	std::remove(file_name.c_str());
 }
 
 double func(double x)
@@ -64,9 +92,10 @@ TEST(TestUtilities, TestExportImportFunction)
 	double xMax										= 3.0;
 	unsigned int steps								= 3;
 	std::vector<std::vector<double>> correct_values = {{1.0, 1.0}, {2.0, 4.0}, {3.0, 9.0}};
+	std::string file_name							= "test_function.txt";
 	// ACT
-	Export_Function("test_function.txt", func, xMin, xMax, steps);
-	std::vector<std::vector<double>> imported_values = Import_Table("test_function.txt");
+	Export_Function(file_name, func, xMin, xMax, steps);
+	std::vector<std::vector<double>> imported_values = Import_Table(file_name);
 	// ASSERT
 	ASSERT_EQ(imported_values.size(), correct_values.size());
 	for(unsigned int i = 0; i < correct_values.size(); i++)
@@ -75,6 +104,7 @@ TEST(TestUtilities, TestExportImportFunction)
 		for(unsigned int j = 0; j < correct_values[i].size(); j++)
 			ASSERT_DOUBLE_EQ(imported_values[i][j], correct_values[i][j]);
 	}
+	std::remove(file_name.c_str());
 }
 
 //3. Create list with equi-distant numbers in log-space

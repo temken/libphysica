@@ -3,6 +3,7 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
+#include <sys/stat.h>
 
 #include "Natural_Units.hpp"
 #include "Numerics.hpp"
@@ -96,6 +97,12 @@ void Print_Box(std::string str, unsigned int tabs, int mpi_rank)
 }
 
 //2. Import and export data from files
+bool File_Exists(const std::string& file_path)
+{
+	struct stat buffer;
+	return (stat(file_path.c_str(), &buffer) == 0);
+}
+
 std::vector<double> Import_List(std::string filepath, double dimension, unsigned int ignored_initial_lines)
 {
 	std::vector<double> data;
