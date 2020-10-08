@@ -3,6 +3,7 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
+#include <sys/stat.h>
 
 #include "Natural_Units.hpp"
 #include "Numerics.hpp"
@@ -76,26 +77,32 @@ void Print_Box(std::string str, unsigned int tabs, int mpi_rank)
 {
 	if(mpi_rank == 0)
 	{
-		int length = str.length() + 2;
-		for(int i = 0; i < tabs; i++)
+		unsigned int length = str.length() + 2;
+		for(unsigned int i = 0; i < tabs; i++)
 			std::cout << "\t";
 		std::cout << "╔";
-		for(int i = 0; i < length; i++)
+		for(unsigned int i = 0; i < length; i++)
 			std::cout << "═";
 		std::cout << "╗" << std::endl;
-		for(int i = 0; i < tabs; i++)
+		for(unsigned int i = 0; i < tabs; i++)
 			std::cout << "\t";
 		std::cout << "║ " << str << " ║" << std::endl;
-		for(int i = 0; i < tabs; i++)
+		for(unsigned int i = 0; i < tabs; i++)
 			std::cout << "\t";
 		std::cout << "╚";
-		for(int i = 0; i < length; i++)
+		for(unsigned int i = 0; i < length; i++)
 			std::cout << "═";
 		std::cout << "╝" << std::endl;
 	}
 }
 
 //2. Import and export data from files
+bool File_Exists(const std::string& file_path)
+{
+	struct stat buffer;
+	return (stat(file_path.c_str(), &buffer) == 0);
+}
+
 std::vector<double> Import_List(std::string filepath, double dimension, unsigned int ignored_initial_lines)
 {
 	std::vector<double> data;
