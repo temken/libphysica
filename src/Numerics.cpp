@@ -852,7 +852,7 @@ double Find_Root(std::function<double(double)> func, double xLeft, double xRight
 			return xRight;
 		else
 		{
-			std::cerr << "Error in libphysica::Find_Root(): f(xLeft)*f(xRight) = (" << fLeft << ")*(" << fRight << ")>0.0" << std::endl;
+			std::cerr << "Error in libphysica::Find_Root(): f(xLeft = " << xLeft << ") * f(xRight = " << xRight << ") = (" << fLeft << ") * (" << fRight << ") > 0.0" << std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 	}
