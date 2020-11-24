@@ -40,11 +40,11 @@ class Vector
 	const double& operator[](const unsigned int i) const;
 
 	// Overloading operators
-	Vector operator+(Vector v);
-	Vector operator-(Vector v);
-	double operator*(Vector v);
-	Vector operator*(double s);
-	Vector operator/(double s);
+	Vector operator+(Vector v) const;
+	Vector operator-(Vector v) const;
+	double operator*(Vector v) const;
+	Vector operator*(double s) const;
+	Vector operator/(double s) const;
 	Vector operator=(Vector v);
 	Vector& operator+=(const Vector& v);
 	Vector& operator-=(const Vector& v);

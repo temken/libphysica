@@ -134,7 +134,7 @@ const double& Vector::operator[](const unsigned int i) const
 }
 
 // Member operators
-Vector Vector::operator+(Vector v)
+Vector Vector::operator+(Vector v) const
 {
 	if(dimension != v.dimension)
 	{
@@ -150,7 +150,7 @@ Vector Vector::operator+(Vector v)
 	}
 }
 
-Vector Vector::operator-(Vector v)
+Vector Vector::operator-(Vector v) const
 {
 	if(dimension != v.dimension)
 	{
@@ -166,12 +166,12 @@ Vector Vector::operator-(Vector v)
 	}
 }
 
-double Vector::operator*(Vector v)
+double Vector::operator*(Vector v) const
 {
 	return Dot(v);
 }
 
-Vector Vector::operator*(double s)
+Vector Vector::operator*(double s) const
 {
 	std::vector<double> new_components(dimension);
 	for(unsigned int i = 0; i < dimension; i++)
@@ -179,7 +179,7 @@ Vector Vector::operator*(double s)
 	return Vector(new_components);
 }
 
-Vector Vector::operator/(double s)
+Vector Vector::operator/(double s) const
 {
 	std::vector<double> new_components(dimension);
 	for(unsigned int i = 0; i < dimension; i++)
