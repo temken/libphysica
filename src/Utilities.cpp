@@ -1,8 +1,6 @@
 #include "Utilities.hpp"
 
 #include <cmath>
-#include <fstream>
-#include <iostream>
 #include <sys/stat.h>
 
 #include "Natural_Units.hpp"
@@ -276,5 +274,4 @@ std::vector<double> Log_Space(double min, double max, unsigned int steps)
 		return result;
 	}
 }
-
 }	// namespace libphysica
