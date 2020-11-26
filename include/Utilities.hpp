@@ -1,7 +1,9 @@
 #ifndef __Utilities_hpp_
 #define __Utilities_hpp_
 
+#include <fstream>
 #include <functional>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -29,6 +31,33 @@ extern std::vector<int> Range(int max);
 extern std::vector<int> Range(int min, int max, int stepsize = 1);
 extern std::vector<double> Linear_Space(double min, double max, unsigned int steps);
 extern std::vector<double> Log_Space(double min, double max, unsigned int steps);
+
+// 4. Dual stream class to write onto terminal and a log file simultaneously.
+class Logger
+{
+  private:
+	std::ofstream logfile_stream;
+
+  public:
+	Logger(const std::string& file_name)
+	{
+		logfile_stream.open(file_name);
+	};
+
+	template <class T>
+	Logger& operator<<(const T& x)
+	{
+		std::cout << x;
+		logfile_stream << x;
+		return *this;
+	}
+	Logger& operator<<(std::ostream& (*os)(std::ostream&) )
+	{
+		std::cout << os;
+		logfile_stream << os;
+		return *this;
+	}
+};
 
 }	// namespace libphysica
 

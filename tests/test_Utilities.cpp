@@ -169,3 +169,25 @@ TEST(TestUtilities, TestLogSpace)
 	for(unsigned int i = 0; i < list_correct.size(); i++)
 		ASSERT_NEAR(list[i], list_correct[i], 1.0e-3);
 }
+
+// 4. Dual stream class to write onto terminal and a log file simultaneously.
+TEST(TestUtilities, TestLogger)
+{
+	// ARRANGE
+	std::string file = "log.txt";
+	Logger logger(file);
+	std::vector<int> numbers = {17, 1, 9};
+	// ACT
+	for(auto& number : numbers)
+		logger << number << std::endl;
+	std::ifstream f(file);
+	int number;
+	std::vector<int> output;
+	while(f >> number)
+		output.push_back(number);
+	// ASSERT
+	EXPECT_TRUE(File_Exists(file));
+	EXPECT_EQ(numbers.size(), output.size());
+	for(unsigned int i = 0; i < numbers.size(); i++)
+		EXPECT_EQ(numbers[i], output[i]);
+}

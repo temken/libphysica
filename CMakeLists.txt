@@ -50,7 +50,7 @@ configure_file(
 )
 
 # Source and include directories
-include_directories( ${INCLUDE_DIR} )
+include_directories( ${INCLUDE_DIR} ${GENERATED_DIR} )
 add_subdirectory( ${SRC_DIR} )
 
 # Code Coverage Configuration
