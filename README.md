@@ -3,6 +3,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 # libphysica
+[![DOI](https://zenodo.org/badge/261012574.svg)](https://zenodo.org/badge/latestdoi/261012574)
+
 Static C++ library collecting functions, variables, and classes for application in scientific codes.
 
 - *Linear_Algebra*: Basic linear algebra functionality (vectors and matrices).
