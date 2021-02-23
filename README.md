@@ -15,12 +15,15 @@ Static C++ library collecting functions, variables, and classes for application 
 
 - The unit tests are set up with the [googletest](https://github.com/google/googletest) framework, which is downloaded and installed automatically via [CMake](https://cmake.org/).
 
+## VERSION HISTORY
+
+- 23.02.2021: Release of version 0.1.0
+
 ## AUTHORS & CONTACT
 
 The author of this library is Timon Emken.
 
 For questions, bug reports, or other suggestions, please contact [emken@chalmers.se](mailto:emken@chalmers.se).
-
 
 ## LICENSE
 

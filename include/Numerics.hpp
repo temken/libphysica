@@ -2,6 +2,7 @@
 #define __Numerics_hpp_
 
 #include <functional>
+#include <string>
 #include <vector>
 
 namespace libphysica
