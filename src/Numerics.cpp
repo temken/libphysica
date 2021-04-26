@@ -3,7 +3,7 @@
 //"Numerical Recipes 3rd Edition: The Art of Scientific Computing"
 //by William H. Press, Saul A. Teukolsky, William T. Vetterling, Brian P. Flannery
 
-#include "Numerics.hpp"
+#include "libphysica/Numerics.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -11,7 +11,7 @@
 #include <iostream>
 #include <limits>	// std::numeric_limits
 
-#include "Utilities.hpp"
+#include "libphysica/Utilities.hpp"
 
 namespace libphysica
 {

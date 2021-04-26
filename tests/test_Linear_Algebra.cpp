@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#include "Linear_Algebra.hpp"
+#include "libphysica/Linear_Algebra.hpp"
 
 using namespace libphysica;
 

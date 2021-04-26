@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "Statistics.hpp"
+#include "libphysica/Statistics.hpp"
 
 using namespace libphysica;
 

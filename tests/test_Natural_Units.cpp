@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#include "Natural_Units.hpp"
+#include "libphysica/Natural_Units.hpp"
 
 using namespace libphysica;
 using namespace libphysica::natural_units;
