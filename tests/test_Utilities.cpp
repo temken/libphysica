@@ -5,7 +5,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "Utilities.hpp"
+#include "libphysica/Utilities.hpp"
 
 using namespace libphysica;
 

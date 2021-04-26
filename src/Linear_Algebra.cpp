@@ -1,9 +1,9 @@
-#include "Linear_Algebra.hpp"
+#include "libphysica/Linear_Algebra.hpp"
 
 #include <cmath>
 #include <numeric>
 
-#include "Numerics.hpp"
+#include "libphysica/Numerics.hpp"
 
 namespace libphysica
 {

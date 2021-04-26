@@ -1,10 +1,10 @@
-#include "Utilities.hpp"
+#include "libphysica/Utilities.hpp"
 
 #include <cmath>
 #include <sys/stat.h>
 
-#include "Natural_Units.hpp"
-#include "Numerics.hpp"
+#include "libphysica/Natural_Units.hpp"
+#include "libphysica/Numerics.hpp"
 
 namespace libphysica
 {

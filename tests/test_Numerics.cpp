@@ -4,9 +4,9 @@
 #include <functional>
 #include <random>
 
-#include "Numerics.hpp"
-#include "Statistics.hpp"
-#include "Utilities.hpp"
+#include "libphysica/Numerics.hpp"
+#include "libphysica/Statistics.hpp"
+#include "libphysica/Utilities.hpp"
 
 using namespace libphysica;
 
