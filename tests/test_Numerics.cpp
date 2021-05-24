@@ -67,6 +67,41 @@ TEST(TestNumerics, TestRound)
 	ASSERT_DOUBLE_EQ(Round(no, 7), 5.656378e-17);
 }
 
+TEST(TestNumerics, TestRoundVector)
+{
+	// ARRANGE
+	double pi  = 3.14159265359;
+	double no  = 5.6563782e-17;
+	double neg = -19.1457;
+	Vector vec({pi, no, 2.0 * pi, neg});
+	// ACT & ASSERT
+	for(unsigned int i = 0; i < vec.Size(); i++)
+		ASSERT_DOUBLE_EQ(Round(vec, 1)[i], Vector({3.0, 6.0e-17, 6.0, -20.0})[i]);
+	for(unsigned int i = 0; i < vec.Size(); i++)
+		ASSERT_DOUBLE_EQ(Round(vec, 2)[i], Vector({3.1, 5.7e-17, 6.3, -19.0})[i]);
+	for(unsigned int i = 0; i < vec.Size(); i++)
+		ASSERT_DOUBLE_EQ(Round(vec, 3)[i], Vector({3.14, 5.66e-17, 6.28, -19.1})[i]);
+}
+
+TEST(TestNumerics, TestRoundMatrix)
+{
+	// ARRANGE
+	double pi  = 3.14159265359;
+	double no  = 5.6563782e-17;
+	double neg = -19.1457;
+	Matrix M({{pi, no}, {neg, 2.0 * pi}});
+	// ACT & ASSERT
+	for(unsigned int i = 0; i < M.Rows(); i++)
+		for(unsigned int j = 0; j < M.Columns(); j++)
+			ASSERT_DOUBLE_EQ(Round(M, 1)[i][j], Matrix({{3.0, 6.0e-17}, {-20.0, 6.0}})[i][j]);
+	for(unsigned int i = 0; i < M.Rows(); i++)
+		for(unsigned int j = 0; j < M.Columns(); j++)
+			ASSERT_DOUBLE_EQ(Round(M, 2)[i][j], Matrix({{3.1, 5.7e-17}, {-19.0, 6.3}})[i][j]);
+	for(unsigned int i = 0; i < M.Rows(); i++)
+		for(unsigned int j = 0; j < M.Columns(); j++)
+			ASSERT_DOUBLE_EQ(Round(M, 3)[i][j], Matrix({{3.14, 5.66e-17}, {-19.1, 6.28}})[i][j]);
+}
+
 TEST(TestNumerics, TestRelativeDifference)
 {
 	// ARRANGE
@@ -183,6 +218,17 @@ TEST(TestNumerics, TestInvGammaQ)
 }
 
 //2.2 Other special functions
+TEST(TestNumerics, TestErfi)
+{
+	// ARRANGE
+	std::vector<double> xs		= {0.01, 0.2, 4.2, 8.4, -2.0 / 3.0};
+	std::vector<double> results = {0.0112842, 0.228721, 6.34555e6, 2.97919e29, -0.880276};
+	double tol					= 1.0e-5;
+	// ACT & ASSERT
+	for(unsigned int i = 0; i < xs.size(); i++)
+		EXPECT_NEAR(Erfi(xs[i]), results[i], std::fabs(tol * results[i]));
+}
+
 TEST(TestNumerics, TestInvErf)
 {
 	// ARRANGE

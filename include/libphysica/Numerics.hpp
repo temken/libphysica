@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "libphysica/Linear_Algebra.hpp"
+
 namespace libphysica
 {
 
@@ -13,6 +15,8 @@ extern int Sign(double arg);
 extern double Sign(double x, double y);	  //Returns x with the sign of y.
 extern double StepFunction(double x);
 extern double Round(double N, unsigned int digits = 3);
+extern Vector Round(const Vector& vec, unsigned int digits = 3);
+extern Matrix Round(const Matrix& matrix, unsigned int digits = 3);
 extern double Relative_Difference(double a, double b);
 extern bool Floats_Equal(double a, double b, double tol = 1e-10);
 
@@ -30,6 +34,7 @@ extern double Inv_GammaP(double p, double a);	//Solves P(x,a)=p for x.
 extern double Inv_GammaQ(double q, double a);	//Solves Q(x,a)=q for x.
 
 //2.2 Other special functions
+extern double Erfi(double x);
 extern double Inv_Erf(double p);
 
 //3. Integration

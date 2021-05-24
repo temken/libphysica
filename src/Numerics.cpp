@@ -68,6 +68,23 @@ double Round(double N, unsigned int digits)
 	return sign * prefactor * pow(10, DecimalPower);
 }
 
+Vector Round(const Vector& vec, unsigned int digits)
+{
+	Vector rounded_vec = vec;
+	for(unsigned int i = 0; i < vec.Size(); i++)
+		rounded_vec[i] = Round(vec[i], digits);
+	return rounded_vec;
+}
+
+Matrix Round(const Matrix& matrix, unsigned int digits)
+{
+	Matrix rounded_matrix = matrix;
+	for(unsigned int i = 0; i < matrix.Rows(); i++)
+		for(unsigned int j = 0; j < matrix.Columns(); j++)
+			rounded_matrix[i][j] = Round(matrix[i][j], digits);
+	return rounded_matrix;
+}
+
 double Relative_Difference(double a, double b)
 {
 	double d   = std::fabs(a - b);
@@ -330,6 +347,16 @@ double Inv_GammaQ(double q, double a)
 }
 
 //2.2 Other special functions
+double Erfi(double x)
+{
+	auto integrand = [](double z) {
+		return exp(z * z);
+	};
+	double eps		= Find_Epsilon(integrand, 0.0, x, 1e-6);
+	double integral = Integrate(integrand, 0.0, x, eps);
+	return 2.0 / sqrt(M_PI) * integral;
+}
+
 double Inv_Erf(double p)
 {
 	// return inverfc(1.-p);
