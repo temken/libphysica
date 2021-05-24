@@ -330,6 +330,16 @@ double Inv_GammaQ(double q, double a)
 }
 
 //2.2 Other special functions
+double Erfi(double x)
+{
+	auto integrand = [](double z) {
+		return exp(z * z);
+	};
+	double eps		= Find_Epsilon(integrand, 0.0, x, 1e-6);
+	double integral = Integrate(integrand, 0.0, x, eps);
+	return 2.0 / sqrt(M_PI) * integral;
+}
+
 double Inv_Erf(double p)
 {
 	// return inverfc(1.-p);

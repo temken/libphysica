@@ -183,6 +183,17 @@ TEST(TestNumerics, TestInvGammaQ)
 }
 
 //2.2 Other special functions
+TEST(TestNumerics, TestErfi)
+{
+	// ARRANGE
+	std::vector<double> xs		= {0.01, 0.2, 4.2, 8.4, -2.0 / 3.0};
+	std::vector<double> results = {0.0112842, 0.228721, 6.34555e6, 2.97919e29, -0.880276};
+	double tol					= 1.0e-5;
+	// ACT & ASSERT
+	for(unsigned int i = 0; i < xs.size(); i++)
+		EXPECT_NEAR(Erfi(xs[i]), results[i], std::fabs(tol * results[i]));
+}
+
 TEST(TestNumerics, TestInvErf)
 {
 	// ARRANGE

@@ -30,6 +30,7 @@ extern double Inv_GammaP(double p, double a);	//Solves P(x,a)=p for x.
 extern double Inv_GammaQ(double q, double a);	//Solves Q(x,a)=q for x.
 
 //2.2 Other special functions
+extern double Erfi(double x);
 extern double Inv_Erf(double p);
 
 //3. Integration
