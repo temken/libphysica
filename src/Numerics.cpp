@@ -9,7 +9,6 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
-#include <limits>	// std::numeric_limits
 
 #include "libphysica/Special_Functions.hpp"
 #include "libphysica/Utilities.hpp"

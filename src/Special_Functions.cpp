@@ -6,6 +6,7 @@
 #include "libphysica/Special_Functions.hpp"
 
 #include <cmath>
+#include <limits>	// std::numeric_limits
 
 #include "libphysica/Integration.hpp"
 #include "libphysica/Numerics.hpp"
