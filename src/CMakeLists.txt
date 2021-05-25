@@ -13,11 +13,13 @@ set_target_properties(libphysica PROPERTIES PREFIX "")
 target_compile_options(libphysica PUBLIC -Wall -pedantic)
 
 target_link_libraries(libphysica
+    PRIVATE ${Boost_LIBRARIES}
 	PUBLIC coverage_config )
 
 target_include_directories(libphysica
 	PRIVATE
 		${GENERATED_DIR}
+        ${Boost_INCLUDE_DIR} 
 	PUBLIC
 		${CMAKE_CURRENT_SOURCE_DIR}
 		${INCLUDE_DIR})

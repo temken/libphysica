@@ -18,6 +18,9 @@ set(EXTERNAL_DIR  ${PROJECT_SOURCE_DIR}/external)
 
 #External projects
 include(FetchContent)
+
+find_package(Boost 1.65  REQUIRED )
+
 # Googletest
 set(GTEST_DIR   ${EXTERNAL_DIR}/googletest)
 FetchContent_Declare(googletest
