@@ -185,6 +185,7 @@ TEST(TestUtilities, TestLogger)
 	std::vector<int> output;
 	while(f >> number)
 		output.push_back(number);
+	f.close();
 	// ASSERT
 	EXPECT_TRUE(File_Exists(file));
 	EXPECT_EQ(numbers.size(), output.size());

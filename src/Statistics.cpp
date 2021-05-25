@@ -3,6 +3,9 @@
 #include <algorithm>
 #include <iostream>
 
+#include "libphysica/Integration.hpp"
+#include "libphysica/Special_Functions.hpp"
+
 namespace libphysica
 {
 

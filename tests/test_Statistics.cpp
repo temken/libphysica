@@ -2,6 +2,8 @@
 
 #include "libphysica/Statistics.hpp"
 
+#include "libphysica/Integration.hpp"
+
 using namespace libphysica;
 
 //1. Distributions

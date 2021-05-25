@@ -1,8 +1,10 @@
 
 add_library(libphysica STATIC
     Linear_Algebra.cpp
+    Integration.cpp
     Natural_Units.cpp
     Numerics.cpp
+    Special_Functions.cpp
     Statistics.cpp
     Utilities.cpp )
 
