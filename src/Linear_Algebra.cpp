@@ -3,7 +3,7 @@
 #include <cmath>
 #include <numeric>
 
-#include "libphysica/Numerics.hpp"
+#include "libphysica/Special_Functions.hpp"
 
 namespace libphysica
 {
