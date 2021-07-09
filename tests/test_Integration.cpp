@@ -49,6 +49,23 @@ TEST(TestNumerics, TestIntegrateBoost)
 	}
 }
 
+TEST(TestNumerics, TestIntegrationLimits)
+{
+	// ARRANGE
+	double tolerance				   = 1.0e-8;
+	std::function<double(double)> func = [](double x) {
+		return 1.0 / x;
+	};
+	double a						 = 2.0;
+	double b						 = 3.0;
+	std::vector<std::string> methods = {"Trapezoidal", "Gauss-Legendre", "Gauss-Kronrod"};
+
+	// ACT & ASSERT
+	EXPECT_DOUBLE_EQ(Integrate(func, a, b, tolerance), -1.0 * Integrate(func, b, a, tolerance));
+	for(auto& method : methods)
+		EXPECT_DOUBLE_EQ(Integrate(func, a, b, method), -1.0 * Integrate(func, b, a, method));
+}
+
 TEST(TestNumerics, TestIntegrate2D)
 {
 	// ARRANGE
