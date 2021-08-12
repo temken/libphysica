@@ -1,5 +1,6 @@
 #include "libphysica/Integration.hpp"
 
+#include <algorithm>
 #include <iostream>
 
 #include <boost/math/quadrature/gauss.hpp>
@@ -53,18 +54,23 @@ double Adaptive_Simpson_Integration(std::function<double(double)> func, double a
 }
 
 //Recursive functions for one-dimensional integration
+void Check_Integration_Limits(double& a, double& b, double& sign)
+{
+	if(a > b)
+	{
+		std::cerr << "Warning in libphysica::Integrate(): From the integral from a to b, a>b (a = " << a << ", b = " << b << "). Sign will get swapped." << std::endl;
+		std::swap(a, b);
+		sign = -1.0;
+	}
+}
+
 double Integrate(std::function<double(double)> func, double a, double b, double epsilon, int maxRecursionDepth)
 {
-	int sign = +1;
+	double sign = +1.0;
 	if(a == b)
 		return 0.0;
-	else if(a > b)
-	{
-		double aux = a;
-		a		   = b;
-		b		   = aux;
-		sign	   = -1;
-	}
+	else
+		Check_Integration_Limits(a, b, sign);
 	double c	  = (a + b) / 2;
 	double h	  = b - a;
 	double fa	  = func(a);
@@ -88,12 +94,17 @@ double Integrate(std::function<double(double)> func, double a, double b, double 
 // 1.2 1D integration with boost functions
 double Integrate(std::function<double(double)> func, double a, double b, const std::string& method)
 {
+	double sign = 1.0;
+	if(a == b)
+		return 0.0;
+	else
+		Check_Integration_Limits(a, b, sign);
 	if(method == "Trapezoidal")
-		return trapezoidal(func, a, b);
+		return sign * trapezoidal(func, a, b);
 	else if(method == "Gauss-Legendre")
-		return gauss<double, 30>::integrate(func, a, b);
+		return sign * gauss<double, 30>::integrate(func, a, b);
 	else if(method == "Gauss-Kronrod")
-		return gauss_kronrod<double, 31>::integrate(func, a, b, 5, 1e-9);
+		return sign * gauss_kronrod<double, 31>::integrate(func, a, b, 5, 1e-9);
 	else
 	{
 		std::cerr << "Error in libphysica::Integrate(): Method " << method << " not recognized." << std::endl;
