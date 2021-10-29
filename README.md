@@ -10,7 +10,7 @@ Static C++ library collecting functions, variables, and classes for application 
 - *Integration*: Numerical integration / quadrature (for both one- and multi-dimensional integrals).
 - *Linear_Algebra*: Basic linear algebra functionality (vectors and matrices).
 - *Natural_Units*: A simple implementation of natural units.
-- *Numerics*: Various special functions and numerical algorithms (interpolation, root_finding, multidimensional minimization).
+- *Numerics*: Various special functions and numerical algorithms (interpolation, root finding, multidimensional minimization).
 - *Special_Functions*: Implementation of various functions.
 - *Statistics*: Includes PDFs and CDFs for a number of distributions, sampling techniques, rudimentary data analysis, and Kernel density estimation.
 - *Utilities*: Some useful functions, that don't fit anywhere else. (Progress bars, import and export of data from files,...)
@@ -19,6 +19,7 @@ Static C++ library collecting functions, variables, and classes for application 
 
 - The unit tests are set up with the [googletest](https://github.com/google/googletest) framework, which is downloaded and installed automatically via [CMake](https://cmake.org/).
 - The numerical integration methods rely partially on [boost](https://www.boost.org/).
+- The *Configuration* class uses the library [libconfig](https://hyperrealm.github.io/libconfig/).
 
 ## INSTALLATION
 
