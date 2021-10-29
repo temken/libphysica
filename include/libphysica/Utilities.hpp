@@ -4,18 +4,19 @@
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <libconfig.h++>
 #include <string>
 #include <vector>
 
 namespace libphysica
 {
 
-//1. Terminal output
+// 1. Terminal output
 extern std::string Time_Display(double seconds);
 extern void Print_Progress_Bar(double progress, unsigned int MPI_rang = 0, unsigned int bar_length = 50, double time = 0.0);
 extern void Print_Box(std::string str, unsigned int tabs = 0, int mpi_rank = 0);
 
-//2. Import and export data from files
+// 2. Import and export data from files
 extern bool File_Exists(const std::string& file_path);
 
 extern std::vector<double> Import_List(std::string filepath, double dimension = 1.0, unsigned int ignored_initial_lines = 0);
@@ -26,7 +27,7 @@ extern void Export_Table(std::string filepath, const std::vector<std::vector<dou
 extern void Export_Function(std::string filepath, std::function<double(double)> func, const std::vector<double>& x_list, std::vector<double> dimensions = {});
 extern void Export_Function(std::string filepath, std::function<double(double)> func, double xMin, double xMax, unsigned int steps, std::vector<double> dimensions = {}, bool logarithmic = false);
 
-//3. Create lists with equi-distant numbers
+// 3. Create lists with equi-distant numbers
 extern std::vector<int> Range(int max);
 extern std::vector<int> Range(int min, int max, int stepsize = 1);
 extern std::vector<double> Linear_Space(double min, double max, unsigned int steps);
@@ -57,6 +58,28 @@ class Logger
 		logfile_stream << os;
 		return *this;
 	}
+};
+
+// 5. Configuration class using libconfig
+class Configuration
+{
+  protected:
+	libconfig::Config config;
+	std::string cfg_file;
+
+	virtual void Read_Config_File();
+
+	virtual void Initialize_Result_Folder(int MPI_rank = 0);
+	virtual void Create_Result_Folder(int MPI_rank = 0);
+	virtual void Copy_Config_File(int MPI_rank = 0);
+
+	virtual void Initialize_Parameters() {};
+
+  public:
+	std::string ID, results_path;
+	explicit Configuration(std::string cfg_filename, int MPI_rank = 0);
+
+	virtual void Print_Summary(int MPI_rank = 0) {};
 };
 
 }	// namespace libphysica

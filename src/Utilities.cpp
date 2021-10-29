@@ -1,16 +1,19 @@
 #include "libphysica/Utilities.hpp"
 
 #include <cmath>
-#include <sys/stat.h>
+#include <sys/stat.h>	 //required to create a folder
+#include <sys/types.h>	 // required for stat.h
 
 #include "libphysica/Natural_Units.hpp"
 #include "libphysica/Special_Functions.hpp"
+#include "version.hpp"
 
 namespace libphysica
 {
 using namespace libphysica::natural_units;
+using namespace libconfig;
 
-//1. Terminal output
+// 1. Terminal output
 std::string Time_Display(double seconds_total)
 {
 	std::vector<std::string> units_strings = {"y", "w", "d", "h", "m", "s", "ms"};
@@ -94,7 +97,7 @@ void Print_Box(std::string str, unsigned int tabs, int mpi_rank)
 	}
 }
 
-//2. Import and export data from files
+// 2. Import and export data from files
 bool File_Exists(const std::string& file_path)
 {
 	struct stat buffer;
@@ -228,7 +231,7 @@ void Export_Function(std::string filepath, std::function<double(double)> func, d
 	Export_Function(filepath, func, x_list, dimensions);
 }
 
-//3. Create lists with equi-distant numbers
+// 3. Create lists with equi-distant numbers
 std::vector<int> Range(int max)
 {
 	return Range(0, max, 1);
@@ -274,4 +277,95 @@ std::vector<double> Log_Space(double min, double max, unsigned int steps)
 		return result;
 	}
 }
+
+// 5. Configuration class using libconfig
+void Configuration::Read_Config_File()
+{
+	try
+	{
+		config.readFile(cfg_file.c_str());
+	}
+	catch(const FileIOException& fioex)
+	{
+		std::cerr << "Error in libphysica::Configuration::Read_Config_File(): I/O error while reading configuration file." << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+	catch(const ParseException& pex)
+	{
+		std::cerr << "Error in libphysica::Configuration::Read_Config_File(): Configurate file parse error at " << pex.getFile() << ":" << pex.getLine() << " - " << pex.getError() << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+}
+
+void Configuration::Initialize_Result_Folder(int MPI_rank)
+{
+	try
+	{
+		ID = config.lookup("ID").c_str();
+	}
+	catch(const SettingNotFoundException& nfex)
+	{
+		std::cerr << "Error in libphysica::Configuration::Initialize_Result_Folder(): No 'ID' setting in configuration file." << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+	results_path = TOP_LEVEL_DIR "results/" + ID + "/";
+	Create_Result_Folder(MPI_rank);
+	Copy_Config_File(MPI_rank);
+}
+
+void Configuration::Create_Result_Folder(int MPI_rank)
+{
+	if(MPI_rank == 0)
+	{
+		// 1. Create the /results/ folder if necessary
+		std::string results_folder = TOP_LEVEL_DIR "results";
+		mode_t nMode			   = 0733;	 // UNIX style permissions
+		int nError_1			   = 0;
+#if defined(_WIN32)
+		nError_1 = _mkdir(results_folder.c_str());	 // can be used on Windows
+#else
+		nError_1 = mkdir(results_folder.c_str(), nMode);   // can be used on non-Windows
+#endif
+
+		// 2. Create a /result/<ID>/ folder for result files.
+		int nError = 0;
+#if defined(_WIN32)
+		nError = _mkdir(results_path.c_str());	 // can be used on Windows
+#else
+		nError	 = mkdir(results_path.c_str(), nMode);	   // can be used on non-Windows
+#endif
+		if(nError != 0)
+		{
+			std::cerr << "\nWarning in Configuration::Create_Result_Folder(int): The folder exists already, data will be overwritten." << std::endl
+					  << std::endl;
+		}
+	}
+}
+
+void Configuration::Copy_Config_File(int MPI_rank)
+{
+	if(MPI_rank == 0)
+	{
+		std::ifstream inFile;
+		std::ofstream outFile;
+		inFile.open(cfg_file);
+		outFile.open(TOP_LEVEL_DIR "results/" + ID + "/" + ID + ".cfg");
+		outFile << "// " << PROJECT_NAME << "-v" << PROJECT_VERSION << "\tgit:" << GIT_BRANCH << "/" << GIT_COMMIT_HASH << std::endl;
+		outFile << inFile.rdbuf();
+		inFile.close();
+		outFile.close();
+	}
+}
+
+Configuration::Configuration(std::string cfg_filename, int MPI_rank)
+: cfg_file(cfg_filename), results_path("./")
+{
+
+	// 1. Read the cfg file.
+	Read_Config_File();
+
+	// 2. Find the run ID, create a folder and copy the cfg file.
+	Initialize_Result_Folder(MPI_rank);
+}
+
 }	// namespace libphysica
