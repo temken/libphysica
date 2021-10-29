@@ -350,7 +350,7 @@ void Configuration::Copy_Config_File(int MPI_rank)
 		std::ofstream outFile;
 		inFile.open(cfg_file);
 		outFile.open(TOP_LEVEL_DIR "results/" + ID + "/" + ID + ".cfg");
-		outFile << "// " << CMAKE_PROJECT_NAME << "-v" << CMAKE_PROJECT_VERSION << "\tgit:" << GIT_BRANCH << "/" << GIT_COMMIT_HASH << std::endl;
+		outFile << "// " << TOP_LEVEL_PROJECT_NAME << "-v" << TOP_LEVEL_PROJECT_VERSION << "\tgit:" << TOP_LEVEL_GIT_BRANCH << "/" << TOP_LEVEL_GIT_COMMIT_HASH << std::endl;
 		outFile << inFile.rdbuf();
 		inFile.close();
 		outFile.close();
