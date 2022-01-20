@@ -55,8 +55,11 @@ std::ostream& operator<<(std::ostream& output, const Vector& v);
 
 bool operator==(const Vector& v1, const Vector& v2);
 
+double Angle(const Vector& v1, const Vector& v2);
+
 // 2. Coordinate systems
 extern Vector Spherical_Coordinates(double r, double theta, double phi);
+extern Vector Spherical_Coordinates(double r, double theta, double phi, const Vector& axis);
 
 // 3. Matrices
 class Matrix
@@ -85,7 +88,7 @@ class Matrix
 	Vector Return_Row(unsigned int row) const;
 	Vector Return_Column(unsigned int column) const;
 
-	//Binary operations
+	// Binary operations
 	Matrix Plus(const Matrix& M) const;
 	Matrix Minus(const Matrix& M) const;
 	Matrix Product(double s) const;
@@ -93,7 +96,7 @@ class Matrix
 	Vector Product(const Vector& v) const;
 	Matrix Division(double s) const;
 
-	//Matrix properties
+	// Matrix properties
 	bool Square() const;
 	bool Symmetric() const;
 	bool Antisymmetric() const;
@@ -101,15 +104,15 @@ class Matrix
 	bool Invertible() const;
 	bool Orthogonal() const;
 
-	//Matrix operations
+	// Matrix operations
 	Matrix Transpose() const;
 	Matrix Inverse() const;
 	double Trace() const;
 	double Determinant() const;
 
 	Matrix Sub_Matrix(int row, int column) const;
-	std::vector<double> Eigen_Values() const;	 //TODO
-	std::vector<Vector> Eigen_Vectors() const;	 //TODO
+	std::vector<double> Eigen_Values() const;	 // TODO
+	std::vector<Vector> Eigen_Vectors() const;	 // TODO
 
 	// Overloading brackets
 	std::vector<double>& operator[](const unsigned int i);

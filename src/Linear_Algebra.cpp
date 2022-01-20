@@ -247,11 +247,37 @@ bool operator==(const Vector& v1, const Vector& v2)
 	}
 }
 
+double Angle(const Vector& v1, const Vector& v2)
+{
+	return acos(v1 * v2 / (v1.Norm() * v2.Norm()));
+}
+
 // 2. Coordinates
 Vector Spherical_Coordinates(double r, double theta, double phi)
 {
 	std::vector<double> comp = {r * sin(theta) * cos(phi), r * sin(theta) * sin(phi), r * cos(theta)};
 	return Vector(comp);
+}
+
+Vector Spherical_Coordinates(double r, double theta, double phi, const Vector& axis)
+{
+	libphysica::Vector ev = axis.Normalized();
+	if(ev[2] == 1.0)
+		return Spherical_Coordinates(r, theta, phi);
+	else
+	{
+		double aux = sqrt(1.0 - pow(ev[2], 2.0));
+
+		double cos_theta = cos(theta);
+		double sin_theta = sqrt(1.0 - cos_theta * cos_theta);
+		double cos_phi	 = cos(phi);
+		double sin_phi	 = sin(phi);
+
+		libphysica::Vector unit_vector({cos_theta * ev[0] + sin_theta / aux * (ev[0] * ev[2] * cos_phi - ev[1] * sin_phi),
+										cos_theta * ev[1] + sin_theta / aux * (ev[1] * ev[2] * cos_phi + ev[0] * sin_phi),
+										cos_theta * ev[2] - aux * cos_phi * sin_theta});
+		return r * unit_vector;
+	}
 }
 
 // 3. Matrix functions.
@@ -431,7 +457,7 @@ Vector Matrix::Return_Column(unsigned int column) const
 		return Transpose().Return_Row(column);
 }
 
-//Binary operations
+// Binary operations
 Matrix Matrix::Plus(const Matrix& M) const
 {
 	if(rows != M.Columns() || columns != M.Rows())
@@ -544,7 +570,7 @@ Matrix Matrix::Division(double s) const
 	return Matrix(result_components);
 }
 
-//Matrix properties
+// Matrix properties
 bool Matrix::Square() const
 {
 	if(rows == columns)
@@ -635,7 +661,7 @@ bool Matrix::Orthogonal() const
 	}
 }
 
-//Matrix operations
+// Matrix operations
 Matrix Matrix::Transpose() const
 {
 	unsigned int rows_new = columns;
@@ -773,13 +799,13 @@ Matrix Matrix::Sub_Matrix(int row, int column) const
 }
 
 std::vector<double> Matrix::Eigen_Values() const
-//TO DO
+// TO DO
 {
 	return std::vector<double>(1);
 }
 
 std::vector<Vector> Matrix::Eigen_Vectors() const
-//TO DO
+// TO DO
 {
 	return std::vector<Vector>(1);
 }
@@ -1049,7 +1075,7 @@ std::vector<double> Eigenvalues(const Matrix& M)
 		A = qr.second * qr.first;
 		// U = U * qr.first;
 
-		//Check for convergence
+		// Check for convergence
 		if(i > 10)
 		{
 			double eigenvalues_sum	= 0.0;

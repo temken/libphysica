@@ -146,6 +146,20 @@ TEST(TestVector, TestOperators)
 	ASSERT_TRUE(v2 == v3);
 }
 
+TEST(TestVector, TestAngle)
+{
+	// ARRANGE
+	Vector v1({1, 0, 0});
+	Vector v2({0, 1, 0});
+	Vector v3({0, 0, 1});
+	Vector v4({1, 1, 1});
+	// ACT & ASSERT
+	ASSERT_DOUBLE_EQ(Angle(v1, v2), M_PI / 2.0);
+	ASSERT_DOUBLE_EQ(Angle(v1, v3), M_PI / 2.0);
+	ASSERT_DOUBLE_EQ(Angle(v1, v4), acos(1.0 / sqrt(3.0)));
+	ASSERT_DOUBLE_EQ(Angle(v2, v3), M_PI / 2.0);
+}
+
 // 2. Coordinate systems
 TEST(TestCoordinateSystems, TestSphericalCoordinates)
 {
@@ -153,11 +167,31 @@ TEST(TestCoordinateSystems, TestSphericalCoordinates)
 	double r	 = 3.14;
 	double theta = 0.4;
 	double phi	 = 0.5;
-	Vector R	 = Spherical_Coordinates(r, theta, phi);
-	// ACT & ASSERT
+	// ACT
+	Vector R = Spherical_Coordinates(r, theta, phi);
+	// ASSERT
 	ASSERT_DOUBLE_EQ(R.Norm(), r);
 	ASSERT_DOUBLE_EQ(acos(R[2] / R.Norm()), theta);
 	ASSERT_DOUBLE_EQ(atan2(R[1], R[0]), phi);
+}
+
+TEST(TestCoordinateSystems, TestSphericalCoordinates2)
+{
+	// ARRANGE
+	double r	 = 3.14;
+	double theta = 0.4;
+	double phi	 = 0.5;
+	Vector axis_1({0.0, 0.0, 1.0});
+	Vector axis_2({5.3, 7.1, -9.3});
+	// ACT
+	Vector R_1 = Spherical_Coordinates(r, theta, phi, axis_1);
+	Vector R_2 = Spherical_Coordinates(r, theta, phi, axis_2);
+	// ACT & ASSERT
+	ASSERT_DOUBLE_EQ(R_1.Norm(), r);
+	ASSERT_DOUBLE_EQ(Angle(R_1, axis_1), theta);
+
+	ASSERT_DOUBLE_EQ(R_2.Norm(), r);
+	ASSERT_DOUBLE_EQ(Angle(R_2, axis_2), theta);
 }
 
 // 3. Matrices
