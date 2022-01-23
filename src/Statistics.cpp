@@ -9,8 +9,8 @@
 namespace libphysica
 {
 
-//1. Distributions
-//1.1. Uniform distribution
+// 1. Distributions
+// 1.1. Uniform distribution
 double PDF_Uniform(double x, double x_min, double x_max)
 {
 	if(x < x_min || x > x_max)
@@ -29,7 +29,7 @@ double CDF_Uniform(double x, double x_min, double x_max)
 		return (x - x_min) / (x_max - x_min);
 }
 
-//1.2 Normal distribution
+// 1.2 Normal distribution
 double PDF_Gauss(double x, double mu, double sigma)
 {
 	return 1.0 / sqrt(2.0 * M_PI) / sigma * exp(-pow((x - mu) / sigma, 2.0) / 2.0);
@@ -45,7 +45,7 @@ double Quantile_Gauss(double p, double mu, double sigma)
 	return mu + sqrt(2.0) * sigma * Inv_Erf(2.0 * p - 1.0);
 }
 
-//1.3 Binomial distribution
+// 1.3 Binomial distribution
 double PMF_Binomial(unsigned int trials, double p, unsigned int x)
 {
 	if(p < 0.0 || p > 1.0)
@@ -69,7 +69,7 @@ double CDF_Binomial(unsigned int trials, double p, unsigned int x)
 	return cdf;
 }
 
-//1.4 Poission distribution
+// 1.4 Poission distribution
 double PMF_Poisson(double expected_events, unsigned int events)
 {
 	if(expected_events < 0 || events < 0)
@@ -121,7 +121,7 @@ double Inv_CDF_Poisson(unsigned int observed_events, double cdf)
 		return Inv_GammaQ(cdf, observed_events + 1);
 }
 
-//1.5 Chi-square distribution
+// 1.5 Chi-square distribution
 double PDF_Chi_Square(double x, double dof)
 {
 	if(x <= 0 || dof < 1.0e-6)
@@ -147,7 +147,7 @@ double PDF_Chi_Bar_Square(double x, std::vector<double> weights)
 	else
 	{
 		double pdf = 0.0;
-		for(unsigned int dof = 1; dof < weights.size(); dof++)	 //start at 1 because of dof = 0
+		for(unsigned int dof = 1; dof < weights.size(); dof++)	 // start at 1 because of dof = 0
 			pdf += weights[dof] * PDF_Chi_Square(x, dof);
 		return pdf;
 	}
@@ -172,7 +172,7 @@ double CDF_Chi_Bar_Square(double x, std::vector<double> weights)
 	}
 }
 
-//1.6 Exponential distribution
+// 1.6 Exponential distribution
 double PDF_Exponential(double x, double mean)
 {
 	if(mean <= 0.0)
@@ -199,7 +199,7 @@ double CDF_Exponential(double x, double mean)
 		return 1.0 - exp(-1.0 / mean * x);
 }
 
-//1.7 Maxwell-Boltzmann distribution
+// 1.7 Maxwell-Boltzmann distribution
 double PDF_Maxwell_Boltzmann(double x, double a)
 {
 	if(a <= 0.0)
@@ -226,7 +226,7 @@ double CDF_Maxwell_Boltzmann(double x, double a)
 		return erf(x / sqrt(2.0) / a) - sqrt(2.0 / M_PI) * x / a * exp(-x * x / 2.0 / a / a);
 }
 
-//2. Likelihoods
+// 2. Likelihoods
 double Log_Likelihood_Poisson(double N_prediction, unsigned long int N_observed, double expected_background)
 {
 	double log_N_obs_factorial = 0.0;
@@ -266,16 +266,16 @@ double Likelihood_Poisson_Binned(const std::vector<double>& N_prediction_binned,
 	return exp(Log_Likelihood_Poisson_Binned(N_prediction_binned, N_observed_binned, expected_background_binned));
 }
 
-//3. Sampling random numbers
+// 3. Sampling random numbers
 
-//3.1 Sample from specific distribution
+// 3.1 Sample from specific distribution
 double Sample_Uniform(std::mt19937& PRNG, double x_min, double x_max)
 {
 	std::uniform_real_distribution<double> dis(x_min, x_max);
 	return dis(PRNG);
 }
 
-unsigned int Sample_Poisson(std::mt19937& PRNG, double expectation_value)	//Algorithm from https://en.wikipedia.org/wiki/Poisson_distribution
+unsigned int Sample_Poisson(std::mt19937& PRNG, double expectation_value)	// Algorithm from https://en.wikipedia.org/wiki/Poisson_distribution
 {
 	double STEP		   = 500;
 	double lambda_left = expectation_value;
@@ -311,7 +311,7 @@ std::vector<unsigned int> Sample_Poisson(std::mt19937& PRNG, const std::vector<d
 	return samples;
 }
 
-//3.2 General sampling algorithms
+// 3.2 General sampling algorithms
 double Rejection_Sampling(const std::function<double(double)>& PDF, double xMin, double xMax, double yMax, std::mt19937& PRNG)
 {
 	bool success = false;
@@ -320,21 +320,34 @@ double Rejection_Sampling(const std::function<double(double)>& PDF, double xMin,
 	while(!success)
 	{
 		count++;
-		if(count % 1000 == 0)
-			std::cout << "Warning in libphysica::Rejection_Sampling(): Very inefficient sampling with N=" << count << "." << std::endl;
 
-		x		   = xMin + Sample_Uniform(PRNG, 0.0, 1.0) * (xMax - xMin);
-		double y   = Sample_Uniform(PRNG, 0.0, 1.0) * yMax;
+		// Inefficiency warning and error
+		if(count % 1000 == 0)
+		{
+			double theoretical_efficiency = 100.0 / (xMax - xMin) / yMax;
+			if(count % 10000 == 0)
+			{
+				std::cout << "Error in libphysica::Rejection_Sampling() of random variable with domain [" << xMin << "," << xMax << "]: Too inefficient sampling with N = " << count << "." << std::endl
+						  << "\tTheoretical efficiency [%]:\t" << theoretical_efficiency << std::endl;
+				std::exit(EXIT_FAILURE);
+			}
+			else
+				std::cout << "Warning in libphysica::Rejection_Sampling() of random variable with domain [" << xMin << "," << xMax << "]: Very inefficient sampling with N = " << count << "." << std::endl
+						  << "\tTheoretical efficiency [%]:\t" << theoretical_efficiency << std::endl;
+		}
+
+		x		   = Sample_Uniform(PRNG, xMin, xMax);
+		double y   = Sample_Uniform(PRNG, 0.0, yMax);
 		double pdf = PDF(x);
 		if(pdf < 0.0)
 		{
-			std::cerr << "Error in libphysica::Rejection_Sampling(): PDF is negative -> f(" << x << ")=" << pdf << std::endl;
+			std::cerr << "Error in libphysica::Rejection_Sampling() of random variable with domain [" << xMin << "," << xMax << "]: PDF is negative -> f(" << x << ") = " << pdf << std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else if(pdf > yMax)
 		{
-			std::cout << "Warning in libphysica::Rejection_Sampling(): PDF>yMax, yMax is set to PDF." << std::endl;
-			return Rejection_Sampling(PDF, xMin, xMax, pdf, PRNG);
+			std::cout << "Error in libphysica::Rejection_Sampling() of random variable with domain [" << xMin << "," << xMax << "]: PDF > yMax." << std::endl;
+			std::exit(EXIT_FAILURE);
 		}
 		else if(y <= pdf)
 			success = true;
@@ -350,7 +363,7 @@ double Inverse_Transform_Sampling(const std::function<double(double)>& cdf, doub
 	return Find_Root(fct, xMin, xMax, 1e-10 * (xMax - xMin));
 }
 
-//4. Data point with statistical weight
+// 4. Data point with statistical weight
 DataPoint::DataPoint(double v, double w)
 {
 	value  = v;
@@ -378,7 +391,7 @@ std::ostream& operator<<(std::ostream& output, const DataPoint& dp)
 	return output;
 }
 
-//5. Basic data analysis
+// 5. Basic data analysis
 double Arithmetic_Mean(const std::vector<double>& data)
 {
 	return 1.0 * std::accumulate(data.begin(), data.end(), 0.0) / data.size();
@@ -426,7 +439,7 @@ std::vector<double> Weighted_Average(std::vector<DataPoint>& data)
 	double sum			= 0.0;
 	double wsum			= 0.0;
 	long unsigned int N = data.size();
-	//1. Average
+	// 1. Average
 	for(unsigned int i = 0; i < N; i++)
 	{
 		sum += data[i].weight * data[i].value;
@@ -434,7 +447,7 @@ std::vector<double> Weighted_Average(std::vector<DataPoint>& data)
 	}
 	double Average	= sum / wsum;
 	double wAverage = wsum / N;
-	//2. Standard error (Cochran)
+	// 2. Standard error (Cochran)
 	double sum1 = 0.0, sum2 = 0.0, sum3 = 0.0;
 	for(unsigned int i = 0; i < data.size(); i++)
 	{
@@ -443,11 +456,11 @@ std::vector<double> Weighted_Average(std::vector<DataPoint>& data)
 		sum3 += pow(data[i].weight - wAverage, 2.0);
 	}
 	double SE = N / (N - 1.0) / wsum / wsum * (sum1 - 2.0 * Average * sum2 + pow(Average, 2.0) * sum3);
-	//3. Return result
+	// 3. Return result
 	return std::vector<double> {Average, sqrt(SE)};
 }
 
-//6. Kernel density estimation
+// 6. Kernel density estimation
 double Gaussian_Kernel(double x)
 {
 	return PDF_Gauss(x, 0.0, 1.0);
@@ -457,33 +470,33 @@ Interpolation Perform_KDE(std::vector<DataPoint> data, double xMin, double xMax,
 	unsigned int N_Data = data.size();
 	double Weight_Sum	= 0.0;
 
-	//Count the weights
+	// Count the weights
 	for(unsigned int i = 0; i < N_Data; i++)
 		Weight_Sum += data[i].weight;
 
-	//1. Bandwidth selection:
-	//If the bandwidth is not set manually, we find it here.
+	// 1. Bandwidth selection:
+	// If the bandwidth is not set manually, we find it here.
 	if(bw == 0)
 	{
-		//1.1 Average.
+		// 1.1 Average.
 		double AverageSum = 0.0;
 		for(unsigned int i = 0; i < N_Data; i++)
 			AverageSum += data[i].weight * data[i].value;
 		double Average = AverageSum / Weight_Sum;
-		//1.2 Standard deviation
+		// 1.2 Standard deviation
 		double Variance = 0.0;
 		for(unsigned int i = 0; i < N_Data; i++)
 			Variance += data[i].weight * pow(data[i].value - Average, 2.0) / Weight_Sum;
-		//1.3 Bandwidth with rule-of-thumb estimator
+		// 1.3 Bandwidth with rule-of-thumb estimator
 		bw = sqrt(Variance) * pow(4.0 / 3.0 / N_Data, 0.2);
 	}
 
-	//Sort data:
+	// Sort data:
 	std::sort(data.begin(), data.end());
 	// Pseudo data
 	unsigned int N_PseudoData = N_Data / 3.0;
 
-	//2. Perform and tabulate the KDE
+	// 2. Perform and tabulate the KDE
 	int points = 150;
 	double dx  = (xMax - xMin) / (points - 1);
 	std::vector<std::vector<double>> Interpol_List;
@@ -493,9 +506,9 @@ Interpolation Perform_KDE(std::vector<DataPoint> data, double xMin, double xMax,
 		double kde = 0.0;
 		for(unsigned int i = 0; i < N_Data; i++)
 		{
-			//Vanilla Gauss KDE
+			// Vanilla Gauss KDE
 			kde += data[i].weight * Gaussian_Kernel((x - data[i].value) / bw);
-			//Cowling and Hall pseudo data method 1
+			// Cowling and Hall pseudo data method 1
 			if(i < N_PseudoData)
 			{
 				double xPseudo = 4.0 * xMin - 6.0 * data[i].value + 4.0 * data[2 * i].value - data[3 * i].value;
@@ -503,24 +516,24 @@ Interpolation Perform_KDE(std::vector<DataPoint> data, double xMin, double xMax,
 				kde += wPseudo * Gaussian_Kernel((x - xPseudo) / bw);
 			}
 
-			//Local kernel normalization close to the boundary
-			// double data_point = data[i].value;
-			// if(data_point < xMin + 3.0* bw)
-			// {
-			// 	std::function<double(double)> integrand = [data_point,bw] (double x)
-			// 	{
-			// 		return Gaussian_Kernel((x-data_point)/bw) / bw;
-			// 	};
-			// 	double norm = Integrate(integrand,xMin, xMax,1e-5);
-			// 	kde+= data[i].weight*Gaussian_Kernel((x-data[i].value)/bw) / norm;
-			// 	std::cout <<x <<bw <<"\t" <<norm <<std::endl;
-			// }
-			// else kde+= data[i].weight*Gaussian_Kernel((x-data[i].value)/bw);
+			// Local kernel normalization close to the boundary
+			//  double data_point = data[i].value;
+			//  if(data_point < xMin + 3.0* bw)
+			//  {
+			//  	std::function<double(double)> integrand = [data_point,bw] (double x)
+			//  	{
+			//  		return Gaussian_Kernel((x-data_point)/bw) / bw;
+			//  	};
+			//  	double norm = Integrate(integrand,xMin, xMax,1e-5);
+			//  	kde+= data[i].weight*Gaussian_Kernel((x-data[i].value)/bw) / norm;
+			//  	std::cout <<x <<bw <<"\t" <<norm <<std::endl;
+			//  }
+			//  else kde+= data[i].weight*Gaussian_Kernel((x-data[i].value)/bw);
 
-			//Cowling and Hall pseudo data method 2
-			// double xi3 = (i%3 == 0)? data[i/3].value : 2.0/3.0 * data[std::floor(i/3.0)].value + 1.0/3.0 * data[std::ceil(i/3.0)].value;
-			// double x2i3 = (i%3 == 0)? data[2*i/3].value : 1.0/3.0 * data[std::floor(i/3.0)].value + 2.0/3.0 * data[std::ceil(i/3.0)].value;
-			// double xi = data[i].value;
+			// Cowling and Hall pseudo data method 2
+			//  double xi3 = (i%3 == 0)? data[i/3].value : 2.0/3.0 * data[std::floor(i/3.0)].value + 1.0/3.0 * data[std::ceil(i/3.0)].value;
+			//  double x2i3 = (i%3 == 0)? data[2*i/3].value : 1.0/3.0 * data[std::floor(i/3.0)].value + 2.0/3.0 * data[std::ceil(i/3.0)].value;
+			//  double xi = data[i].value;
 
 			// double wi3 = (i%3 == 0)? data[i/3].weight : 2.0/3.0 * data[std::floor(i/3.0)].weight + 1.0/3.0 * data[std::ceil(i/3.0)].weight;
 			// double w2i3 = (i%3 == 0)? data[2*i/3].weight : 1.0/3.0 * data[std::floor(i/3.0)].weight + 2.0/3.0 * data[std::ceil(i/3.0)].weight;
@@ -530,7 +543,7 @@ Interpolation Perform_KDE(std::vector<DataPoint> data, double xMin, double xMax,
 			// double wPseudo = (wi3 + w2i3 + wi)/3.0;
 
 			// kde += wPseudo*Gaussian_Kernel((x-xPseudo)/bw);
-			//Reflection
+			// Reflection
 			// double xRefl = 2.0 * xMin - data[i].value;
 			// kde+=data[i].weight*Gaussian_Kernel((x-xRefl)/bw);
 		}
@@ -540,7 +553,7 @@ Interpolation Perform_KDE(std::vector<DataPoint> data, double xMin, double xMax,
 
 	Interpolation result(Interpol_List);
 
-	//3. Check normalization/ re-normalize.
+	// 3. Check normalization/ re-normalize.
 	double norm = Integrate(result, xMin, xMax, 1e-8);
 	result.Multiply(1.0 / norm);
 
