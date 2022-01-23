@@ -275,6 +275,12 @@ double Sample_Uniform(std::mt19937& PRNG, double x_min, double x_max)
 	return dis(PRNG);
 }
 
+double Sample_Gauss(std::mt19937& PRNG, double mean, double standard_deviation)
+{
+	double xi = Sample_Uniform(PRNG, 0.0, 1.0);
+	return Quantile_Gauss(xi, mean, standard_deviation);
+}
+
 unsigned int Sample_Poisson(std::mt19937& PRNG, double expectation_value)	// Algorithm from https://en.wikipedia.org/wiki/Poisson_distribution
 {
 	double STEP		   = 500;
