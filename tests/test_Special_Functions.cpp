@@ -10,7 +10,7 @@
 
 using namespace libphysica;
 
-//1. Simple functions
+// 1. Simple functions
 TEST(TestNumerics, TestSign)
 {
 	// ARRANGE
@@ -123,8 +123,8 @@ TEST(TestNumerics, TestFloats_Equal)
 	ASSERT_FALSE(Floats_Equal(float_1, float_2, 1e-10));
 }
 
-//2. Special functions
-//2.1 Gamma functions
+// 2. Special functions
+// 2.1 Gamma functions
 TEST(TestNumerics, TestFactorial)
 {
 	// ARRANGE
@@ -217,7 +217,7 @@ TEST(TestNumerics, TestInvGammaQ)
 	ASSERT_DOUBLE_EQ(GammaQ(Inv_GammaQ(q, a), a), q);
 }
 
-//2.2 Other special functions
+// 2.2 Other special functions
 TEST(TestNumerics, TestErfi)
 {
 	// ARRANGE

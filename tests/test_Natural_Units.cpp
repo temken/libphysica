@@ -7,7 +7,7 @@
 using namespace libphysica;
 using namespace libphysica::natural_units;
 
-//2. Units
+// 2. Units
 TEST(TestNaturalUnits, TestUnitsAngles)
 {
 	ASSERT_DOUBLE_EQ(deg, M_PI / 180.0);
@@ -64,7 +64,7 @@ TEST(TestNaturalUnits, TestUnitsPower)
 	ASSERT_DOUBLE_EQ(Watt, Joule / sec);
 }
 
-//5. Transform quantities to a given dimension
+// 5. Transform quantities to a given dimension
 TEST(TestNaturalUnits, TestInUnitsScalar)
 {
 	// ARRANGE
@@ -140,7 +140,7 @@ TEST(TestNaturalUnits, TestInUnitsMatrix)
 		for(unsigned int j = 0; j < M.Columns(); j++)
 			ASSERT_DOUBLE_EQ(In_Units(M, AU)[i][j], M_AU[i][j]);
 }
-//6. Simple physics functions
+// 6. Simple physics functions
 TEST(TestNaturalUnits, TestReducedMass)
 {
 	// ARRANGE

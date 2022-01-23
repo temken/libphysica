@@ -9,7 +9,7 @@
 
 using namespace libphysica;
 
-//1. Progress bar
+// 1. Progress bar
 TEST(TestUtilities, TestTimeDisplay)
 {
 	// ARRANGE
@@ -30,7 +30,7 @@ TEST(TestUtilities, TestPrintBox)
 	Print_Box("Hello", 1, 0);
 }
 
-//2. Import and export data from files
+// 2. Import and export data from files
 TEST(TestUtilities, TestFileExists)
 {
 	// ARRANGE
@@ -107,7 +107,7 @@ TEST(TestUtilities, TestExportImportFunction)
 	std::remove(file_name.c_str());
 }
 
-//3. Create list with equi-distant numbers in log-space
+// 3. Create list with equi-distant numbers in log-space
 TEST(TestUtilities, TestRangeMax)
 {
 	// ARRANGE
