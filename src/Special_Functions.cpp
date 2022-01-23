@@ -1,7 +1,7 @@
-//Disclaimer:
-//Some of the function implementations were made with the help of the
+// Disclaimer:
+// Some of the function implementations were made with the help of the
 //"Numerical Recipes 3rd Edition: The Art of Scientific Computing"
-//by William H. Press, Saul A. Teukolsky, William T. Vetterling, Brian P. Flannery
+// by William H. Press, Saul A. Teukolsky, William T. Vetterling, Brian P. Flannery
 
 #include "libphysica/Special_Functions.hpp"
 
@@ -51,15 +51,15 @@ double Round(double N, unsigned int digits)
 		std::cerr << "Error in libphysica::Round(): Significant digits > " << digits_max << "." << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
-	//Make the argument a positive number.
+	// Make the argument a positive number.
 	double sign = Sign(N);
 	N *= sign;
 
-	//Cut off the decimal power
+	// Cut off the decimal power
 	double DecimalPower = floor(log10(N));
 	double prefactor	= N * pow(10, -DecimalPower);
 
-	//Round the prefactor
+	// Round the prefactor
 	prefactor = std::floor(prefactor * pow(10.0, digits - 1) + 0.5);
 	prefactor = prefactor * pow(10.0, -1.0 * digits + 1);
 
@@ -173,32 +173,32 @@ double Lower_Incomplete_Gamma(double x, double s)
 // Q(x,a) via integration;
 double GammaQint(double x, double a)
 {
-	//Compute P(x,a)
+	// Compute P(x,a)
 	double gammaP;
 	double gln = GammaLn(a);
-	//How far to integrate N sqrt(a) around the peak at a-1:
+	// How far to integrate N sqrt(a) around the peak at a-1:
 	double N	 = 10;
 	double tPeak = a - 1.0;
 	double tMin	 = std::max(0.0, tPeak - N * sqrt(a));
 	double tMax	 = tPeak + N * sqrt(a);
-	//If x lies far away from the peak:
+	// If x lies far away from the peak:
 	if(x > tMax)
 		gammaP = 1.0;
 	else if(x < tMin)
 		gammaP = 0.0;
-	//Numerical integration
+	// Numerical integration
 	else
 	{
 
-		//integrand
+		// integrand
 		std::function<double(double)> integrand = [a, gln](double t) {
 			return exp(-gln - t + log(t) * (a - 1.0));
 		};
 		if(x < tMin)
 			tMin = 0.0;
-		//Precision
+		// Precision
 		double eps = Find_Epsilon(integrand, tMin, x, 1e-5);
-		//Integrate
+		// Integrate
 		gammaP = Integrate(integrand, tMin, x, eps);
 	}
 
@@ -225,7 +225,7 @@ double GammaPser(double x, double a)
 // Continued fraction representation of Q(x,a)
 double GammaQcf(double x, double a)
 {
-	//Precision
+	// Precision
 	double eps	 = std::numeric_limits<double>::epsilon();
 	double FPMIN = std::numeric_limits<double>::min() / eps;
 	double del	 = 0.0;
@@ -279,7 +279,7 @@ double GammaP(double x, double a)
 // Inverse incomplete gamma function. (Solves P(x,a)=p for x.)
 double Inv_GammaP(double p, double a)
 {
-	//Check the arguments
+	// Check the arguments
 	if(a <= 0.0)
 	{
 		std::cerr << "Error in libphysica::Inv_GammaP(): a must be positive." << std::endl;
@@ -290,14 +290,14 @@ double Inv_GammaP(double p, double a)
 	if(p <= 0.0)
 		return 0.0;
 
-	//Parameter
+	// Parameter
 	double x;
 	double gln	= GammaLn(a);
 	double a1	= a - 1.0;
 	double lna1 = log(a1);
 	double afac = exp(a1 * (lna1 - 1.0) - gln);
 
-	//Initial guess 1
+	// Initial guess 1
 	if(a > 1.0)
 	{
 		double pp = (p < 0.5) ? p : 1.0 - p;
@@ -307,7 +307,7 @@ double Inv_GammaP(double p, double a)
 			x = -x;
 		x = std::max(1.0e-3, a * pow(1.0 - 1.0 / (9. * a) - x / (3. * sqrt(a)), 3.0));
 	}
-	//Initial guess 2
+	// Initial guess 2
 	else
 	{
 		double t = 1.0 - a * (0.253 + a * 0.12);
@@ -316,7 +316,7 @@ double Inv_GammaP(double p, double a)
 		else
 			x = 1. - log(1. - (p - t) / (1. - t));
 	}
-	//Halley's method
+	// Halley's method
 	double EPS = 1.0e-8;
 	for(int i = 0; i < 12; i++)
 	{

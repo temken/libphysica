@@ -17,7 +17,7 @@ using namespace boost::math::quadrature;
 // 1. One-dimensional MC integration
 // 1.1 One-dimensional integration via adaptive Simpson method
 
-//Function to return a reasonable precision.
+// Function to return a reasonable precision.
 double Find_Epsilon(std::function<double(double)> func, double a, double b, double precision)
 {
 	double c	   = (a + b) / 2;
@@ -41,7 +41,7 @@ double Adaptive_Simpson_Integration(std::function<double(double)> func, double a
 	double Sleft  = (h / 12) * (fa + 4 * fd + fc);
 	double Sright = (h / 12) * (fc + 4 * fe + fb);
 	double S2	  = Sleft + Sright;
-	if(bottom <= 0 || fabs(S2 - S) <= 15 * epsilon)	  //15 due to error analysis
+	if(bottom <= 0 || fabs(S2 - S) <= 15 * epsilon)	  // 15 due to error analysis
 	{
 		if(bottom <= 0 && fabs(S2 - S) > 15 * epsilon)
 			warning = true;
@@ -53,7 +53,7 @@ double Adaptive_Simpson_Integration(std::function<double(double)> func, double a
 	}
 }
 
-//Recursive functions for one-dimensional integration
+// Recursive functions for one-dimensional integration
 void Check_Integration_Limits(double& a, double& b, double& sign)
 {
 	if(a > b)
