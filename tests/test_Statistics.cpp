@@ -6,8 +6,8 @@
 
 using namespace libphysica;
 
-//1. Distributions
-//1.1. Uniform distribution
+// 1. Distributions
+// 1.1. Uniform distribution
 TEST(TestStatistics, TestPDFUniform)
 {
 	// ARRANGE
@@ -33,7 +33,7 @@ TEST(TestStatistics, TestCDFUniform)
 	ASSERT_DOUBLE_EQ(CDF_Uniform(x_Max, x_Min, x_Max), 1.0);
 }
 
-//1.2 Normal distribution
+// 1.2 Normal distribution
 TEST(TestStatistics, TestPDFGauss)
 {
 	// ARRANGE
@@ -70,7 +70,7 @@ TEST(TestStatistics, TestQuantileGauss)
 	ASSERT_NEAR(CDF_Gauss(Quantile_Gauss(p, mu, sigma), mu, sigma), p, 1.0e-8);
 }
 
-//1.3 Binomial distribution
+// 1.3 Binomial distribution
 TEST(TestStatistics, TestPMFBinomial)
 {
 	// ARRANGE
@@ -91,7 +91,7 @@ TEST(TestStatistics, TestCDFBinomial)
 	ASSERT_DOUBLE_EQ(CDF_Binomial(trials, p, 6), 0.996494293212890625);
 }
 
-//1.4 Poission distribution
+// 1.4 Poission distribution
 TEST(TestStatistics, TestPMFPoisson)
 {
 	// ARRANGE
@@ -119,7 +119,7 @@ TEST(TestStatistics, TestInvCDFPoisson)
 	ASSERT_DOUBLE_EQ(Inv_CDF_Poisson(x, 0.05), log(20));
 	ASSERT_DOUBLE_EQ(Inv_CDF_Poisson(x, 0.01), log(100));
 }
-//1.5 Chi-square distribution
+// 1.5 Chi-square distribution
 TEST(TestStatistics, TestPDFChiSquare)
 {
 	// ARRANGE
@@ -167,7 +167,7 @@ TEST(TestStatistics, TestCDFChiBarSquare)
 	ASSERT_DOUBLE_EQ(CDF_Chi_Bar_Square(-1.0, weights), 0.0);
 }
 
-//1.6 Exponential distribution
+// 1.6 Exponential distribution
 TEST(TestStatistics, TestPDFExponential)
 {
 	// ARRANGE
@@ -190,7 +190,7 @@ TEST(TestStatistics, TestCDFExponential)
 	ASSERT_DOUBLE_EQ(CDF_Exponential(-1.0, mean), 0.0);
 }
 
-//1.6 Exponential distribution
+// 1.6 Exponential distribution
 TEST(TestStatistics, TestPDFMaxwellBoltzmann)
 {
 	// ARRANGE
@@ -214,8 +214,8 @@ TEST(TestStatistics, TestCDFMaxwellBoltzmann)
 	ASSERT_DOUBLE_EQ(CDF_Maxwell_Boltzmann(100. * a, a), 1.0);
 }
 
-//2. Likelihoods
-// extern double Likelihood_Poisson(double N_prediction, unsigned long int N_observed, double expected_background = 0.0);
+// 2. Likelihoods
+//  extern double Likelihood_Poisson(double N_prediction, unsigned long int N_observed, double expected_background = 0.0);
 TEST(TestStatistics, TestLikelihoodPoisson)
 {
 	// ARRANGE
@@ -260,8 +260,8 @@ TEST(TestStatistics, TestLogLikelihoodPoissonBinned)
 	// ACT & ASSERT
 	ASSERT_DOUBLE_EQ(Log_Likelihood_Poisson_Binned(mu, data), log_llh_correct);
 }
-//3. Sampling random numbers
-// 3.1 Sample from specific distribution
+// 3. Sampling random numbers
+//  3.1 Sample from specific distribution
 TEST(TestStatistics, SampleUniform)
 {
 	// ARRANGE
@@ -276,6 +276,24 @@ TEST(TestStatistics, SampleUniform)
 		ASSERT_GT(x, xMin);
 		ASSERT_LT(x, xMax);
 	}
+}
+
+TEST(TestStatistics, SampleGaussian)
+{
+	// ARRANGE
+	int seed = 13;
+	std::mt19937 PRNG(seed);
+	double mu	 = 13.2;
+	double sigma = 4.2;
+
+	// ACT
+	std::vector<double> list;
+	for(unsigned int i = 0; i < 100000; i++)
+		list.push_back(Sample_Gauss(PRNG, mu, sigma));
+
+	// ASSERT
+	ASSERT_NEAR(Arithmetic_Mean(list), mu, 0.1);
+	ASSERT_NEAR(Standard_Deviation(list), sigma, 0.1);
 }
 
 // extern int Sample_Poisson(std::mt19937& PRNG, double expectation_value);
@@ -306,8 +324,8 @@ TEST(TestStatistics, TestSamplePoisson2)
 		EXPECT_EQ(samples[i], result[i]);
 }
 
-//3.2 General sampling algorithms
-// extern double Rejection_Sampling(const std::function<double(double)>& PDF,double xMin,double xMax,double yMax,std::mt19937& PRNG);
+// 3.2 General sampling algorithms
+//  extern double Rejection_Sampling(const std::function<double(double)>& PDF,double xMin,double xMax,double yMax,std::mt19937& PRNG);
 TEST(TestStatistics, TestRejectionSampling)
 {
 	// ARRANGE
@@ -345,7 +363,7 @@ TEST(TestStatistics, TestInverseTransformSampling)
 		ASSERT_LT(x, xMax);
 	}
 }
-//4. Data point with statistical weight
+// 4. Data point with statistical weight
 TEST(TestStatistics, TestDataPoint)
 {
 	// ARRANGE
@@ -358,7 +376,7 @@ TEST(TestStatistics, TestDataPoint)
 	ASSERT_EQ(P1, P3);
 }
 
-//5. Basic data analysis
+// 5. Basic data analysis
 TEST(TestStatistics, TestBasicDataAnalysis)
 {
 	// ARRANGE
@@ -372,8 +390,8 @@ TEST(TestStatistics, TestBasicDataAnalysis)
 	EXPECT_DOUBLE_EQ(Weighted_Average(data2)[0], 1.5);
 }
 
-//6. Kernel density estimation
-// extern Interpolation Perform_KDE(std::vector<DataPoint> data,double xMin,double xMax,double bw = 0);
+// 6. Kernel density estimation
+//  extern Interpolation Perform_KDE(std::vector<DataPoint> data,double xMin,double xMax,double bw = 0);
 TEST(TestStatistics, TestPerformKDE)
 {
 	// ARRANGE
@@ -381,10 +399,10 @@ TEST(TestStatistics, TestPerformKDE)
 	double xMin					= 0.0;
 	double xMax					= 30.0;
 	double tolerance			= 1.0e-6;
-	//ACT
+	// ACT
 	Interpolation kde = Perform_KDE(data, xMin, xMax);
 	double norm		  = Integrate(kde, xMin, 29.99999, tolerance);
-	//ASSERT
+	// ASSERT
 	ASSERT_GT(kde(10.0), 0.0);
 	ASSERT_NEAR(norm, 1.0, tolerance);
 }
