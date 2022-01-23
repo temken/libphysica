@@ -1,7 +1,7 @@
-//Disclaimer:
-//Some of the function implementations were made with the help of the
+// Disclaimer:
+// Some of the function implementations were made with the help of the
 //"Numerical Recipes 3rd Edition: The Art of Scientific Computing"
-//by William H. Press, Saul A. Teukolsky, William T. Vetterling, Brian P. Flannery
+// by William H. Press, Saul A. Teukolsky, William T. Vetterling, Brian P. Flannery
 
 #include "libphysica/Numerics.hpp"
 
@@ -25,8 +25,8 @@ void Interpolation::Compute_Steffen_Coefficients()
 	c.clear();
 	d.clear();
 
-	//Compute the Steffen coefficients for the interpolation
-	//1. h and s.
+	// Compute the Steffen coefficients for the interpolation
+	// 1. h and s.
 	std::vector<double> h(N - 1), s(N - 1);
 	for(unsigned int i = 0; i < N - 1; i++)
 	{
@@ -34,23 +34,23 @@ void Interpolation::Compute_Steffen_Coefficients()
 		s[i] = (function_values[i + 1] - function_values[i]) / h[i];
 	}
 
-	//2. p and dy
+	// 2. p and dy
 	std::vector<double> dy(N), p(N);
 	for(unsigned int i = 0; i < N; i++)
 	{
-		//First point
+		// First point
 		if(i == 0)
 		{
 			p[i]  = s[i] * (1.0 + h[i] / (h[i] + h[i + 1])) - s[i + 1] * h[i] / (h[i] + h[i + 1]);
 			dy[i] = (Sign(p[i]) + Sign(s[i])) * std::min(1.0 * fabs(s[i]), 0.5 * fabs(p[i]));
 		}
-		//Last point
+		// Last point
 		else if(i == N - 1)
 		{
 			p[i]  = s[i - 1] * (1.0 + h[i - 1] / (h[i - 1] + h[i - 2])) - s[i - 2] * h[i - 1] / (h[i - 1] + h[i - 2]);
 			dy[i] = (Sign(p[i]) + Sign(s[i - 1])) * std::min(1.0 * fabs(s[i - 1]), 0.5 * fabs(p[i]));
 		}
-		//Points in the middle
+		// Points in the middle
 		else
 		{
 			p[i]  = (s[i - 1] * h[i] + s[i] * h[i - 1]) / (h[i - 1] + h[i]);
@@ -58,7 +58,7 @@ void Interpolation::Compute_Steffen_Coefficients()
 		}
 	}
 
-	//3. a,b,c, and d
+	// 3. a,b,c, and d
 	for(unsigned int i = 0; i < N - 1; i++)
 	{
 		a.push_back((dy[i] + dy[i + 1] - 2.0 * s[i]) / pow(h[i], 2.0));
@@ -90,7 +90,7 @@ unsigned int Interpolation::Hunt(double x)
 	int dj = 1;
 	int jd;
 	unsigned int ju;
-	//Hunt up
+	// Hunt up
 	if(x > x_values[jLast])
 	{
 		jd = jLast;
@@ -99,7 +99,7 @@ unsigned int Interpolation::Hunt(double x)
 		{
 			jd = ju;
 			ju += dj;
-			//Check if we ran off the range:
+			// Check if we ran off the range:
 			if(ju > N - 1)
 			{
 				ju = N - 1;
@@ -109,7 +109,7 @@ unsigned int Interpolation::Hunt(double x)
 				dj += dj;
 		}
 	}
-	//Hunt down
+	// Hunt down
 	else if(x < x_values[jLast])
 	{
 		ju = jLast;
@@ -118,7 +118,7 @@ unsigned int Interpolation::Hunt(double x)
 		{
 			ju = jd;
 			jd -= dj;
-			//Check if we ran off the range:
+			// Check if we ran off the range:
 			if(jd < 0)
 			{
 				jd = 0;
@@ -161,16 +161,16 @@ unsigned int Interpolation::Locate(double x)
 	}
 	else
 	{
-		//Use Bisection() or the Hunt method, depending of the last calls were correlated.
+		// Use Bisection() or the Hunt method, depending of the last calls were correlated.
 		j = correlated_calls ? Hunt(x) : Bisection(x, 0, N - 1);
 	}
-	//Check if the points are still correlated.
+	// Check if the points are still correlated.
 	correlated_calls = (fabs(j - jLast) < 10);
 	jLast			 = j;
 	return j;
 }
 
-//Constructors
+// Constructors
 Interpolation::Interpolation()
 {
 	std::vector<double> x_val = {-1.0, 0.0, 1.0};
@@ -417,7 +417,7 @@ void Interpolation_2D::Save_Function(std::string filename, unsigned int x_points
 double Find_Root(std::function<double(double)> func, double xLeft, double xRight, double xAccuracy)
 {
 	const int Max_Iterations = 50;
-	//1. Check if xLeft<xRight, otherwise swap.
+	// 1. Check if xLeft<xRight, otherwise swap.
 	if(xLeft > xRight)
 	{
 		double temp = xLeft;
@@ -425,11 +425,11 @@ double Find_Root(std::function<double(double)> func, double xLeft, double xRight
 		xRight		= temp;
 	}
 
-	//2. Compute functions at boundary
+	// 2. Compute functions at boundary
 	double fLeft  = func(xLeft);
 	double fRight = func(xRight);
 
-	//3. Check if xLeft and xRight bracket a root or already yield a root. Also check for NaN's.
+	// 3. Check if xLeft and xRight bracket a root or already yield a root. Also check for NaN's.
 	if(std::isnan(fLeft) || std::isnan(fRight))
 	{
 		std::cerr << "Error in libphysica::Find_Root(): Function returns nan at the brackets." << std::endl;
@@ -448,7 +448,7 @@ double Find_Root(std::function<double(double)> func, double xLeft, double xRight
 		}
 	}
 
-	//4. Ridder's method
+	// 4. Ridder's method
 	else
 	{
 		double x1	  = xLeft;
@@ -458,21 +458,21 @@ double Find_Root(std::function<double(double)> func, double xLeft, double xRight
 		double result = -9.9e99;
 		for(int i = 0; i < Max_Iterations; i++)
 		{
-			//Mid point
+			// Mid point
 			double x3 = (x1 + x2) / 2.0;
 
 			double f3 = func(x3);
-			//New point
+			// New point
 			double x4 = x3 + (x3 - x1) * Sign(f1 - f2) * f3 / sqrt(f3 * f3 - f1 * f2);
-			//Check if we found the root
+			// Check if we found the root
 			if(fabs(x4 - result) < xAccuracy)
 				return x4;
-			//Prepare next iteration
+			// Prepare next iteration
 			result	  = x4;
 			double f4 = func(x4);
 			if(f4 == 0.0)
 				return result;
-			//a) x3 and x4 bracket the root
+			// a) x3 and x4 bracket the root
 			if(Sign(f3, f4) != f3)
 			{
 				x1 = x3;
@@ -480,13 +480,13 @@ double Find_Root(std::function<double(double)> func, double xLeft, double xRight
 				x2 = x4;
 				f2 = f4;
 			}
-			//b) x1 and x4 bracket the root
+			// b) x1 and x4 bracket the root
 			else if(Sign(f1, f4) != f1)
 			{
 				x2 = x4;
 				f2 = f4;
 			}
-			//c) x2 and x4 bracket the root
+			// c) x2 and x4 bracket the root
 			else if(Sign(f2, f4) != f2)
 			{
 				x1 = x4;
@@ -529,8 +529,8 @@ std::vector<double> Minimization::minimize(std::vector<std::vector<double>>& pp,
 {
 	const int NMAX	  = 5000;
 	const double TINY = 1.0e-10;
-	mpts			  = pp.size();		//rows
-	ndim			  = pp[0].size();	//columns
+	mpts			  = pp.size();		// rows
+	ndim			  = pp[0].size();	// columns
 	std::vector<double> psum(ndim), pmin(ndim), x(ndim);
 	current_simplex = pp;
 	y.resize(mpts);
@@ -547,7 +547,7 @@ std::vector<double> Minimization::minimize(std::vector<std::vector<double>>& pp,
 	{
 		int ihi, ilo, inhi;
 		ilo = 0;
-		//First we must determine which point is the highest (worst), next-highest, and lowest (best), by looping over the points in the simplex.
+		// First we must determine which point is the highest (worst), next-highest, and lowest (best), by looping over the points in the simplex.
 		ihi = y[0] > y[1] ? (inhi = 1, 0) : (inhi = 0, 1);
 		for(int i = 0; i < mpts; i++)
 		{
@@ -562,7 +562,7 @@ std::vector<double> Minimization::minimize(std::vector<std::vector<double>>& pp,
 				inhi = i;
 		}
 		double rtol = 2.0 * fabs(y[ihi] - y[ilo]) / (fabs(y[ihi]) + fabs(y[ilo]) + TINY);
-		//Compute the fractional range from highest to lowest and return if satisfactory.
+		// Compute the fractional range from highest to lowest and return if satisfactory.
 		if(rtol < ftol)
 		{
 			std::swap(y[0], y[ilo]);
@@ -584,15 +584,15 @@ std::vector<double> Minimization::minimize(std::vector<std::vector<double>>& pp,
 		// Begin a new iteration. First extrapolate by a factor 􏰱1 through the face of the simplex across from the high point, i.e., reflect the simplex from the high point.
 		double ytry = amotry(current_simplex, y, psum, ihi, -1.0, func);
 		if(ytry <= y[ilo])
-			ytry = amotry(current_simplex, y, psum, ihi, 2.0, func);   //Gives a result better than the best point, so try an additional extrapolation by a factor 2.
+			ytry = amotry(current_simplex, y, psum, ihi, 2.0, func);   // Gives a result better than the best point, so try an additional extrapolation by a factor 2.
 		else if(ytry >= y[inhi])
 		{
-			//The reflected point is worse than the second-highest, so look for an interme- diate lower point, i.e., do a one-dimensional contraction.
+			// The reflected point is worse than the second-highest, so look for an interme- diate lower point, i.e., do a one-dimensional contraction.
 			double ysave = y[ihi];
 			ytry		 = amotry(current_simplex, y, psum, ihi, 0.5, func);
 			if(ytry >= ysave)
 			{
-				//Can’t seem to get rid of that high point.
+				// Can’t seem to get rid of that high point.
 				for(int i = 0; i < mpts; i++)
 				{
 					if(i != ilo)
@@ -602,16 +602,16 @@ std::vector<double> Minimization::minimize(std::vector<std::vector<double>>& pp,
 						y[i] = func(psum);
 					}
 				}
-				nfunc += ndim;					   //Keep track of function evaluations.
-				get_psum(current_simplex, psum);   //Recompute psum.
+				nfunc += ndim;					   // Keep track of function evaluations.
+				get_psum(current_simplex, psum);   // Recompute psum.
 			}
 		}
 		else
-			--nfunc;   //Correct the evaluation count.
+			--nfunc;   // Correct the evaluation count.
 	}				   // Go back to the test of doneness and the next iteration
 }
 
-void Minimization::get_psum(std::vector<std::vector<double>>& p, std::vector<double>& psum)	  //Utility function.
+void Minimization::get_psum(std::vector<std::vector<double>>& p, std::vector<double>& psum)	  // Utility function.
 {
 	for(int j = 0; j < ndim; j++)
 	{
@@ -629,8 +629,8 @@ double Minimization::amotry(std::vector<std::vector<double>>& p, std::vector<dou
 	double fac2 = fac1 - fac;
 	for(int j = 0; j < ndim; j++)
 		ptry[j] = psum[j] * fac1 - p[ihi][j] * fac2;
-	double ytry = func(ptry);	//Evaluate the function at the trial point.
-	if(ytry < y[ihi])			//If it’s better than the highest, then replace the highest.
+	double ytry = func(ptry);	// Evaluate the function at the trial point.
+	if(ytry < y[ihi])			// If it’s better than the highest, then replace the highest.
 	{
 		y[ihi] = ytry;
 		for(int j = 0; j < ndim; j++)
