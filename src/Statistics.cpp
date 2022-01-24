@@ -345,14 +345,16 @@ double Rejection_Sampling(const std::function<double(double)>& PDF, double xMin,
 		x		   = Sample_Uniform(PRNG, xMin, xMax);
 		double y   = Sample_Uniform(PRNG, 0.0, yMax);
 		double pdf = PDF(x);
-		if(pdf < 0.0)
+		if(pdf < 0.0 || std::isnan(pdf) || std::isinf(pdf))
 		{
-			std::cerr << "Error in libphysica::Rejection_Sampling() of random variable with domain [" << xMin << "," << xMax << "]: PDF is negative -> f(" << x << ") = " << pdf << std::endl;
+			std::cerr << "Error in libphysica::Rejection_Sampling() of random variable with domain [" << xMin << "," << xMax << "]: PDF is not a positive number." << std::endl
+					  << "\tPDF(" << x << ") = " << pdf << std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else if(pdf > yMax)
 		{
-			std::cout << "Error in libphysica::Rejection_Sampling() of random variable with domain [" << xMin << "," << xMax << "]: PDF > yMax." << std::endl;
+			std::cout << "Error in libphysica::Rejection_Sampling() of random variable with domain [" << xMin << "," << xMax << "]: PDF > yMax." << std::endl
+					  << "\tPDF(" << x << ") = " << pdf << " > yMax = " << yMax << std::endl;
 			std::exit(EXIT_FAILURE);
 		}
 		else if(y <= pdf)
