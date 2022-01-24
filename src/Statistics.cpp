@@ -351,7 +351,7 @@ double Rejection_Sampling(const std::function<double(double)>& PDF, double xMin,
 					  << "\tPDF(" << x << ") = " << pdf << std::endl;
 			std::exit(EXIT_FAILURE);
 		}
-		else if(pdf > yMax)
+		else if(pdf > yMax && libphysica::Relative_Difference(pdf, yMax) > 0.01)
 		{
 			std::cout << "Error in libphysica::Rejection_Sampling() of random variable with domain [" << xMin << "," << xMax << "]: PDF > yMax." << std::endl
 					  << "\tPDF(" << x << ") = " << pdf << " > yMax = " << yMax << std::endl;
