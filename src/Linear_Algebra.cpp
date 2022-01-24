@@ -262,7 +262,7 @@ Vector Spherical_Coordinates(double r, double theta, double phi)
 Vector Spherical_Coordinates(double r, double theta, double phi, const Vector& axis)
 {
 	libphysica::Vector ev = axis.Normalized();
-	if(ev[2] == 1.0)
+	if(ev[2] == 1.0 || axis.Norm() == 0.0)
 		return Spherical_Coordinates(r, theta, phi);
 	else
 	{
