@@ -25,6 +25,31 @@ Static C++ library collecting functions, variables, and classes for application 
 
 An example on how to include *libphysica* into your CMake build can be found in [this repository](https://github.com/temken/template_cpp_cmake_libphysica), a C++ template code which is built with CMake and automatically downloads and includes this library during the build.
 
+## CITATION
+
+If you decide to use this code, or if you want to add a reference to it, please cite the latest archived version,
+
+> Emken, T., 2021, libphysica - A C++ library for application in scientific codes [Code, v0.1.2] [[DOI:10.5281/zenodo.5956820]](https://doi.org/10.5281/zenodo.5956820).
+
+<details><summary>Bibtex entry</summary>
+<p>
+
+```
+@software{libphysica,
+  author = {Emken, Timon},
+  title = {{libphysica - A C++ library for application in scientific codes [Code, v0.1.2]}},
+  year         = {2020},
+  publisher    = {Zenodo},
+  version      = {v0.1.2},
+  doi          = {DOI:10.5281/zenodo.5956820},
+  url          = {https://doi.org/10.5281/zenodo.5956820},
+  howpublished={The code can be found under \url{https://github.com/temken/libphysica}.}
+}
+```
+
+</p>
+</details>
+
 ## VERSION HISTORY
 
 - 23.02.2021: Release of version 0.1.0
