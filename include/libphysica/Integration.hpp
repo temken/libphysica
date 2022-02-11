@@ -16,7 +16,13 @@ namespace libphysica
 extern double Find_Epsilon(std::function<double(double)> func, double a, double b, double precision);
 extern double Integrate(std::function<double(double)> func, double a, double b, double epsilon, int maxRecursionDepth = 20);
 
-// 1.2 1D integration with boost functions
+// 1.2 Gauss Legendre quadrature
+extern std::vector<std::vector<double>> Compute_Gauss_Legendre_Roots_and_Weights(unsigned int n, double x_min = -1.0, double x_max = 1.0);
+extern double Integrate_Gauss_Legendre(std::function<double(double)> func, double a, double b, unsigned int sample_points = 30);
+extern double Integrate_Gauss_Legendre(std::function<double(double)> func, std::vector<std::vector<double>> roots_and_weights);
+extern double Integrate_Gauss_Legendre(std::vector<double> function_values, std::vector<std::vector<double>> roots_and_weights);
+
+// 1.3 1D integration with boost functions
 extern double Integrate(std::function<double(double)> func, double a, double b, const std::string& method = "Gauss-Legendre");
 
 // 2. Multidimensional integration
