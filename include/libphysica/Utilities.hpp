@@ -82,6 +82,9 @@ class Configuration
 	virtual void Print_Summary(int MPI_rank = 0) {};
 };
 
+// 6. Other utilities
+extern unsigned int Locate_Closest_Location(const std::vector<double>& sorted_list, double target);
+
 }	// namespace libphysica
 
 #endif
