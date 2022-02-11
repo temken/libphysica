@@ -29,7 +29,7 @@ An example on how to include *libphysica* into your CMake build can be found in 
 
 If you decide to use this code, or if you want to add a reference to it, please cite the latest archived version,
 
-> Emken, T., 2021, libphysica - A C++ library for application in scientific codes [Code, v0.1.2] [[DOI:10.5281/zenodo.5956820]](https://doi.org/10.5281/zenodo.5956820).
+> Emken, T., 2021, libphysica - A C++ library for application in scientific codes [Code, v0.1.3] [[DOI:10.5281/zenodo.6045459]](https://doi.org/10.5281/zenodo.6045459).
 
 <details><summary>Bibtex entry</summary>
 <p>
@@ -37,12 +37,12 @@ If you decide to use this code, or if you want to add a reference to it, please 
 ```
 @software{libphysica,
   author = {Emken, Timon},
-  title = {{libphysica - A C++ library for application in scientific codes [Code, v0.1.2]}},
+  title = {{libphysica - A C++ library for application in scientific codes [Code, v0.1.3]}},
   year         = {2020},
   publisher    = {Zenodo},
-  version      = {v0.1.2},
-  doi          = {DOI:10.5281/zenodo.5956820},
-  url          = {https://doi.org/10.5281/zenodo.5956820},
+  version      = {v0.1.3},
+  doi          = {DOI:10.5281/zenodo.6045459},
+  url          = {https://doi.org/10.5281/zenodo.6045459},
   howpublished={The code can be found under \url{https://github.com/temken/libphysica}.}
 }
 ```
