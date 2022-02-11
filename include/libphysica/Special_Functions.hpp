@@ -1,6 +1,8 @@
 #ifndef __Special_Functions_hpp_
 #define __Special_Functions_hpp_
 
+#include <complex>
+
 #include "libphysica/Linear_Algebra.hpp"
 
 namespace libphysica
@@ -28,7 +30,17 @@ extern double GammaP(double x, double a);		// Incomplete Gamma P(x,a)
 extern double Inv_GammaP(double p, double a);	// Solves P(x,a)=p for x.
 extern double Inv_GammaQ(double q, double a);	// Solves Q(x,a)=q for x.
 
-// 2.2 Other special functions
+// 2.2 Scalar spherical Harmonics
+extern std::complex<double> Spherical_Harmonics(int l, int m, double theta, double phi);
+
+// 2.3 Vector spherical Harmonics
+extern std::complex<double> VSH_Y_Component(int component, int l, int m, int l_hat, int m_hat);
+extern std::vector<std::complex<double>> Vector_Spherical_Harmonics_Y(int l, int m, double theta, double phi);
+
+extern std::complex<double> VSH_Psi_Component(int component, int l, int m, int l_hat, int m_hat);
+extern std::vector<std::complex<double>> Vector_Spherical_Harmonics_Psi(int l, int m, double theta, double phi);
+
+// 2.4 Other special functions
 extern double Erfi(double x);
 extern double Inv_Erf(double p);
 

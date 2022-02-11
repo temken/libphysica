@@ -4,11 +4,12 @@
 #include <functional>
 #include <random>
 
+#include "libphysica/Natural_Units.hpp"
 #include "libphysica/Special_Functions.hpp"
-// #include "libphysica/Statistics.hpp"
-// #include "libphysica/Utilities.hpp"
 
 using namespace libphysica;
+using namespace libphysica::natural_units;
+using namespace std::complex_literals;
 
 // 1. Simple functions
 TEST(TestNumerics, TestSign)
@@ -217,7 +218,95 @@ TEST(TestNumerics, TestInvGammaQ)
 	ASSERT_DOUBLE_EQ(GammaQ(Inv_GammaQ(q, a), a), q);
 }
 
-// 2.2 Other special functions
+// 2.2 Scalar spherical Harmonics
+
+TEST(TestSpecialFunctions, TestSphericalHarmonics)
+{
+	// ARRANGE
+	int l						= 5;
+	int m						= 3;
+	double theta				= 25 * deg;
+	double phi					= 13 * deg;
+	std::complex<double> result = -0.129726 - 1.0i * 0.10505;
+	double tol					= 1.0e-6;
+	// ACT & ASSERT
+	EXPECT_NEAR(Spherical_Harmonics(1, 0, theta, phi).real(), 0.5 * sqrt(3.0 / M_PI) * cos(theta), tol);
+
+	EXPECT_NEAR(Spherical_Harmonics(l, m, theta, phi).real(), result.real(), tol);
+	EXPECT_NEAR(Spherical_Harmonics(l, m, theta, phi).imag(), result.imag(), tol);
+
+	EXPECT_NEAR(Spherical_Harmonics(l, m, 0.0, 0.0).imag(), 0.0, tol);
+	EXPECT_NEAR(Spherical_Harmonics(l, m, 0.0, 0.0).imag(), 0.0, tol);
+
+	EXPECT_NEAR(Spherical_Harmonics(l, 2 * l, theta, phi).imag(), 0.0, tol);
+	EXPECT_NEAR(Spherical_Harmonics(l, 2 * l, theta, phi).imag(), 0.0, tol);
+}
+
+// 2.3 Scalar spherical Harmonics
+TEST(TestSpecialFunctions, TestVectorialSphericalHarmonicsY)
+{
+	// ARRANGE
+	int l		 = 5;
+	int m		 = 3;
+	double theta = 25 * deg;
+	double phi	 = 13 * deg;
+	// ACT
+	auto Y	= Vector_Spherical_Harmonics_Y(l, m, theta, phi);
+	auto Ym = Vector_Spherical_Harmonics_Y(l, -m, theta, phi);
+	// ASSERT
+	for(int i = 0; i < 3; i++)
+	{
+		EXPECT_NEAR(Ym[i].real(), std::pow(-1.0, m) * std::conj(Y[i]).real(), 1.0e-6);
+		EXPECT_NEAR(Ym[i].imag(), std::pow(-1.0, m) * std::conj(Y[i]).imag(), 1.0e-6);
+	}
+}
+
+TEST(TestSpecialFunctions, TestVectorialSphericalHarmonicsPsi)
+{
+	// ARRANGE
+	int l		 = 5;
+	int m		 = 3;
+	double theta = 25 * deg;
+	double phi	 = 13 * deg;
+	// ACT
+	auto Psi  = Vector_Spherical_Harmonics_Psi(l, m, theta, phi);
+	auto Psim = Vector_Spherical_Harmonics_Psi(l, -m, theta, phi);
+	// ASSERT
+	for(int i = 0; i < 3; i++)
+	{
+		EXPECT_NEAR(Psim[i].real(), std::pow(-1.0, m) * std::conj(Psi[i]).real(), 1.0e-6);
+		EXPECT_NEAR(Psim[i].imag(), std::pow(-1.0, m) * std::conj(Psi[i]).imag(), 1.0e-6);
+	}
+}
+
+TEST(TestSpecialFunctions, TestVectorialSphericalHarmonicsOrthogonality)
+{
+	// ARRANGE
+	int l		 = 5;
+	int m		 = 3;
+	double theta = 25 * deg;
+	double phi	 = 13 * deg;
+	// ACT
+	auto Y	 = Vector_Spherical_Harmonics_Y(l, m, theta, phi);
+	auto Psi = Vector_Spherical_Harmonics_Psi(l, m, theta, phi);
+	// ASSERT
+	EXPECT_NEAR((Y[0] * Psi[0] + Y[1] * Psi[1] + Y[2] * Psi[2]).real(), 0.0, 1e-16);
+	EXPECT_NEAR((Y[0] * Psi[0] + Y[1] * Psi[1] + Y[2] * Psi[2]).imag(), 0.0, 1e-16);
+}
+
+TEST(TestSpecialFunctions, TestVectorialSphericalHarmonicsYFailure)
+{
+	// ACT & ASSERT
+	ASSERT_DEATH({ auto comp = VSH_Y_Component(5, 5, 3, 5, 3); }, "");
+}
+
+TEST(TestSpecialFunctions, TestVectorialSphericalHarmonicsPsiFailure)
+{
+	// ACT & ASSERT
+	ASSERT_DEATH({ auto comp = VSH_Psi_Component(5, 5, 3, 5, 3); }, "");
+}
+
+// 2.4 Other special functions
 TEST(TestNumerics, TestErfi)
 {
 	// ARRANGE
