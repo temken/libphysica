@@ -192,3 +192,19 @@ TEST(TestUtilities, TestLogger)
 	for(unsigned int i = 0; i < numbers.size(); i++)
 		EXPECT_EQ(numbers[i], output[i]);
 }
+
+// 5. Configuration class
+
+// 6. Other utilities
+TEST(TestUtilities, TestLocateClosestLocation)
+{
+	// ARRANGE
+	std::vector<double> sorted_list	  = {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+	std::vector<double> unsorted_list = {3.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+	std::vector<double> targets		  = {-10.0, 0.4, 0.6, 0.9, 1.1, 1.55, 3.7, 4.0, 4.6, 8.1, 8.6, 9.0, 9.1, 10.9, 1e4};
+	std::vector<unsigned int> result  = {0, 0, 1, 1, 1, 2, 4, 4, 5, 8, 9, 9, 9, 9, 9};
+	// ACT & ASSERT
+	for(int i = 0; i < targets.size(); i++)
+		EXPECT_EQ(Locate_Closest_Location(sorted_list, targets[i]), result[i]);
+	EXPECT_DEATH(Locate_Closest_Location(unsorted_list, 3.1), "");
+}

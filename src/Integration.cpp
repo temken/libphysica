@@ -91,7 +91,72 @@ double Integrate(std::function<double(double)> func, double a, double b, double 
 	return sign * result;
 }
 
-// 1.2 1D integration with boost functions
+// 1.2 Gauss Legendre quadrature
+std::vector<std::vector<double>> Compute_Gauss_Legendre_Roots_and_Weights(unsigned int n, double x_min, double x_max)
+{
+	std::vector<std::vector<double>> roots_and_weights(n, std::vector<double>(2, 0.0));
+
+	double eps			= 1.0e-14;
+	int m				= (n + 1) / 2;
+	double x_middle		= 0.5 * (x_max + x_min);
+	double x_half_width = 0.5 * (x_max - x_min);
+
+	for(int i = 0; i < m; i++)
+	{
+		double pp;
+		double z = cos(M_PI * (i + 0.75) / (n + 0.5));
+		while(true)
+		{
+			double p1 = 1.0;
+			double p2 = 0.0;
+			for(int j = 0; j < n; j++)
+			{
+				double p3 = p2;
+				p2		  = p1;
+				p1		  = ((2.0 * j + 1.0) * z * p2 - j * p3) / (j + 1.0);
+			}
+			pp		  = n * (z * p1 - p2) / (z * z - 1.0);
+			double z1 = z;
+			z		  = z1 - p1 / pp;
+			if(std::fabs(z - z1) <= eps)
+				break;
+		}
+		roots_and_weights[i][0]			= x_middle - x_half_width * z;
+		roots_and_weights[n - i - 1][0] = x_middle + x_half_width * z;
+		roots_and_weights[i][1]			= 2.0 * x_half_width / ((1.0 - z * z) * pp * pp);
+		roots_and_weights[n - i - 1][1] = roots_and_weights[i][1];
+	}
+	return roots_and_weights;
+}
+
+double Integrate_Gauss_Legendre(std::function<double(double)> func, double a, double b, unsigned int sample_points)
+{
+	std::vector<std::vector<double>> roots_and_weights = Compute_Gauss_Legendre_Roots_and_Weights(sample_points, a, b);
+	return Integrate_Gauss_Legendre(func, roots_and_weights);
+}
+
+double Integrate_Gauss_Legendre(std::function<double(double)> func, std::vector<std::vector<double>> roots_and_weights)
+{
+	std::vector<double> function_values(roots_and_weights.size(), 0.0);
+	for(unsigned int i = 0; i < roots_and_weights.size(); i++)
+		function_values[i] = func(roots_and_weights[i][0]);
+	return Integrate_Gauss_Legendre(function_values, roots_and_weights);
+}
+
+double Integrate_Gauss_Legendre(std::vector<double> function_values, std::vector<std::vector<double>> roots_and_weights)
+{
+	if(function_values.size() != roots_and_weights.size())
+	{
+		std::cerr << "libphysica::Integrate_Gauss_Legendre(): function_values and roots_and_weights must have the same size." << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+	double integral = 0.0;
+	for(unsigned int i = 0; i < function_values.size(); i++)
+		integral += function_values[i] * roots_and_weights[i][1];
+	return integral;
+}
+
+// 1.3 1D integration with boost functions
 double Integrate(std::function<double(double)> func, double a, double b, const std::string& method)
 {
 	double sign = 1.0;

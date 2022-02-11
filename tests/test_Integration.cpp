@@ -14,7 +14,7 @@ using namespace libphysica;
 
 // 1. Integration
 // 1.1 One-dimensional integration via adaptive Simpson method
-TEST(TestNumerics, TestIntegrate)
+TEST(TestIntegration, TestIntegrate)
 {
 	// ARRANGE
 	double tolerance				   = 1.0e-8;
@@ -29,8 +29,41 @@ TEST(TestNumerics, TestIntegrate)
 	ASSERT_NEAR(Integrate(func2, -1.0, 1.0, tolerance), 0.0, tolerance);
 }
 
-// 1.2 1D integration with boost functions
-TEST(TestNumerics, TestIntegrateBoost)
+// 1.2 Gauss Legendre quadrature
+TEST(TestIntegration, TestGaussLegendreRoots)
+{
+	// ARRANGE
+	int n = 4;
+	std::vector<double> roots {-0.86113631, -0.33998104, 0.33998104, 0.86113631};
+	std::vector<double> weights {0.34785485, 0.65214515, 0.65214515, 0.34785485};
+
+	// ACT
+	auto roots_and_weights = Compute_Gauss_Legendre_Roots_and_Weights(n);
+
+	// ASSERT
+	for(int i = 0; i < n; i++)
+	{
+		EXPECT_FLOAT_EQ(roots_and_weights[i][0], roots[i]);
+		EXPECT_FLOAT_EQ(roots_and_weights[i][1], weights[i]);
+	}
+}
+
+TEST(TestIntegration, TestGaussLegendre)
+{
+	// ARRANGE
+	std::function<double(double)> func = [](double x) {
+		return x * x * x - 2.0 * x * x + x - 1.0;
+	};
+	double a = 3.4, b = 4.5;
+	unsigned int n = 4;
+	// ACT
+	double integral = Integrate_Gauss_Legendre(func, a, b, n);
+	// ASSERT
+	EXPECT_NEAR(integral, 37.8049, 1.0e-4);
+}
+
+// 1.3 1D integration with boost functions
+TEST(TestIntegration, TestIntegrateBoost)
 {
 	// ARRANGE
 	double tolerance				   = 1.0e-8;
@@ -49,7 +82,7 @@ TEST(TestNumerics, TestIntegrateBoost)
 	}
 }
 
-TEST(TestNumerics, TestIntegrationLimits)
+TEST(TestIntegration, TestIntegrationLimits)
 {
 	// ARRANGE
 	double tolerance				   = 1.0e-8;
@@ -66,7 +99,7 @@ TEST(TestNumerics, TestIntegrationLimits)
 		EXPECT_DOUBLE_EQ(Integrate(func, a, b, method), -1.0 * Integrate(func, b, a, method));
 }
 
-TEST(TestNumerics, TestIntegrate2D)
+TEST(TestIntegration, TestIntegrate2D)
 {
 	// ARRANGE
 	double tolerance = 1.0e-6;
@@ -79,7 +112,7 @@ TEST(TestNumerics, TestIntegrate2D)
 		EXPECT_NEAR(Integrate_2D(func, -1.0, 1.0, -1.0, 1.0, method), M_PI * erf(1.0) * erf(1.0), tolerance);
 }
 
-TEST(TestNumerics, TestIntegrate3D)
+TEST(TestIntegration, TestIntegrate3D)
 {
 	// ARRANGE
 	double tolerance = 1.0e-6;
@@ -92,7 +125,7 @@ TEST(TestNumerics, TestIntegrate3D)
 		EXPECT_NEAR(Integrate_3D(func, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, method), 1.5, tolerance);
 }
 
-TEST(TestNumerics, TestIntegrate3DVector)
+TEST(TestIntegration, TestIntegrate3DVector)
 {
 	// ARRANGE
 	double tolerance = 1.0e-6;
@@ -106,7 +139,7 @@ TEST(TestNumerics, TestIntegrate3DVector)
 		EXPECT_NEAR(Integrate_3D(func, 0.0, 5.0, -1.0, 1.0, 0.0, 2.0 * M_PI, method), result, tolerance * result);
 }
 
-TEST(TestNumerics, TestIntegrateMCBruteForce)
+TEST(TestIntegration, TestIntegrateMCBruteForce)
 {
 	// ARRANGE
 	double tolerance		   = 1.0e-3;
@@ -119,7 +152,7 @@ TEST(TestNumerics, TestIntegrateMCBruteForce)
 	EXPECT_NEAR(Integrate_MC(func, region, 1000000, "Brute force"), result, tolerance);
 }
 
-TEST(TestNumerics, TestIntegrateMCVegas)
+TEST(TestIntegration, TestIntegrateMCVegas)
 {
 	// ARRANGE
 	double tolerance		   = 1.0e-4;

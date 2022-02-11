@@ -1,5 +1,6 @@
 #include "libphysica/Utilities.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <sys/stat.h>	 //required to create a folder
 #include <sys/types.h>	 // required for stat.h
@@ -366,6 +367,37 @@ Configuration::Configuration(std::string cfg_filename, int MPI_rank)
 
 	// 2. Find the run ID, create a folder and copy the cfg file.
 	Initialize_Result_Folder(MPI_rank);
+}
+
+// 6. Other utilities
+unsigned int Locate_Closest_Location(const std::vector<double>& sorted_list, double target)
+{
+	if(std::is_sorted(std::begin(sorted_list), std::end(sorted_list)) == false)
+	{
+		std::cerr << "Error in libphysica::Locate_Closest_Location(): The list is not sorted." << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+
+	auto const it = std::upper_bound(sorted_list.begin(), sorted_list.end(), target);
+	if(it == sorted_list.end())
+		return sorted_list.size() - 1;
+	else
+	{
+		int index = std::distance(sorted_list.begin(), it);
+		if(index == 0)
+			return 0;
+		else if(index == sorted_list.size())
+			return sorted_list.size() - 1;
+		else
+		{
+			double diff1 = std::fabs(sorted_list[index - 1] - target);
+			double diff2 = std::fabs(sorted_list[index] - target);
+			if(diff1 < diff2)
+				return index - 1;
+			else
+				return index;
+		}
+	}
 }
 
 }	// namespace libphysica
