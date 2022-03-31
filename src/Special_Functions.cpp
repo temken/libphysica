@@ -468,8 +468,7 @@ double Erfi(double x)
 	auto integrand = [](double z) {
 		return exp(z * z);
 	};
-	double eps		= Find_Epsilon(integrand, 0.0, x, 1e-6);
-	double integral = Integrate(integrand, 0.0, x, eps);
+	double integral = Integrate(integrand, 0.0, x);
 	return 2.0 / sqrt(M_PI) * integral;
 }
 

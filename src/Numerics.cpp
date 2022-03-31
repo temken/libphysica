@@ -9,6 +9,7 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
+#include <limits>
 
 #include "libphysica/Special_Functions.hpp"
 #include "libphysica/Utilities.hpp"
@@ -504,7 +505,201 @@ double Find_Root(std::function<double(double)> func, double xLeft, double xRight
 }
 
 // 3. Minimization
-// 3.1 Multi-dimensional
+// 3.1 One-dimensional
+// Find a<b<c such that f(b)<f(a) and f(b) < f(c).
+struct Bracket_Method
+{
+	double ax, bx, cx, fa, fb, fc;
+
+	template <class T>
+	void Bracket(const double a, const double b, T& func)
+	{
+		const double golden_ratio = 1.618034;
+		double GLIMIT			  = 100.0;
+		double TINY				  = 1.0e-20;
+
+		ax = a;
+		bx = b;
+		double fu;
+		fa = func(ax);
+		fb = func(bx);
+		if(fb > fa)
+		{
+			std::swap(ax, bx);
+			std::swap(fb, fa);
+		}
+		cx = bx + golden_ratio * (bx - ax);
+		fc = func(cx);
+		while(fb > fc)
+		{
+			double r	= (bx - ax) * (fb - fc);
+			double q	= (bx - cx) * (fb - fa);
+			double u	= bx - ((bx - cx) * q - (bx - ax) * r) / (2.0 * Sign(std::max(std::fabs(q - r), TINY), q - r));
+			double ulim = bx + GLIMIT * (cx - bx);
+			if((bx - u) * (u - cx) > 0.0)
+			{
+				fu = func(u);
+				if(fu < fc)
+				{
+					ax = bx;
+					bx = u;
+					fa = fb;
+					fb = fu;
+					return;
+				}
+				else if(fu > fb)
+				{
+					cx = u;
+					fc = fu;
+					return;
+				}
+				u  = cx + golden_ratio * (cx - bx);
+				fu = func(u);
+			}
+			else if((cx - u) * (u - ulim) > 0.0)
+			{
+				fu = func(u);
+				if(fu < fc)
+				{
+					Shift3(bx, cx, u, u + golden_ratio * (u - bx));
+					Shift3(fb, fc, fu, func(u));
+				}
+			}
+			else if((u - ulim) * (ulim - cx) >= 0.0)
+			{
+				u  = ulim;
+				fu = func(u);
+			}
+			else
+			{
+				u  = cx + golden_ratio * (cx - bx);
+				fu = func(u);
+			}
+			Shift3(ax, bx, cx, u);
+			Shift3(fa, fb, fc, fu);
+		}
+	}
+
+	inline void Shift2(double& a, double& b, const double c)
+	{
+		a = b;
+		b = c;
+	}
+	inline void Shift3(double& a, double& b, double& c, const double d)
+	{
+		a = b;
+		b = c;
+		c = d;
+	}
+
+	inline void Move3(double& a, double& b, double& c, const double d, const double e, const double f)
+	{
+		a = d;
+		b = e;
+		c = f;
+	}
+};
+
+struct Brent : Bracket_Method
+{
+	double x_min, f_min;
+	const double tol;
+
+	Brent(const double toll = 3e-8)
+	: tol(toll) {};
+
+	template <class T>
+	double Minimize(T& func)
+	{
+		const int ITMAX	   = 100;
+		const double CGOLD = 0.3819660;
+		const double ZEPS  = std::numeric_limits<double>::epsilon();
+		double a, b, d = 0.0, etemp, fu, fv, fw, fx, p, q, r, tol1, tol2, u, v, w, x, xm, e = 0.0;
+
+		a = (ax < cx ? ax : cx);
+		b = (ax > cx ? ax : cx);
+		x = w = v = bx;
+		fw = fv = fx = func(x);
+		for(int iter = 0; iter < ITMAX; iter++)
+		{
+			xm	 = 0.5 * (a + b);
+			tol2 = 2.0 * (tol1 = tol * std::fabs(x) + ZEPS);
+			if(std::fabs(x - xm) <= (tol2 - 0.5 * (b - a)))
+			{
+				f_min = fx;
+				x_min = x;
+				return x_min;
+			}
+			if(std::fabs(e) > tol1)
+			{
+				r = (x - w) * (fx - fv);
+				q = (x - v) * (fx - fw);
+				p = (x - v) * q - (x - w) * r;
+				q = 2.0 * (q - r);
+				if(q > 0.0)
+					p = -p;
+				q	  = std::fabs(q);
+				etemp = e;
+				e	  = d;
+				if(std::fabs(p) >= std::fabs(0.5 * q * etemp) || p <= q * (a - x) || p >= q * (b - x))
+					d = CGOLD * (e = (x >= xm ? a - x : b - x));
+				else
+				{
+					d = p / q;
+					u = x + d;
+					if(u - a < tol2 || b - u < tol2)
+						d = Sign(tol1, xm - x);
+				}
+			}
+			else
+				d = CGOLD * (e = (x >= xm ? a - x : b - x));
+
+			u  = (std::fabs(d) >= tol1 ? x + d : x + Sign(tol1, d));
+			fu = func(u);
+
+			if(fu <= fx)
+			{
+				if(u >= x)
+					a = x;
+				else
+					b = x;
+				Shift3(v, w, x, u);
+				Shift3(fv, fw, fx, fu);
+			}
+			else
+			{
+				if(u < x)
+					a = u;
+				else
+					b = u;
+				if(fu <= fw || w == x)
+				{
+					v  = w;
+					w  = u;
+					fv = fw;
+					fw = fu;
+				}
+				else if(fu <= fv || v == x || v == w)
+				{
+					v  = u;
+					fv = fu;
+				}
+			}
+		}
+		std::cerr << "Error in Brent::Minimize(): Too many iterations." << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+};
+
+double Find_Minimum(std::function<double(double)> func, double xLeft, double xRight, double tol)
+{
+	Brent brent(tol);
+	brent.Bracket(xLeft, xRight, func);
+	double x_min = brent.Minimize(func);
+	return x_min;
+}
+
+// 3.2 Multi-dimensional
 std::vector<double> Minimization::minimize(std::vector<double>& starting_point, const double delta, std::function<double(std::vector<double>)> func)
 {
 	std::vector<double> deltas(starting_point.size(), delta);

@@ -12,7 +12,7 @@ using namespace libphysica::natural_units;
 using namespace std::complex_literals;
 
 // 1. Simple functions
-TEST(TestNumerics, TestSign)
+TEST(TestSpecialFunctions, TestSign)
 {
 	// ARRANGE
 	double positive_number = 10.3;
@@ -22,7 +22,7 @@ TEST(TestNumerics, TestSign)
 	ASSERT_EQ(Sign(negative_number), -1);
 }
 
-TEST(TestNumerics, TestSign2)
+TEST(TestSpecialFunctions, TestSign2)
 {
 	// ARRANGE
 	double positive_number = 10.3;
@@ -34,7 +34,7 @@ TEST(TestNumerics, TestSign2)
 	ASSERT_DOUBLE_EQ(Sign(negative_number, -1.1), negative_number);
 }
 
-TEST(TestNumerics, TestStepFunction)
+TEST(TestSpecialFunctions, TestStepFunction)
 {
 	// ARRANGE
 	double positive_number = 10.3;
@@ -46,7 +46,7 @@ TEST(TestNumerics, TestStepFunction)
 	ASSERT_DOUBLE_EQ(StepFunction(zero), 1.0);
 }
 
-TEST(TestNumerics, TestRound)
+TEST(TestSpecialFunctions, TestRound)
 {
 	// ARRANGE
 	double pi = 3.14159265359;
@@ -68,7 +68,7 @@ TEST(TestNumerics, TestRound)
 	ASSERT_DOUBLE_EQ(Round(no, 7), 5.656378e-17);
 }
 
-TEST(TestNumerics, TestRoundVector)
+TEST(TestSpecialFunctions, TestRoundVector)
 {
 	// ARRANGE
 	double pi  = 3.14159265359;
@@ -84,7 +84,7 @@ TEST(TestNumerics, TestRoundVector)
 		ASSERT_DOUBLE_EQ(Round(vec, 3)[i], Vector({3.14, 5.66e-17, 6.28, -19.1})[i]);
 }
 
-TEST(TestNumerics, TestRoundMatrix)
+TEST(TestSpecialFunctions, TestRoundMatrix)
 {
 	// ARRANGE
 	double pi  = 3.14159265359;
@@ -103,7 +103,7 @@ TEST(TestNumerics, TestRoundMatrix)
 			ASSERT_DOUBLE_EQ(Round(M, 3)[i][j], Matrix({{3.14, 5.66e-17}, {-19.1, 6.28}})[i][j]);
 }
 
-TEST(TestNumerics, TestRelativeDifference)
+TEST(TestSpecialFunctions, TestRelativeDifference)
 {
 	// ARRANGE
 	double number_1			   = 1.3;
@@ -114,7 +114,7 @@ TEST(TestNumerics, TestRelativeDifference)
 	ASSERT_DOUBLE_EQ(Relative_Difference(number_1, number_1), 0.0);
 }
 
-TEST(TestNumerics, TestFloats_Equal)
+TEST(TestSpecialFunctions, TestFloats_Equal)
 {
 	// ARRANGE
 	double float_1 = 1.0000000000;
@@ -126,7 +126,7 @@ TEST(TestNumerics, TestFloats_Equal)
 
 // 2. Special functions
 // 2.1 Gamma functions
-TEST(TestNumerics, TestFactorial)
+TEST(TestSpecialFunctions, TestFactorial)
 {
 	// ARRANGE
 	std::vector<int> numbers			= {0, 1, 2, 3, 4, 5, 10, 20, 170};
@@ -136,7 +136,7 @@ TEST(TestNumerics, TestFactorial)
 		ASSERT_DOUBLE_EQ(Factorial(numbers[i]), correct_results[i]);
 }
 
-TEST(TestNumerics, TestBinomialCoefficient)
+TEST(TestSpecialFunctions, TestBinomialCoefficient)
 {
 	// ACT & ASSERT
 	ASSERT_EQ(Binomial_Coefficient(3, 5), 0);
@@ -149,7 +149,7 @@ TEST(TestNumerics, TestBinomialCoefficient)
 	ASSERT_EQ(Binomial_Coefficient(50, 10), 10272278170);
 }
 
-TEST(TestNumerics, TestGammaLn)
+TEST(TestSpecialFunctions, TestGammaLn)
 {
 	// ARRANGE
 	double tolerance = 1.0e-10;
@@ -161,7 +161,7 @@ TEST(TestNumerics, TestGammaLn)
 	ASSERT_NEAR(GammaLn(8.0), log(5040.0), tolerance);
 }
 
-TEST(TestNumerics, TestGamma)
+TEST(TestSpecialFunctions, TestGamma)
 {
 	// ACT & ASSERT
 	ASSERT_DOUBLE_EQ(Gamma(2.0), 1.0);
@@ -170,7 +170,7 @@ TEST(TestNumerics, TestGamma)
 		ASSERT_NEAR(Gamma(k + 1), Factorial(k), 1.0e-6);
 }
 
-TEST(TestNumerics, TestIncompleteGamma)
+TEST(TestSpecialFunctions, TestIncompleteGamma)
 {
 	// ARRANGE
 	double s = 3.5;
@@ -180,7 +180,7 @@ TEST(TestNumerics, TestIncompleteGamma)
 		ASSERT_NEAR(Upper_Incomplete_Gamma(x, s) + Lower_Incomplete_Gamma(x, s), Gamma(s), 1.0e-12);
 }
 
-TEST(TestNumerics, TestGammaQ)
+TEST(TestSpecialFunctions, TestGammaQ)
 {
 	// ARRANGE
 	double e = exp(1.0);
@@ -192,7 +192,7 @@ TEST(TestNumerics, TestGammaQ)
 	ASSERT_NEAR(GammaQ(110.0, 110.0), 0.48732, 1.0e-6);
 }
 
-TEST(TestNumerics, TestGammaP)
+TEST(TestSpecialFunctions, TestGammaP)
 {
 	// ARRANGE
 	double e = exp(1.0);
@@ -200,7 +200,7 @@ TEST(TestNumerics, TestGammaP)
 	ASSERT_DOUBLE_EQ(GammaP(1.0, 3.0), 1.0 - 5.0 / (2.0 * e));
 }
 
-TEST(TestNumerics, TestInvGammaP)
+TEST(TestSpecialFunctions, TestInvGammaP)
 {
 	// ARRANGE
 	double p = 0.7;
@@ -209,7 +209,7 @@ TEST(TestNumerics, TestInvGammaP)
 	ASSERT_DOUBLE_EQ(GammaP(Inv_GammaP(p, a), a), p);
 }
 
-TEST(TestNumerics, TestInvGammaQ)
+TEST(TestSpecialFunctions, TestInvGammaQ)
 {
 	// ARRANGE
 	double q = 0.7;
@@ -307,7 +307,7 @@ TEST(TestSpecialFunctions, TestVectorialSphericalHarmonicsPsiFailure)
 }
 
 // 2.4 Other special functions
-TEST(TestNumerics, TestErfi)
+TEST(TestSpecialFunctions, TestErfi)
 {
 	// ARRANGE
 	std::vector<double> xs		= {0.01, 0.2, 4.2, 8.4, -2.0 / 3.0};
@@ -318,7 +318,7 @@ TEST(TestNumerics, TestErfi)
 		EXPECT_NEAR(Erfi(xs[i]), results[i], std::fabs(tol * results[i]));
 }
 
-TEST(TestNumerics, TestInvErf)
+TEST(TestSpecialFunctions, TestInvErf)
 {
 	// ARRANGE
 	double y = 0.45;

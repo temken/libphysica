@@ -194,7 +194,26 @@ TEST(TestNumerics, TestFindRoot)
 }
 
 // 3. Minimization
-// 3.1 Multi-dimensional
+// 3.1 One-dimensional
+double minimize_function_1d_1(double x)
+{
+	double sig = std::pow(2.2, -1.0 / 6);
+	return std::pow(sig / x, 12) - std::pow(sig / x, 6);
+}
+double minimize_function_1d_2(double x)
+{
+	return cos(x);
+}
+TEST(TestNumerics, TestMinimization1D)
+{
+	// ARRANGE
+	double minimum_1 = 0.9842404697785967;
+	// ACT & ASSERT
+	EXPECT_NEAR(Find_Minimum(minimize_function_1d_1, 0.0, 2.0), minimum_1, 1.0e-8);
+	EXPECT_NEAR(Find_Minimum(minimize_function_1d_2, 2.0, 4.0), M_PI, 1.0e-8);
+}
+
+// 3.2 Multi-dimensional
 double minimize_function(std::vector<double> args)
 {
 	return (args[0] - M_PI) * (args[0] - M_PI) + (args[1] - exp(1.0)) * (args[1] - exp(1.0));
