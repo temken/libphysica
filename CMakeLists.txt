@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(libphysica VERSION "0.1.3")
+project(libphysica VERSION "0.1.4")
 
 # Use C++-14
 set(CMAKE_CXX_STANDARD 14)
