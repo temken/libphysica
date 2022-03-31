@@ -27,15 +27,37 @@ An example on how to include *libphysica* into your CMake build can be found in 
 
 ## CITATION
 
-If you decide to use this code, or if you want to add a reference to it, please cite the latest archived version,
+If you decide to use this code, or if you want to add a reference to it, please cite
 
-> Emken, T., 2021, libphysica - A C++ library for application in scientific codes [Code, v0.1.3] [[DOI:10.5281/zenodo.6045459]](https://doi.org/10.5281/zenodo.6045459).
+> Emken, T., 2021, libphysica - A C++ library for application in scientific codes [Code] [[DOI:10.5281/zenodo.4557117]](https://doi.org/10.5281/zenodo.4557117).
 
 <details><summary>Bibtex entry</summary>
 <p>
 
 ```
 @software{libphysica,
+  author = {Emken, Timon},
+  title = {{libphysica - A C++ library for application in scientific codes [Code]}},
+  year         = {2020},
+  publisher    = {Zenodo},
+  doi          = {DOI:10.5281/zenodo.4557117},
+  url          = {https://doi.org/10.5281/zenodo.4557117},
+  howpublished={The code can be found under \url{https://github.com/temken/libphysica}.}
+}
+```
+</p>
+</details>
+
+<details><summary>Cite a specific version (for example v0.1.3)</summary>
+<p>
+If you want to cite a specific version, e.g. v0.1.3, please cite the respective DOI that you can find [here](https://doi.org/10.5281/zenodo.4557117),
+
+> Emken, T., 2021, libphysica - A C++ library for application in scientific codes [Code, v0.1.3] [[DOI:10.5281/zenodo.6045459]](https://doi.org/10.5281/zenodo.6045459).
+
+And the corresponding bibtex entry:
+
+```
+@software{libphysica_0_1_3,
   author = {Emken, Timon},
   title = {{libphysica - A C++ library for application in scientific codes [Code, v0.1.3]}},
   year         = {2020},
@@ -46,7 +68,6 @@ If you decide to use this code, or if you want to add a reference to it, please 
   howpublished={The code can be found under \url{https://github.com/temken/libphysica}.}
 }
 ```
-
 </p>
 </details>
 
