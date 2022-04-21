@@ -1,12 +1,7 @@
-
+file(GLOB FILES "*.cpp")
+list(REMOVE_ITEM FILES ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
 add_library(libphysica STATIC
-    Linear_Algebra.cpp
-    Integration.cpp
-    Natural_Units.cpp
-    Numerics.cpp
-    Special_Functions.cpp
-    Statistics.cpp
-    Utilities.cpp )
+        ${FILES} )
 
 set_target_properties(libphysica PROPERTIES PREFIX "")
 
