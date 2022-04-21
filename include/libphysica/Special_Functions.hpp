@@ -41,6 +41,7 @@ extern std::complex<double> VSH_Psi_Component(int component, int l, int m, int l
 extern std::vector<std::complex<double>> Vector_Spherical_Harmonics_Psi(int l, int m, double theta, double phi);
 
 // 2.4 Other special functions
+extern double Dawson_Integral(double x);
 extern double Erfi(double x);
 extern double Inv_Erf(double p);
 
