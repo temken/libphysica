@@ -691,6 +691,14 @@ struct Brent : Bracket_Method
 	}
 };
 
+double Find_Maximum(std::function<double(double)> func, double xLeft, double xRight, double tol)
+{
+	auto minus_func = [&func](double x) {
+		return -1.0 * func(x);
+	};
+	return Find_Minimum(minus_func, xLeft, xRight, tol);
+}
+
 double Find_Minimum(std::function<double(double)> func, double xLeft, double xRight, double tol)
 {
 	Brent brent(tol);

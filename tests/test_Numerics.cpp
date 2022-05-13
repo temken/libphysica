@@ -213,6 +213,20 @@ TEST(TestNumerics, TestMinimization1D)
 	EXPECT_NEAR(Find_Minimum(minimize_function_1d_2, 2.0, 4.0), M_PI, 1.0e-8);
 }
 
+double maximize_function_1d(double x)
+{
+	double C = 1.9;
+	return -std::pow(x - C, 2.0);
+}
+
+TEST(TestNumerics, TestMaximization1D)
+{
+	// ARRANGE
+	double maximum = 1.9;
+	// ACT & ASSERT
+	EXPECT_NEAR(Find_Maximum(maximize_function_1d, 0.0, 10.), maximum, 1.0e-8);
+}
+
 // 3.2 Multi-dimensional
 double minimize_function(std::vector<double> args)
 {

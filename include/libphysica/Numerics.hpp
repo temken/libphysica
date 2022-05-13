@@ -87,6 +87,7 @@ extern double Find_Root(std::function<double(double)> func, double xLeft, double
 
 // 3. Minimization
 // 3.1 One-dimensional
+extern double Find_Maximum(std::function<double(double)> func, double xLeft, double xRight, double tol = 3e-8);
 extern double Find_Minimum(std::function<double(double)> func, double xLeft, double xRight, double tol = 3e-8);
 
 // 3.2 Multi-dimensional
