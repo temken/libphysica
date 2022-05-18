@@ -84,6 +84,8 @@ class Configuration
 
 // 6. Other utilities
 extern unsigned int Locate_Closest_Location(const std::vector<double>& sorted_list, double target);
+extern void Check_For_Error(bool error_condition, std::string function_name, std::string error_message);
+extern void Check_For_Warning(bool warning_condition, std::string function_name, std::string warning_message);
 
 }	// namespace libphysica
 

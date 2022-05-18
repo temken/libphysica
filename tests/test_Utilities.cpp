@@ -208,3 +208,25 @@ TEST(TestUtilities, TestLocateClosestLocation)
 		EXPECT_EQ(Locate_Closest_Location(sorted_list, targets[i]), result[i]);
 	EXPECT_DEATH(Locate_Closest_Location(unsorted_list, 3.1), "");
 }
+
+TEST(TestUtilities, TestCheckForError)
+{
+	// ARRANGE
+	std::string error_message = "Error message";
+	double a				  = 1.0;
+	double b				  = 2.0;
+	// ACT & ASSERT
+	EXPECT_DEATH(Check_For_Error(a == a, "function", error_message), error_message);
+	EXPECT_NO_FATAL_FAILURE(Check_For_Error(a == b, "function", error_message));
+}
+
+TEST(TestUtilities, TestCheckForWarning)
+{
+	// ARRANGE
+	std::string warning_message = "Warning message";
+	double a					= 1.0;
+	double b					= 2.0;
+	// ACT & ASSERT
+	EXPECT_NO_FATAL_FAILURE(Check_For_Warning(a == b, "function", warning_message));
+	EXPECT_NO_FATAL_FAILURE(Check_For_Warning(a == a, "function", warning_message));
+}
