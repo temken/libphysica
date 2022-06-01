@@ -1,5 +1,5 @@
 [![Build Status](https://github.com/temken/libphysica/workflows/Build%20Status/badge.svg)](https://github.com/temken/libphysica/actions)
-[![codecov](https://codecov.io/gh/temken/libphysica/branch/master/graph/badge.svg)](https://codecov.io/gh/temken/libphysica)
+[![codecov](https://codecov.io/gh/temken/libphysica/branch/main/graph/badge.svg)](https://codecov.io/gh/temken/libphysica)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 # libphysica
