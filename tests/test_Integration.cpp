@@ -99,7 +99,7 @@ TEST(TestIntegration, TestIntegrationLimits)
 		EXPECT_DOUBLE_EQ(Integrate(func, a, b, method), -1.0 * Integrate(func, b, a, method));
 }
 
-TEST(TestIntegration, TestIntegrate2D)
+TEST(TestIntegration, TestIntegrate2DNested)
 {
 	// ARRANGE
 	double tolerance = 1.0e-6;
@@ -112,7 +112,20 @@ TEST(TestIntegration, TestIntegrate2D)
 		EXPECT_NEAR(Integrate_2D(func, -1.0, 1.0, -1.0, 1.0, method), M_PI * erf(1.0) * erf(1.0), tolerance);
 }
 
-TEST(TestIntegration, TestIntegrate3D)
+TEST(TestIntegration, TestIntegrate2DMC)
+{
+	// ARRANGE
+	double tolerance_MC	   = 1.0e-2;
+	double tolerance_Vegas = 1.0e-4;
+	auto func			   = [](double x, double y) {
+		 return exp(-x * x - y * y);
+	};
+	// ACT & ASSERT
+	EXPECT_NEAR(Integrate_2D(func, -1.0, 1.0, -1.0, 1.0, "Monte-Carlo"), M_PI * erf(1.0) * erf(1.0), tolerance_MC);
+	EXPECT_NEAR(Integrate_2D(func, -1.0, 1.0, -1.0, 1.0, "Vegas"), M_PI * erf(1.0) * erf(1.0), tolerance_Vegas);
+}
+
+TEST(TestIntegration, TestIntegrate3DNested)
 {
 	// ARRANGE
 	double tolerance = 1.0e-6;
@@ -123,6 +136,19 @@ TEST(TestIntegration, TestIntegrate3D)
 	// ACT & ASSERT
 	for(auto& method : methods)
 		EXPECT_NEAR(Integrate_3D(func, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, method), 1.5, tolerance);
+}
+
+TEST(TestIntegration, TestIntegrate3DMC)
+{
+	// ARRANGE
+	double tolerance_MC	   = 1.0e-2;
+	double tolerance_Vegas = 1.0e-4;
+	auto func			   = [](double x, double y, double z) {
+		 return x + y + z;
+	};
+	// ACT & ASSERT
+	EXPECT_NEAR(Integrate_3D(func, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, "Monte-Carlo"), 1.5, tolerance_MC);
+	EXPECT_NEAR(Integrate_3D(func, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, "Vegas"), 1.5, tolerance_Vegas);
 }
 
 TEST(TestIntegration, TestIntegrate3DVector)
@@ -149,7 +175,7 @@ TEST(TestIntegration, TestIntegrateMCBruteForce)
 		 return exp(-x[0] - x[1] - x[2]);
 	};
 	// ACT & ASSERT
-	EXPECT_NEAR(Integrate_MC(func, region, 1000000, "Brute force"), result, tolerance);
+	EXPECT_NEAR(Integrate_MC(func, region, 1000000, "Monte-Carlo"), result, tolerance);
 }
 
 TEST(TestIntegration, TestIntegrateMCVegas)

@@ -170,6 +170,11 @@ double Integrate(std::function<double(double)> func, double a, double b, const s
 		return sign * gauss<double, 30>::integrate(func, a, b);
 	else if(method == "Gauss-Kronrod")
 		return sign * gauss_kronrod<double, 31>::integrate(func, a, b, 5, 1e-9);
+	else if(method == "Adaptive-Simpson")
+	{
+		double eps = Find_Epsilon(func, a, b, 1e-9);
+		return sign * Integrate(func, a, b, eps);
+	}
 	else
 	{
 		std::cerr << "Error in libphysica::Integrate(): Method " << method << " not recognized." << std::endl;
@@ -181,27 +186,61 @@ double Integrate(std::function<double(double)> func, double a, double b, const s
 // 2.1 Multidimensional integration via nesting 1D integration
 double Integrate_2D(std::function<double(double, double)> func, double x1, double x2, double y1, double y2, const std::string& method)
 {
-	auto integrand_x = [&func, y1, y2, method](double x) {
-		auto integrand_y = [&func, x](double y) {
-			return func(x, y);
+	if(method == "Trapezoidal" || method == "Gauss-Legendre" || method == "Gauss-Kronrod" || method == "Adaptive-Simpson")
+	{
+		auto integrand_x = [&func, y1, y2, method](double x) {
+			auto integrand_y = [&func, x](double y) {
+				return func(x, y);
+			};
+			return Integrate(integrand_y, y1, y2, method);
 		};
-		return Integrate(integrand_y, y1, y2, method);
-	};
-	return Integrate(integrand_x, x1, x2, method);
+		return Integrate(integrand_x, x1, x2, method);
+	}
+	else if(method == "Monte-Carlo" || method == "Vegas")
+	{
+		std::function<double(std::vector<double>&, const double)> integrand = [&func](std::vector<double>& args, double param) {
+			return func(args[0], args[1]);
+		};
+		std::vector<double> region = {x1, y1, x2, y2};
+		int ncalls				   = 30000;
+		return Integrate_MC(integrand, region, ncalls, method);
+	}
+	else
+	{
+		std::cerr << "Error in libphysica::Integrate_2D(): Method " << method << " not recognized." << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
 }
 
 double Integrate_3D(std::function<double(double, double, double)> func, double x1, double x2, double y1, double y2, double z1, double z2, const std::string& method)
 {
-	auto integrand_x = [&func, y1, y2, z1, z2, method](double x) {
-		auto integrand_y = [&func, z1, z2, x, method](double y) {
-			auto integrand_z = [&func, x, y, method](double z) {
-				return func(x, y, z);
+	if(method == "Trapezoidal" || method == "Gauss-Legendre" || method == "Gauss-Kronrod" || method == "Adaptive-Simpson")
+	{
+		auto integrand_x = [&func, y1, y2, z1, z2, method](double x) {
+			auto integrand_y = [&func, z1, z2, x, method](double y) {
+				auto integrand_z = [&func, x, y, method](double z) {
+					return func(x, y, z);
+				};
+				return Integrate(integrand_z, z1, z2, method);
 			};
-			return Integrate(integrand_z, z1, z2, method);
+			return Integrate(integrand_y, y1, y2, method);
 		};
-		return Integrate(integrand_y, y1, y2, method);
-	};
-	return Integrate(integrand_x, x1, x2, method);
+		return Integrate(integrand_x, x1, x2, method);
+	}
+	else if(method == "Monte-Carlo" || method == "Vegas")
+	{
+		std::function<double(std::vector<double>&, const double)> integrand = [&func](std::vector<double>& args, double param) {
+			return func(args[0], args[1], args[2]);
+		};
+		std::vector<double> region = {x1, y1, z1, x2, y2, z2};
+		int ncalls				   = 30000;
+		return Integrate_MC(integrand, region, ncalls, method);
+	}
+	else
+	{
+		std::cerr << "Error in libphysica::Integrate_2D(): Method " << method << " not recognized." << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
 }
 
 double Integrate_3D(std::function<double(Vector)> func, double r1, double r2, double costheta_1, double costheta_2, double phi_1, double phi_2, const std::string& method)
@@ -487,7 +526,7 @@ double Integrate_MC_Brute_Force(std::function<double(std::vector<double>&, const
 
 double Integrate_MC(std::function<double(std::vector<double>&, const double)> func, std::vector<double>& region, const int ncalls, const std::string& method)
 {
-	if(method == "Brute force")
+	if(method == "Monte-Carlo")
 		return Integrate_MC_Brute_Force(func, region, ncalls);
 	else if(method == "Vegas")
 	{
