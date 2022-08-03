@@ -43,18 +43,19 @@ if(NOT DOWNLOAD_LIBCONFIG)
   if(LIBCONFIGPP_LIBRARY_PATH AND LIBCONFIG_INCLUDE_DIRs)
     message(STATUS "Found libconfig++: ${LIBCONFIGPP_LIBRARY_PATH} and headers in ${LIBCONFIG_INCLUDE_DIRs}.")
   else()
-    message(WARNING "libconfig++ could not be found. Download version 1.7.2 from http://www.hyperrealm.com/libconfig/ and install it in /external/.")
+    message(WARNING "libconfig++ could not be found. The library will be downloaded.")
     set(DOWNLOAD_LIBCONFIG ON)
   endif()
 endif()
 
 if(DOWNLOAD_LIBCONFIG)
-  ExternalProject_Add(libconfig
+  message(STATUS "libconfig++: Download version 1.7.2 from http://www.hyperrealm.com/libconfig/ and install it in /external/.")
+  ExternalProject_Add(libconfig_download
     PREFIX ${EXTERNAL_DIR}/libconfig
     URL https://hyperrealm.github.io/libconfig/dist/libconfig-1.7.2.tar.gz
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
-    CONFIGURE_COMMAND ${EXTERNAL_DIR}/libconfig/src/libconfig/configure
+    CONFIGURE_COMMAND ${EXTERNAL_DIR}/libconfig/src/libconfig_download/configure
     --prefix=${EXTERNAL_DIR}/libconfig
     --enable-shared
     --disable-examples
@@ -65,8 +66,10 @@ if(DOWNLOAD_LIBCONFIG)
   set(LIBCONFIGPP_LIBRARY_PATH ${EXTERNAL_DIR}/libconfig/lib/libconfig++${CMAKE_SHARED_LIBRARY_SUFFIX})
 endif()
 
-add_library(LIBCONFIGPP_LIBRARY SHARED IMPORTED)
-set_target_properties(LIBCONFIGPP_LIBRARY PROPERTIES IMPORTED_LOCATION ${LIBCONFIGPP_LIBRARY_PATH})
+add_library(libconfig++ SHARED IMPORTED)
+set_target_properties(libconfig++ PROPERTIES IMPORTED_LOCATION ${LIBCONFIGPP_LIBRARY_PATH})
+
+# target_include_directories(libconfig++ INTERFACE ${LIBCONFIG_INCLUDE_DIRs})
 
 # 3. Googletest
 set(GTEST_DIR ${EXTERNAL_DIR}/googletest)

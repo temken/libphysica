@@ -5,7 +5,7 @@ add_library(libphysica STATIC
     ${FILES})
 
 if(DOWNLOAD_LIBCONFIG)
-    add_dependencies(libphysica libconfig) # ensures that libconfig gets build before libphysica.
+    add_dependencies(libphysica libconfig_download) # ensures that libconfig gets build before libphysica.
 endif()
 
 set_target_properties(libphysica PROPERTIES PREFIX "")
@@ -16,7 +16,7 @@ target_link_libraries(libphysica
     PRIVATE ${Boost_LIBRARIES}
     PUBLIC
     coverage_config
-    LIBCONFIGPP_LIBRARY
+    libconfig++
 )
 
 target_include_directories(libphysica
