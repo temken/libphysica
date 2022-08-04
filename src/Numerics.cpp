@@ -244,6 +244,7 @@ void Interpolation::Multiply(double factor)
 	prefactor *= factor;
 }
 
+// Function properties
 double Interpolation::Derivative(double x, unsigned int derivation)
 {
 	int j	   = Locate(x);
@@ -282,6 +283,50 @@ double Interpolation::Integrate(double x_1, double x_2)
 		integral += stemfunc_right - stemfunc_left;
 	}
 	return sign * integral;
+}
+
+double Interpolation::Local_Minimum(double x_1, double x_2)
+{
+	libphysica::Check_For_Error(x_2 < x_1, "Interpolation::Local_Minimum()", "Faulty order of arguments.");
+	double f_left  = Interpolate(x_1);
+	double f_right = Interpolate(x_2);
+	int i_1		   = Locate(x_1);
+	int i_2		   = Locate(x_2);
+	if(i_1 == i_2)
+		return std::min(f_left, f_right);
+	else
+	{
+		// Find the smallest value of function_values between i_1+1 and i_2.
+		double min_entry = *std::min_element(function_values.begin() + i_1 + 1, function_values.begin() + i_2);
+		return std::min({f_left, min_entry, f_right});
+	}
+}
+
+double Interpolation::Local_Maximum(double x_1, double x_2)
+{
+	libphysica::Check_For_Error(x_2 < x_1, "Interpolation::Local_Minimum()", "Faulty order of arguments.");
+	double f_left  = Interpolate(x_1);
+	double f_right = Interpolate(x_2);
+	int i_1		   = Locate(x_1);
+	int i_2		   = Locate(x_2);
+	if(i_1 == i_2)
+		return std::max(f_left, f_right);
+	else
+	{
+		// Find the largest value of function_values between i_1+1 and i_2.
+		double max_entry = *std::max_element(function_values.begin() + i_1 + 1, function_values.begin() + i_2);
+		return std::max({f_left, max_entry, f_right});
+	}
+}
+
+double Interpolation::Global_Minimum()
+{
+	return *std::min_element(function_values.begin(), function_values.end());
+}
+
+double Interpolation::Global_Maximum()
+{
+	return *std::max_element(function_values.begin(), function_values.end());
 }
 
 void Interpolation::Save_Function(std::string filename, unsigned int points)

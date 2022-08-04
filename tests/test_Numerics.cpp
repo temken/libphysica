@@ -83,6 +83,70 @@ TEST(TestNumerics, TestInterpolation1DIntegrate)
 	ASSERT_NEAR(interpol.Integrate(0, M_PI), M_PI * M_PI * M_PI * M_PI / 4.0, tol);
 }
 
+TEST(TestNumerics, TestInterpolation1DLocalMinimum)
+{
+	// ARRANGE
+	std::vector<double> x_values = Linear_Space(-5, 5, 10000);
+	std::vector<double> y_values, y_values_2;
+	for(auto& x : x_values)
+		y_values.push_back(x * x * x);
+	Interpolation interpol(x_values, y_values);
+	for(auto& x : x_values)
+		y_values_2.push_back(x * x);
+	Interpolation interpol_2(x_values, y_values_2);
+	double tol = 1e-6;
+	// ACT & ASSERT
+	EXPECT_NEAR(interpol.Local_Minimum(-1.0, 1.0), -1.0, tol);
+	EXPECT_NEAR(interpol.Local_Minimum(2.0, 2.3), 8.0, tol);
+	EXPECT_NEAR(interpol_2.Local_Minimum(-2.0, 2.0), 0.0, tol);
+	ASSERT_DEATH(interpol.Local_Minimum(2.4, 2.1), "");
+}
+
+TEST(TestNumerics, TestInterpolation1DLocalMaximum)
+{
+	// ARRANGE
+	std::vector<double> x_values = Linear_Space(-5, 5, 10000);
+	std::vector<double> y_values, y_values_2;
+	for(auto& x : x_values)
+		y_values.push_back(x * x * x);
+	Interpolation interpol(x_values, y_values);
+	for(auto& x : x_values)
+		y_values_2.push_back(sin(x));
+	Interpolation interpol_2(x_values, y_values_2);
+	double tol = 1e-6;
+	// ACT & ASSERT
+	EXPECT_NEAR(interpol.Local_Maximum(-1.0, 1.0), 1.0, tol);
+	EXPECT_NEAR(interpol.Local_Maximum(2.0, 2.3), 2.3 * 2.3 * 2.3, tol);
+	EXPECT_NEAR(interpol_2.Local_Maximum(0.0, 1.0), sin(1), tol);
+	EXPECT_NEAR(interpol_2.Local_Maximum(0.0, 3.0), 1.0, tol);
+}
+
+TEST(TestNumerics, TestInterpolation1DGlobalMinimum)
+{
+	// ARRANGE
+	std::vector<double> x_values = Linear_Space(-5, 5, 10000);
+	std::vector<double> y_values;
+	for(auto& x : x_values)
+		y_values.push_back(x * x - 5.0);
+	Interpolation interpol(x_values, y_values);
+	double tol = 1e-6;
+	// ACT & ASSERT
+	ASSERT_NEAR(interpol.Global_Minimum(), -5.0, tol);
+}
+
+TEST(TestNumerics, TestInterpolation1DGlobalMaximum)
+{
+	// ARRANGE
+	std::vector<double> x_values = Linear_Space(-5, 5, 10000);
+	std::vector<double> y_values;
+	for(auto& x : x_values)
+		y_values.push_back(-std::pow(x - 2.3, 2) + M_PI);
+	Interpolation interpol(x_values, y_values);
+	double tol = 1e-6;
+	// ACT & ASSERT
+	ASSERT_NEAR(interpol.Global_Maximum(), M_PI, tol);
+}
+
 // 1.2 Two-dimensional interpolation (bilinear interpolation)
 TEST(TestNumerics, TestInterpolation2dDefaultConstructor)
 {
