@@ -64,6 +64,7 @@ if(DOWNLOAD_LIBCONFIG)
   )
   set(LIBCONFIG_INCLUDE_DIRs ${EXTERNAL_DIR}/libconfig/include)
   set(LIBCONFIGPP_LIBRARY_PATH ${EXTERNAL_DIR}/libconfig/lib/libconfig++${CMAKE_SHARED_LIBRARY_SUFFIX})
+  message(STATUS "libconfig++ will be installed in ${LIBCONFIGPP_LIBRARY_PATH} and headers in ${LIBCONFIG_INCLUDE_DIRs}.")
 endif()
 
 add_library(libconfig++ SHARED IMPORTED)
