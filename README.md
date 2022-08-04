@@ -19,7 +19,7 @@ Static C++ library collecting functions, variables, and classes for application 
 
 - The unit tests are set up with the [googletest](https://github.com/google/googletest) framework, which is downloaded and installed automatically via [CMake](https://cmake.org/).
 - The numerical integration methods rely partially on [boost](https://www.boost.org/).
-- The *Configuration* class uses the library [libconfig](https://hyperrealm.github.io/libconfig/).
+- The *Configuration* class uses the library [libconfig](https://hyperrealm.github.io/libconfig/). (If libconfig is not installed on the system, it will be downloaded and locally installed in /external/ via CMake.)
 
 ## INSTALLATION
 
