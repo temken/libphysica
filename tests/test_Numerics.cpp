@@ -218,6 +218,84 @@ TEST(TestNumerics, TestInterpolation2dTableConstructor)
 	}
 }
 
+TEST(TestNumerics, TestInterpolation2dGlobalMinimum)
+{
+	// ARRANGE
+	std::vector<std::vector<double>> data_table = {
+		{-5.0, -5.0, -53.0},
+		{-5.0, 0.0, 0.0},
+		{-5.0, 5.0, 5.0},
+		{0.0, -5.0, -5.0},
+		{0.0, 0.0, 0.0},
+		{0.0, 5.0, 5.0},
+		{5.0, -5.0, -5.0},
+		{5.0, 0.0, 0.0},
+		{5.0, 5.0, 8.0}};
+	Interpolation_2D interpolation(data_table);
+	// ACT & ASSERT
+	ASSERT_DOUBLE_EQ(interpolation.Global_Minimum(), -53.0);
+}
+
+TEST(TestNumerics, TestInterpolation2dGlobalMinimum2)
+{
+	// ARRANGE
+	std::vector<std::vector<double>> data_table = {
+		{-5.0, -5.0, -53.0},
+		{-5.0, 0.0, 0.0},
+		{-5.0, 5.0, 5.0},
+		{0.0, -5.0, -5.0},
+		{0.0, 0.0, 0.0},
+		{0.0, 5.0, 5.0},
+		{5.0, -5.0, -5.0},
+		{5.0, 0.0, 0.0},
+		{5.0, 5.0, 8.0}};
+	Interpolation_2D interpolation(data_table);
+
+	std::random_device rd;
+	std::mt19937 PRNG(rd());
+	unsigned int trials = 10000;
+
+	// ACT & ASSERT
+	for(unsigned int i = 0; i < trials; i++)
+	{
+		double x = Sample_Uniform(PRNG, interpolation.domain[0][0], interpolation.domain[0][1]);
+		double y = Sample_Uniform(PRNG, interpolation.domain[1][0], interpolation.domain[1][1]);
+		EXPECT_TRUE(interpolation(x, y) > interpolation.Global_Minimum());
+	}
+}
+
+TEST(TestNumerics, TestInterpolation2dGlobalMaximum)
+{
+	// ARRANGE
+	std::vector<double> x_list				 = {-5.0, 0.0, 5.0};
+	std::vector<double> y_list				 = {-5.0, 0.0, 5.0};
+	std::vector<std::vector<double>> f_table = {{-5.0, 0.0, 5.0}, {-5.0, 13.6, 5.0}, {-5.0, 0.0, 5.0}};
+	Interpolation_2D interpolation(x_list, y_list, f_table);
+	// ACT & ASSERT
+	ASSERT_DOUBLE_EQ(interpolation.Global_Maximum(), 13.6);
+}
+
+TEST(TestNumerics, TestInterpolation2dGlobalMaximum2)
+{
+	// ARRANGE
+	std::vector<double> x_list				 = {-5.0, 0.0, 5.0};
+	std::vector<double> y_list				 = {-5.0, 0.0, 5.0};
+	std::vector<std::vector<double>> f_table = {{-5.0, 0.0, 5.0}, {-5.0, 13.6, 5.0}, {-5.0, 0.0, 5.0}};
+	Interpolation_2D interpolation(x_list, y_list, f_table);
+
+	std::random_device rd;
+	std::mt19937 PRNG(rd());
+	unsigned int trials = 10000;
+
+	// ACT & ASSERT
+	for(unsigned int i = 0; i < trials; i++)
+	{
+		double x = Sample_Uniform(PRNG, interpolation.domain[0][0], interpolation.domain[0][1]);
+		double y = Sample_Uniform(PRNG, interpolation.domain[1][0], interpolation.domain[1][1]);
+		EXPECT_TRUE(interpolation(x, y) < interpolation.Global_Maximum());
+	}
+}
+
 TEST(TestNumerics, TestInterpolation2dUnits)
 {
 	// ARRANGE

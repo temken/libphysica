@@ -444,6 +444,22 @@ void Interpolation_2D::Multiply(double factor)
 	prefactor *= factor;
 }
 
+// Function properties
+double Interpolation_2D::Global_Minimum()
+{
+	std::vector<double> row_minima;
+	for(auto& row : function_values)
+		row_minima.push_back(*std::min_element(row.begin(), row.end()));
+	return *std::min_element(row_minima.begin(), row_minima.end());
+}
+double Interpolation_2D::Global_Maximum()
+{
+	std::vector<double> row_maxima;
+	for(auto& row : function_values)
+		row_maxima.push_back(*std::max_element(row.begin(), row.end()));
+	return *std::max_element(row_maxima.begin(), row_maxima.end());
+}
+
 void Interpolation_2D::Save_Function(std::string filename, unsigned int x_points, unsigned int y_points)
 {
 	std::ofstream f;

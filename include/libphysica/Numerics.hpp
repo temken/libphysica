@@ -85,6 +85,10 @@ class Interpolation_2D
 	void Set_Prefactor(double factor);
 	void Multiply(double factor);
 
+	// Function properties
+	double Global_Minimum();
+	double Global_Maximum();
+
 	void Save_Function(std::string filename, unsigned int x_points, unsigned int y_points = 0);
 };
 
