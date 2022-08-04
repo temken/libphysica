@@ -307,11 +307,21 @@ TEST(TestSpecialFunctions, TestVectorialSphericalHarmonicsPsiFailure)
 }
 
 // 2.4 Other special functions
+TEST(TestSpecialFunctions, TestDawsonIntegral)
+{
+	// ARRANGE
+	std::vector<double> xs		= {0.1, 0.5, 2.3, 10.7, 22.0};
+	std::vector<double> results = {0.099336, 0.424436, 0.249053, 0.0469358, 0.0227508};
+	// ACT & ASSERT
+	for(unsigned int i = 0; i < xs.size(); i++)
+		EXPECT_NEAR(Dawson_Integral(xs[i]), results[i], 1e-6);
+}
+
 TEST(TestSpecialFunctions, TestErfi)
 {
 	// ARRANGE
-	std::vector<double> xs		= {0.01, 0.2, 4.2, 8.4, -2.0 / 3.0};
-	std::vector<double> results = {0.0112842, 0.228721, 6.34555e6, 2.97919e29, -0.880276};
+	std::vector<double> xs		= {0.01, 0.2, 4.2, 8.4, -2.0 / 3.0, 0.15, 0.45, 2.35, 10.24, 22.9};
+	std::vector<double> results = {0.0112842, 0.228721, 6.34555e6, 2.97919e29, -0.880276, 0.170535, 0.544232, 68.3326, 1.91557e44, 1.38157e226};
 	double tol					= 1.0e-5;
 	// ACT & ASSERT
 	for(unsigned int i = 0; i < xs.size(); i++)

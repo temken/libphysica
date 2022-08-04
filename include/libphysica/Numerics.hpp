@@ -42,12 +42,18 @@ class Interpolation
 	void Multiply(double factor);
 
 	double Interpolate(double x);
-	double Derivative(double x, unsigned int deriv = 1);
-	double Integrate(double x_1, double x_2);
 	double operator()(double x)
 	{
 		return Interpolate(x);
 	};
+
+	// Function properties
+	double Derivative(double x, unsigned int deriv = 1);
+	double Integrate(double x_1, double x_2);
+	double Local_Minimum(double x_1, double x_2);
+	double Local_Maximum(double x_1, double x_2);
+	double Global_Minimum();
+	double Global_Maximum();
 
 	void Save_Function(std::string filename, unsigned int points);
 };
@@ -79,6 +85,10 @@ class Interpolation_2D
 	void Set_Prefactor(double factor);
 	void Multiply(double factor);
 
+	// Function properties
+	double Global_Minimum();
+	double Global_Maximum();
+
 	void Save_Function(std::string filename, unsigned int x_points, unsigned int y_points = 0);
 };
 
@@ -87,6 +97,7 @@ extern double Find_Root(std::function<double(double)> func, double xLeft, double
 
 // 3. Minimization
 // 3.1 One-dimensional
+extern double Find_Maximum(std::function<double(double)> func, double xLeft, double xRight, double tol = 3e-8);
 extern double Find_Minimum(std::function<double(double)> func, double xLeft, double xRight, double tol = 3e-8);
 
 // 3.2 Multi-dimensional

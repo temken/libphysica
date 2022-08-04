@@ -83,6 +83,70 @@ TEST(TestNumerics, TestInterpolation1DIntegrate)
 	ASSERT_NEAR(interpol.Integrate(0, M_PI), M_PI * M_PI * M_PI * M_PI / 4.0, tol);
 }
 
+TEST(TestNumerics, TestInterpolation1DLocalMinimum)
+{
+	// ARRANGE
+	std::vector<double> x_values = Linear_Space(-5, 5, 10000);
+	std::vector<double> y_values, y_values_2;
+	for(auto& x : x_values)
+		y_values.push_back(x * x * x);
+	Interpolation interpol(x_values, y_values);
+	for(auto& x : x_values)
+		y_values_2.push_back(x * x);
+	Interpolation interpol_2(x_values, y_values_2);
+	double tol = 1e-6;
+	// ACT & ASSERT
+	EXPECT_NEAR(interpol.Local_Minimum(-1.0, 1.0), -1.0, tol);
+	EXPECT_NEAR(interpol.Local_Minimum(2.0, 2.3), 8.0, tol);
+	EXPECT_NEAR(interpol_2.Local_Minimum(-2.0, 2.0), 0.0, tol);
+	ASSERT_DEATH(interpol.Local_Minimum(2.4, 2.1), "");
+}
+
+TEST(TestNumerics, TestInterpolation1DLocalMaximum)
+{
+	// ARRANGE
+	std::vector<double> x_values = Linear_Space(-5, 5, 10000);
+	std::vector<double> y_values, y_values_2;
+	for(auto& x : x_values)
+		y_values.push_back(x * x * x);
+	Interpolation interpol(x_values, y_values);
+	for(auto& x : x_values)
+		y_values_2.push_back(sin(x));
+	Interpolation interpol_2(x_values, y_values_2);
+	double tol = 1e-6;
+	// ACT & ASSERT
+	EXPECT_NEAR(interpol.Local_Maximum(-1.0, 1.0), 1.0, tol);
+	EXPECT_NEAR(interpol.Local_Maximum(2.0, 2.3), 2.3 * 2.3 * 2.3, tol);
+	EXPECT_NEAR(interpol_2.Local_Maximum(0.0, 1.0), sin(1), tol);
+	EXPECT_NEAR(interpol_2.Local_Maximum(0.0, 3.0), 1.0, tol);
+}
+
+TEST(TestNumerics, TestInterpolation1DGlobalMinimum)
+{
+	// ARRANGE
+	std::vector<double> x_values = Linear_Space(-5, 5, 10000);
+	std::vector<double> y_values;
+	for(auto& x : x_values)
+		y_values.push_back(x * x - 5.0);
+	Interpolation interpol(x_values, y_values);
+	double tol = 1e-6;
+	// ACT & ASSERT
+	ASSERT_NEAR(interpol.Global_Minimum(), -5.0, tol);
+}
+
+TEST(TestNumerics, TestInterpolation1DGlobalMaximum)
+{
+	// ARRANGE
+	std::vector<double> x_values = Linear_Space(-5, 5, 10000);
+	std::vector<double> y_values;
+	for(auto& x : x_values)
+		y_values.push_back(-std::pow(x - 2.3, 2) + M_PI);
+	Interpolation interpol(x_values, y_values);
+	double tol = 1e-6;
+	// ACT & ASSERT
+	ASSERT_NEAR(interpol.Global_Maximum(), M_PI, tol);
+}
+
 // 1.2 Two-dimensional interpolation (bilinear interpolation)
 TEST(TestNumerics, TestInterpolation2dDefaultConstructor)
 {
@@ -154,6 +218,84 @@ TEST(TestNumerics, TestInterpolation2dTableConstructor)
 	}
 }
 
+TEST(TestNumerics, TestInterpolation2dGlobalMinimum)
+{
+	// ARRANGE
+	std::vector<std::vector<double>> data_table = {
+		{-5.0, -5.0, -53.0},
+		{-5.0, 0.0, 0.0},
+		{-5.0, 5.0, 5.0},
+		{0.0, -5.0, -5.0},
+		{0.0, 0.0, 0.0},
+		{0.0, 5.0, 5.0},
+		{5.0, -5.0, -5.0},
+		{5.0, 0.0, 0.0},
+		{5.0, 5.0, 8.0}};
+	Interpolation_2D interpolation(data_table);
+	// ACT & ASSERT
+	ASSERT_DOUBLE_EQ(interpolation.Global_Minimum(), -53.0);
+}
+
+TEST(TestNumerics, TestInterpolation2dGlobalMinimum2)
+{
+	// ARRANGE
+	std::vector<std::vector<double>> data_table = {
+		{-5.0, -5.0, -53.0},
+		{-5.0, 0.0, 0.0},
+		{-5.0, 5.0, 5.0},
+		{0.0, -5.0, -5.0},
+		{0.0, 0.0, 0.0},
+		{0.0, 5.0, 5.0},
+		{5.0, -5.0, -5.0},
+		{5.0, 0.0, 0.0},
+		{5.0, 5.0, 8.0}};
+	Interpolation_2D interpolation(data_table);
+
+	std::random_device rd;
+	std::mt19937 PRNG(rd());
+	unsigned int trials = 10000;
+
+	// ACT & ASSERT
+	for(unsigned int i = 0; i < trials; i++)
+	{
+		double x = Sample_Uniform(PRNG, interpolation.domain[0][0], interpolation.domain[0][1]);
+		double y = Sample_Uniform(PRNG, interpolation.domain[1][0], interpolation.domain[1][1]);
+		EXPECT_TRUE(interpolation(x, y) > interpolation.Global_Minimum());
+	}
+}
+
+TEST(TestNumerics, TestInterpolation2dGlobalMaximum)
+{
+	// ARRANGE
+	std::vector<double> x_list				 = {-5.0, 0.0, 5.0};
+	std::vector<double> y_list				 = {-5.0, 0.0, 5.0};
+	std::vector<std::vector<double>> f_table = {{-5.0, 0.0, 5.0}, {-5.0, 13.6, 5.0}, {-5.0, 0.0, 5.0}};
+	Interpolation_2D interpolation(x_list, y_list, f_table);
+	// ACT & ASSERT
+	ASSERT_DOUBLE_EQ(interpolation.Global_Maximum(), 13.6);
+}
+
+TEST(TestNumerics, TestInterpolation2dGlobalMaximum2)
+{
+	// ARRANGE
+	std::vector<double> x_list				 = {-5.0, 0.0, 5.0};
+	std::vector<double> y_list				 = {-5.0, 0.0, 5.0};
+	std::vector<std::vector<double>> f_table = {{-5.0, 0.0, 5.0}, {-5.0, 13.6, 5.0}, {-5.0, 0.0, 5.0}};
+	Interpolation_2D interpolation(x_list, y_list, f_table);
+
+	std::random_device rd;
+	std::mt19937 PRNG(rd());
+	unsigned int trials = 10000;
+
+	// ACT & ASSERT
+	for(unsigned int i = 0; i < trials; i++)
+	{
+		double x = Sample_Uniform(PRNG, interpolation.domain[0][0], interpolation.domain[0][1]);
+		double y = Sample_Uniform(PRNG, interpolation.domain[1][0], interpolation.domain[1][1]);
+		EXPECT_TRUE(interpolation(x, y) < interpolation.Global_Maximum());
+	}
+}
+
 TEST(TestNumerics, TestInterpolation2dUnits)
 {
 	// ARRANGE
@@ -211,6 +353,20 @@ TEST(TestNumerics, TestMinimization1D)
 	// ACT & ASSERT
 	EXPECT_NEAR(Find_Minimum(minimize_function_1d_1, 0.0, 2.0), minimum_1, 1.0e-8);
 	EXPECT_NEAR(Find_Minimum(minimize_function_1d_2, 2.0, 4.0), M_PI, 1.0e-8);
+}
+
+double maximize_function_1d(double x)
+{
+	double C = 1.9;
+	return -std::pow(x - C, 2.0);
+}
+
+TEST(TestNumerics, TestMaximization1D)
+{
+	// ARRANGE
+	double maximum = 1.9;
+	// ACT & ASSERT
+	EXPECT_NEAR(Find_Maximum(maximize_function_1d, 0.0, 10.), maximum, 1.0e-8);
 }
 
 // 3.2 Multi-dimensional

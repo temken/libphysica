@@ -400,4 +400,18 @@ unsigned int Locate_Closest_Location(const std::vector<double>& sorted_list, dou
 	}
 }
 
+void Check_For_Error(bool error_condition, std::string function_name, std::string error_message)
+{
+	if(error_condition)
+	{
+		std::cerr << "Error in " << function_name << ": " << error_message << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+}
+void Check_For_Warning(bool warning_condition, std::string function_name, std::string warning_message)
+{
+	if(warning_condition)
+		std::cerr << "Warning in " << function_name << ": " << warning_message << std::endl;
+}
+
 }	// namespace libphysica
