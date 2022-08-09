@@ -66,10 +66,10 @@ if(DOWNLOAD_LIBCONFIG)
   set(LIBCONFIG_INCLUDE_DIRs ${EXTERNAL_DIR}/libconfig/include)
   set(LIBCONFIGPP_LIBRARY_PATH ${EXTERNAL_DIR}/libconfig/lib/libconfig++${CMAKE_SHARED_LIBRARY_SUFFIX})
 
-  # # By default if you don't change any RPATH related settings, CMake will link the executables and shared libraries with full RPATH to all used libraries in the build tree. When installing, it will clear the RPATH of these targets so they are installed with an empty RPATH.
-  # # This setting avoids this.
-  set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-  set(CMAKE_INSTALL_RPATH ${EXTERNAL_DIR}/libconfig/lib/)
+  # By default if you don't change any RPATH related settings, CMake will link the executables and shared libraries with full RPATH to all used libraries in the build tree.
+  # When installing, it will clear the RPATH of these targets so they are installed with an empty RPATH.
+  # This setting avoids this.
+  list(APPEND CMAKE_INSTALL_RPATH ${EXTERNAL_DIR}/libconfig/lib)
   message(STATUS "libconfig++ will be installed in ${LIBCONFIGPP_LIBRARY_PATH} and headers in ${LIBCONFIG_INCLUDE_DIRs}.")
 endif()
 
