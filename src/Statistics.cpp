@@ -45,6 +45,13 @@ double Quantile_Gauss(double p, double mu, double sigma)
 	return mu + sqrt(2.0) * sigma * Inv_Erf(2.0 * p - 1.0);
 }
 
+double PDF_Gauss_2D(double x, double y, std::pair<double, double>& mean, std::pair<double, double>& sigma)
+{
+	double x_diff = x - mean.first;
+	double y_diff = y - mean.second;
+	return 0.5 / M_PI / sigma.first / sigma.second * std::exp(-0.5 * (x_diff * x_diff / sigma.first / sigma.first + y_diff * y_diff / sigma.second / sigma.second));
+}
+
 // 1.3 Binomial distribution
 double PMF_Binomial(unsigned int trials, double p, unsigned int x)
 {
@@ -318,6 +325,16 @@ std::vector<unsigned int> Sample_Poisson(std::mt19937& PRNG, const std::vector<d
 }
 
 // 3.2 General sampling algorithms
+
+double Inverse_Transform_Sampling(const std::function<double(double)>& cdf, double xMin, double xMax, std::mt19937& PRNG)
+{
+	double xi						  = Sample_Uniform(PRNG, 0.0, 1.0);
+	std::function<double(double)> fct = [&cdf, xi](double x) {
+		return xi - cdf(x);
+	};
+	return Find_Root(fct, xMin, xMax, 1e-10 * (xMax - xMin));
+}
+
 double Rejection_Sampling(const std::function<double(double)>& PDF, double xMin, double xMax, double yMax, std::mt19937& PRNG)
 {
 	bool success = false;
@@ -362,13 +379,138 @@ double Rejection_Sampling(const std::function<double(double)>& PDF, double xMin,
 	}
 	return x;
 }
-double Inverse_Transform_Sampling(const std::function<double(double)>& cdf, double xMin, double xMax, std::mt19937& PRNG)
+
+std::pair<double, double> Rejection_Sampling_2D(std::mt19937& PRNG, std::function<double(double, double)>& PDF, double xMin, double xMax, double yMin, double yMax, double zMax)
 {
-	double xi						  = Sample_Uniform(PRNG, 0.0, 1.0);
-	std::function<double(double)> fct = [&cdf, xi](double x) {
-		return xi - cdf(x);
-	};
-	return Find_Root(fct, xMin, xMax, 1e-10 * (xMax - xMin));
+	double x, y;
+	int counter	 = 0;
+	bool success = false;
+	while(!success)
+	{
+		// Inefficiency warning and error
+		counter++;
+		if(counter % 1000 == 0)
+		{
+			double theoretical_efficiency = 100.0 / (xMax - xMin) / (yMax - yMin) / zMax;
+			std::cerr << "Warning in libphysica::Rejection_Sampling_2D(): Sampling on domain x in [" << xMin << " , " << xMax << "], y in [" << yMin << " , " << yMax << "] inefficient. Counter = " << counter << std::endl
+					  << "\tTheoretical efficiency [%]:\t" << Round(theoretical_efficiency) << std::endl;
+			if(counter % 10000 == 0)
+			{
+				std::cerr << "Error in libphysica::Rejection_Sampling_2D(): It's too inefficient." << std::endl;
+				std::exit(EXIT_FAILURE);
+			}
+		}
+
+		x		   = libphysica::Sample_Uniform(PRNG, xMin, xMax);
+		y		   = libphysica::Sample_Uniform(PRNG, yMin, yMax);
+		double z   = libphysica::Sample_Uniform(PRNG, 0.0, zMax);
+		double pdf = PDF(x, y);
+		if(pdf > zMax && libphysica::Relative_Difference(pdf, zMax) > 0.01)
+		{
+			std::cerr << "Error in libphysica::Rejection_Sampling_2D(): Sampling on domain x in [" << xMin << " , " << xMax << "], y in [" << yMin << " , " << yMax << "]. z > zMax " << std::endl
+					  << "\tf(" << x << " , " << y << ") = " << pdf << " > zMax = " << zMax << "." << std::endl;
+			std::exit(EXIT_FAILURE);
+		}
+		else if(z <= pdf)
+			success = true;
+	}
+	return std::make_pair(x, y);
+}
+
+std::vector<double> Sample_Metropolis(std::mt19937& PRNG, const std::function<double(double)>& PDF, double sigma, unsigned int sample, unsigned int thinning, unsigned int burn_in, const std::vector<double> domain)
+{
+	// 1. Check for bounded domain
+	bool bounded_domain;
+	if(domain.size() == 0)
+		bounded_domain = false;
+	else if(domain.size() == 2)
+		bounded_domain = true;
+	else
+	{
+		std::cerr << "Error in libphysica::Sample_Metropolis(): Domain must be a vector of size 0 (unbounded domain) or 2 (bounded domain)." << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+
+	// 2. Starting point
+	double x;
+	if(bounded_domain)
+		x = libphysica::Sample_Uniform(PRNG, domain[0], domain[1]);
+	else
+		x = libphysica::Sample_Gauss(PRNG, 0.0, sigma);
+	double average_acceptance_probability = 0.0;
+
+	// 3. Burn in + sampling phase
+	std::vector<double> samples;
+	unsigned int i_max = burn_in + thinning * sample;
+	for(unsigned int i = 0; i < i_max; i++)
+	{
+		double candidate = libphysica::Sample_Gauss(PRNG, x, sigma);
+		double acceptance_probability;
+		if(bounded_domain && (candidate < domain[0] || candidate > domain[1]))
+			acceptance_probability = 0.0;
+		else
+			acceptance_probability = std::min(1.0, PDF(candidate) / PDF(x));
+		average_acceptance_probability += acceptance_probability;
+		if(libphysica::Sample_Uniform(PRNG, 0.0, 1.0) < acceptance_probability)
+			x = candidate;
+		if(i >= burn_in && i % thinning == 0)
+			samples.push_back(x);
+	}
+
+	// Warning for efficiency.
+	average_acceptance_probability /= i_max;
+	if(average_acceptance_probability < 1e-3 || average_acceptance_probability > 1.0 - 1e-2)
+		std::cerr << "Warning in libphysica::Sample_MetropolisD(): Average acceptance probability = " << average_acceptance_probability << " for sigma = " << sigma << "." << std::endl;
+
+	return samples;
+}
+
+std::vector<std::pair<double, double>> Sample_Metropolis_2D(std::mt19937& PRNG, const std::function<double(double, double)>& PDF, const std::pair<double, double>& sigmas, unsigned int sample, unsigned int thinning, unsigned int burn_in, const std::vector<double> domain)
+{
+	// 1. Check for bounded domain
+	bool bounded_domain;
+	if(domain.size() == 0)
+		bounded_domain = false;
+	else if(domain.size() == 4)
+		bounded_domain = true;
+	else
+	{
+		std::cerr << "Error in libphysica::Sample_Metropolis_2D(): Domain must be a vector of size 0 (unbounded domain) or 4 (bounded domain)." << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+
+	// 2. Starting point
+	std::pair<double, double> x;
+	if(bounded_domain)
+		x = {libphysica::Sample_Uniform(PRNG, domain[0], domain[1]), libphysica::Sample_Uniform(PRNG, domain[2], domain[3])};
+	else
+		x = {libphysica::Sample_Gauss(PRNG, 0.0, sigmas.first), libphysica::Sample_Gauss(PRNG, 0.0, sigmas.second)};
+	double average_acceptance_probability = 0.0;
+
+	// 3. Burn in + sampling phase
+	std::vector<std::pair<double, double>> samples;
+	unsigned int i_max = burn_in + thinning * sample;
+	for(unsigned int i = 0; i < i_max; i++)
+	{
+		std::pair<double, double> candidate = {libphysica::Sample_Gauss(PRNG, x.first, sigmas.first), libphysica::Sample_Gauss(PRNG, x.second, sigmas.second)};
+		double acceptance_probability;
+		if(bounded_domain && (candidate.first < domain[0] || candidate.first > domain[1] || candidate.second < domain[2] || candidate.second > domain[3]))
+			acceptance_probability = 0.0;
+		else
+			acceptance_probability = std::min(1.0, PDF(candidate.first, candidate.second) / PDF(x.first, x.second));
+		average_acceptance_probability += acceptance_probability;
+		if(libphysica::Sample_Uniform(PRNG, 0.0, 1.0) < acceptance_probability)
+			x = candidate;
+		if(i >= burn_in && i % thinning == 0)
+			samples.push_back(x);
+	}
+
+	// Warning for efficiency.
+	average_acceptance_probability /= i_max;
+	if(average_acceptance_probability < 1e-3 || average_acceptance_probability > 1.0 - 1e-2)
+		std::cerr << "Warning in libphysica::Sample_Metropolis_2D(): Average acceptance probability = " << average_acceptance_probability << " for sigma = (" << sigmas.first << " , " << sigmas.second << ")." << std::endl;
+
+	return samples;
 }
 
 // 4. Data point with statistical weight

@@ -325,25 +325,6 @@ TEST(TestStatistics, TestSamplePoisson2)
 }
 
 // 3.2 General sampling algorithms
-//  extern double Rejection_Sampling(const std::function<double(double)>& PDF,double xMin,double xMax,double yMax,std::mt19937& PRNG);
-TEST(TestStatistics, TestRejectionSampling)
-{
-	// ARRANGE
-	std::random_device rd;
-	std::mt19937 PRNG(rd());
-	double lambda = 3.0;
-	double xMin	  = 0.0;
-	double xMax	  = 20.0;
-	auto pdf	  = std::bind(PDF_Exponential, std::placeholders::_1, lambda);
-	// ACT & ASSERT
-	for(int i = 0; i < 10; i++)
-	{
-		double x = Rejection_Sampling(pdf, xMin, xMax, pdf(xMin), PRNG);
-		ASSERT_GT(x, xMin);
-		ASSERT_LT(x, xMax);
-	}
-}
-
 // extern double Inverse_Transform_Sampling(const std::function<double(double)>& cdf,double xMin,double xMax,std::mt19937& PRNG);
 TEST(TestStatistics, TestInverseTransformSampling)
 {
@@ -363,6 +344,100 @@ TEST(TestStatistics, TestInverseTransformSampling)
 		ASSERT_LT(x, xMax);
 	}
 }
+
+//  extern double Rejection_Sampling(const std::function<double(double)>& PDF,double xMin,double xMax,double yMax,std::mt19937& PRNG);
+TEST(TestStatistics, TestRejectionSampling)
+{
+	// ARRANGE
+	std::random_device rd;
+	std::mt19937 PRNG(rd());
+	double lambda = 3.0;
+	double xMin	  = 0.0;
+	double xMax	  = 20.0;
+	auto pdf	  = std::bind(PDF_Exponential, std::placeholders::_1, lambda);
+	// ACT & ASSERT
+	for(int i = 0; i < 200; i++)
+	{
+		double x = Rejection_Sampling(pdf, xMin, xMax, pdf(xMin), PRNG);
+		ASSERT_GT(x, xMin);
+		ASSERT_LT(x, xMax);
+	}
+}
+
+// extern std::pair<double, double> Rejection_Sampling_2D(std::mt19937& PRNG, std::function<double(double, double)>& PDF, double xMin, double xMax, double yMin, double yMax, double zMax);
+TEST(TestStatistics, TestRejectionSampling2D)
+{
+	// ARRANGE
+	std::random_device rd;
+	std::mt19937 PRNG(rd());
+	std::pair<double, double> mu			  = {0.0, 0.0};
+	std::pair<double, double> sigma			  = {1.0, 1.0};
+	std::function<double(double, double)> pdf = [&mu, &sigma](double x, double y) {
+		return PDF_Gauss_2D(x, y, mu, sigma);
+	};
+	// ACT & ASSERT
+	for(int i = 0; i < 200; i++)
+	{
+		auto x = Rejection_Sampling_2D(PRNG, pdf, -10., 10., -5., 5., pdf(0.0, 0.0));
+		EXPECT_GT(x.first, -10.0);
+		EXPECT_LT(x.first, 10.0);
+		EXPECT_GT(x.second, -5.0);
+		EXPECT_LT(x.second, 5.0);
+	}
+}
+
+// extern std::vector<double> Sample_Metropolis(std::mt19937& PRNG, const std::function<double(double)>& PDF, double sigma, unsigned int sample = 100, unsigned int thinning = 10, unsigned int burn_in = 100, const std::vector<double> domain = {});
+TEST(TestStatistics, TestMetropolis1D)
+{
+	// ARRANGE
+	std::random_device rd;
+	std::mt19937 PRNG(rd());
+	double mu						  = M_PI;
+	double sigma					  = 0.5;
+	std::function<double(double)> pdf = [&mu, &sigma](double x) {
+		return PDF_Gauss(x, mu, sigma);
+	};
+	// ACT & ASSERT
+	double sigma_proposal	= 0.1;
+	unsigned int samplesize = 10000;
+	unsigned int thinning	= 10;
+	unsigned int burn_in	= 1000;
+	auto samples			= Sample_Metropolis(PRNG, pdf, sigma_proposal, samplesize, thinning, burn_in);
+	EXPECT_EQ(samples.size(), samplesize);
+	double x_sum = 0.0;
+	for(auto& sample : samples)
+		x_sum += sample / samplesize;
+	EXPECT_NEAR(x_sum, mu, 0.1);
+}
+
+// extern std::vector<std::pair<double, double>> Sample_Metropolis_2D(std::mt19937& PRNG, const std::function<double(double, double)>& PDF, const std::vector<double>& sigmas, unsigned int sample = 100, unsigned int thinning = 10, unsigned int burn_in = 100, const std::vector<double> domain = {});
+TEST(TestStatistics, TestMetropolis2D)
+{
+	// ARRANGE
+	std::random_device rd;
+	std::mt19937 PRNG(rd());
+	std::pair<double, double> mu			  = {10.0, -5.0};
+	std::pair<double, double> sigma			  = {1.0, 1.0};
+	std::function<double(double, double)> pdf = [&mu, &sigma](double x, double y) {
+		return PDF_Gauss_2D(x, y, mu, sigma);
+	};
+	// ACT & ASSERT
+	std::pair<double, double> sigmas = {0.2, 0.2};
+	unsigned int samplesize			 = 10000;
+	unsigned int thinning			 = 10;
+	unsigned int burn_in			 = 1000;
+	auto samples					 = Sample_Metropolis_2D(PRNG, pdf, sigmas, samplesize, thinning, burn_in);
+	EXPECT_EQ(samples.size(), samplesize);
+	double x_sum = 0.0, y_sum = 0.0;
+	for(auto& sample : samples)
+	{
+		x_sum += sample.first / samplesize;
+		y_sum += sample.second / samplesize;
+	}
+	EXPECT_NEAR(x_sum, mu.first, 0.1);
+	EXPECT_NEAR(y_sum, mu.second, 0.1);
+}
+
 // 4. Data point with statistical weight
 TEST(TestStatistics, TestDataPoint)
 {

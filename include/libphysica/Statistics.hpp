@@ -19,6 +19,8 @@ extern double PDF_Gauss(double x, double mu, double sigma);
 extern double CDF_Gauss(double x, double mu, double sigma);
 extern double Quantile_Gauss(double p, double mu, double sigma);
 
+extern double PDF_Gauss_2D(double x, double y, std::pair<double, double>& mean, std::pair<double, double>& sigma);
+
 // 1.3 Binomial distribution
 extern double PMF_Binomial(unsigned int trials, double p, unsigned int x);
 extern double CDF_Binomial(unsigned int trials, double p, unsigned int x);
@@ -56,8 +58,13 @@ extern unsigned int Sample_Poisson(std::mt19937& PRNG, double expectation_value)
 extern std::vector<unsigned int> Sample_Poisson(std::mt19937& PRNG, const std::vector<double>& expectation_values);
 
 // 3.2 General sampling algorithms
-extern double Rejection_Sampling(const std::function<double(double)>& PDF, double xMin, double xMax, double yMax, std::mt19937& PRNG);
 extern double Inverse_Transform_Sampling(const std::function<double(double)>& cdf, double xMin, double xMax, std::mt19937& PRNG);
+
+extern double Rejection_Sampling(const std::function<double(double)>& PDF, double xMin, double xMax, double yMax, std::mt19937& PRNG);
+extern std::pair<double, double> Rejection_Sampling_2D(std::mt19937& PRNG, std::function<double(double, double)>& PDF, double xMin, double xMax, double yMin, double yMax, double zMax);
+
+extern std::vector<double> Sample_Metropolis(std::mt19937& PRNG, const std::function<double(double)>& PDF, double sigma, unsigned int sample = 100, unsigned int thinning = 10, unsigned int burn_in = 100, const std::vector<double> domain = {});
+extern std::vector<std::pair<double, double>> Sample_Metropolis_2D(std::mt19937& PRNG, const std::function<double(double, double)>& PDF, const std::pair<double, double>& sigmas, unsigned int sample = 100, unsigned int thinning = 10, unsigned int burn_in = 100, const std::vector<double> domain = {});
 
 // 4. Data point with statistical weight
 struct DataPoint
