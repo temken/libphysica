@@ -183,19 +183,23 @@ std::vector<std::vector<double>> Import_Table(std::string filepath, std::vector<
 	}
 }
 
-void Export_List(std::string filepath, std::vector<double> data, double dimension)
+void Export_List(std::string filepath, std::vector<double> data, double dimension, const std::string& header)
 {
 	std::ofstream outputfile;
 	outputfile.open(filepath);
+	if(header.length() > 0)
+		outputfile << header << std::endl;
 	for(unsigned int i = 0; i < data.size(); i++)
 		outputfile << In_Units(data[i], dimension) << std::endl;
 	outputfile.close();
 }
 
-void Export_Table(std::string filepath, const std::vector<std::vector<double>>& data, std::vector<double> dimensions)
+void Export_Table(std::string filepath, const std::vector<std::vector<double>>& data, std::vector<double> dimensions, const std::string& header)
 {
 	std::ofstream outputfile;
 	outputfile.open(filepath);
+	if(header.length() > 0)
+		outputfile << header << std::endl;
 	unsigned int lines = data.size();
 	for(unsigned int line = 0; line < lines; line++)
 	{
@@ -218,18 +222,18 @@ void Export_Table(std::string filepath, const std::vector<std::vector<double>>& 
 	outputfile.close();
 }
 
-void Export_Function(std::string filepath, std::function<double(double)> func, const std::vector<double>& x_list, std::vector<double> dimensions)
+void Export_Function(std::string filepath, std::function<double(double)> func, const std::vector<double>& x_list, std::vector<double> dimensions, const std::string& header)
 {
 	std::vector<std::vector<double>> data;
 	for(auto& x : x_list)
 		data.push_back({x, func(x)});
-	Export_Table(filepath, data, dimensions);
+	Export_Table(filepath, data, dimensions, header);
 }
 
-void Export_Function(std::string filepath, std::function<double(double)> func, double xMin, double xMax, unsigned int steps, std::vector<double> dimensions, bool logarithmic)
+void Export_Function(std::string filepath, std::function<double(double)> func, double xMin, double xMax, unsigned int steps, std::vector<double> dimensions, bool logarithmic, const std::string& header)
 {
 	std::vector<double> x_list = (logarithmic) ? Log_Space(xMin, xMax, steps) : Linear_Space(xMin, xMax, steps);
-	Export_Function(filepath, func, x_list, dimensions);
+	Export_Function(filepath, func, x_list, dimensions, header);
 }
 
 // 3. Create lists with equi-distant numbers
