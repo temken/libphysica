@@ -183,6 +183,23 @@ std::vector<std::vector<double>> Import_Table(std::string filepath, std::vector<
 	}
 }
 
+void Create_Folder(const std::string& path, int mpi_rank)
+{
+	if(mpi_rank == 0)
+	{
+		mode_t nMode = 0733;   // UNIX style permissions
+		int nError	 = 0;
+#if defined(_WIN32)
+		nError = _mkdir(path.c_str());	 // can be used on Windows
+#else
+		nError = mkdir(path.c_str(), nMode);   // can be used on non-Windows
+#endif
+		if(nError != 0)
+			std::cerr << "\nWarning in libphysica::Create_Folder(): The folder " << path << " exists already." << std::endl
+					  << std::endl;
+	}
+}
+
 void Export_List(std::string filepath, std::vector<double> data, double dimension, const std::string& header)
 {
 	std::ofstream outputfile;
@@ -313,38 +330,13 @@ void Configuration::Initialize_Result_Folder(int MPI_rank)
 		std::cerr << "Error in libphysica::Configuration::Initialize_Result_Folder(): No 'ID' setting in configuration file." << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
-	results_path = TOP_LEVEL_DIR "results/" + ID + "/";
-	Create_Result_Folder(MPI_rank);
+	// 1. Create the /results/ folder if necessary
+	std::string results_folder = TOP_LEVEL_DIR "results/";
+	Create_Folder(results_folder, MPI_rank);
+	// 2. Create a /result/<ID>/ folder for result files.
+	results_path = results_folder + ID + "/";
+	Create_Folder(results_path, MPI_rank);
 	Copy_Config_File(MPI_rank);
-}
-
-void Configuration::Create_Result_Folder(int MPI_rank)
-{
-	if(MPI_rank == 0)
-	{
-		// 1. Create the /results/ folder if necessary
-		std::string results_folder = TOP_LEVEL_DIR "results";
-		mode_t nMode			   = 0733;	 // UNIX style permissions
-		int nError_1			   = 0;
-#if defined(_WIN32)
-		nError_1 = _mkdir(results_folder.c_str());	 // can be used on Windows
-#else
-		nError_1 = mkdir(results_folder.c_str(), nMode);   // can be used on non-Windows
-#endif
-
-		// 2. Create a /result/<ID>/ folder for result files.
-		int nError = 0;
-#if defined(_WIN32)
-		nError = _mkdir(results_path.c_str());	 // can be used on Windows
-#else
-		nError	 = mkdir(results_path.c_str(), nMode);	   // can be used on non-Windows
-#endif
-		if(nError != 0)
-		{
-			std::cerr << "\nWarning in Configuration::Create_Result_Folder(int): The folder exists already, data will be overwritten." << std::endl
-					  << std::endl;
-		}
-	}
 }
 
 void Configuration::Copy_Config_File(int MPI_rank)

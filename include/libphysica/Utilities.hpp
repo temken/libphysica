@@ -22,7 +22,7 @@ extern bool File_Exists(const std::string& file_path);
 extern std::vector<double> Import_List(std::string filepath, double dimension = 1.0, unsigned int ignored_initial_lines = 0);
 extern std::vector<std::vector<double>> Import_Table(std::string filepath, std::vector<double> dimensions = {}, unsigned int ignored_initial_lines = 0);
 
-extern void Create_Folder(const std::string& path);
+extern void Create_Folder(const std::string& path, int mpi_rank = 0);
 extern void Export_List(std::string filepath, std::vector<double> data, double dimension = 1.0, const std::string& header = "");
 extern void Export_Table(std::string filepath, const std::vector<std::vector<double>>& data, std::vector<double> dimensions = {}, const std::string& header = "");
 extern void Export_Function(std::string filepath, std::function<double(double)> func, const std::vector<double>& x_list, std::vector<double> dimensions = {}, const std::string& header = "");
@@ -71,7 +71,6 @@ class Configuration
 	virtual void Read_Config_File();
 
 	virtual void Initialize_Result_Folder(int MPI_rank = 0);
-	virtual void Create_Result_Folder(int MPI_rank = 0);
 	virtual void Copy_Config_File(int MPI_rank = 0);
 
 	virtual void Initialize_Parameters() {};
