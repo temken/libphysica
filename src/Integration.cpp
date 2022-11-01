@@ -5,6 +5,7 @@
 
 #include <boost/math/quadrature/gauss.hpp>
 #include <boost/math/quadrature/gauss_kronrod.hpp>
+#include <boost/math/quadrature/tanh_sinh.hpp>
 #include <boost/math/quadrature/trapezoidal.hpp>
 
 #include "libphysica/Special_Functions.hpp"
@@ -170,6 +171,13 @@ double Integrate(std::function<double(double)> func, double a, double b, const s
 		return sign * gauss<double, 30>::integrate(func, a, b);
 	else if(method == "Gauss-Kronrod")
 		return sign * gauss_kronrod<double, 31>::integrate(func, a, b, 5, 1e-9);
+	else if(method == "Tanh-Sinh")
+	{
+		tanh_sinh<double> integrator;
+		return sign * integrator.integrate(func, a, b);
+	}
+	else if(method == "Gauss-Legendre_2")
+		return sign * Integrate_Gauss_Legendre(func, a, b, 30);
 	else if(method == "Adaptive-Simpson")
 	{
 		double eps = Find_Epsilon(func, a, b, 1e-9);
@@ -186,7 +194,7 @@ double Integrate(std::function<double(double)> func, double a, double b, const s
 // 2.1 Multidimensional integration via nesting 1D integration
 double Integrate_2D(std::function<double(double, double)> func, double x1, double x2, double y1, double y2, const std::string& method)
 {
-	if(method == "Trapezoidal" || method == "Gauss-Legendre" || method == "Gauss-Kronrod" || method == "Adaptive-Simpson")
+	if(method == "Trapezoidal" || method == "Gauss-Legendre" || method == "Gauss-Kronrod" || method == "Tanh-Sinh" || method == "Adaptive-Simpson" || method == "Gauss-Legendre_2")
 	{
 		auto integrand_x = [&func, y1, y2, method](double x) {
 			auto integrand_y = [&func, x](double y) {
@@ -214,7 +222,7 @@ double Integrate_2D(std::function<double(double, double)> func, double x1, doubl
 
 double Integrate_3D(std::function<double(double, double, double)> func, double x1, double x2, double y1, double y2, double z1, double z2, const std::string& method)
 {
-	if(method == "Trapezoidal" || method == "Gauss-Legendre" || method == "Gauss-Kronrod" || method == "Adaptive-Simpson")
+	if(method == "Trapezoidal" || method == "Gauss-Legendre" || method == "Gauss-Kronrod" || method == "Tanh-Sinh" || method == "Adaptive-Simpson" || method == "Gauss-Legendre_2")
 	{
 		auto integrand_x = [&func, y1, y2, z1, z2, method](double x) {
 			auto integrand_y = [&func, z1, z2, x, method](double y) {

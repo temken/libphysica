@@ -63,7 +63,7 @@ TEST(TestIntegration, TestGaussLegendre)
 }
 
 // 1.3 1D integration with boost functions
-TEST(TestIntegration, TestIntegrateBoost)
+TEST(TestIntegration, TestIntegrateMethods)
 {
 	// ARRANGE
 	double tolerance				   = 1.0e-8;
@@ -73,7 +73,7 @@ TEST(TestIntegration, TestIntegrateBoost)
 	std::function<double(double)> func2 = [](double x) {
 		return sin(x);
 	};
-	std::vector<std::string> methods = {"Trapezoidal", "Gauss-Legendre", "Gauss-Kronrod"};
+	std::vector<std::string> methods = {"Trapezoidal", "Gauss-Legendre", "Gauss-Kronrod", "Tanh-Sinh", "Adaptive-Simpson", "Gauss-Legendre_2"};
 	// ACT & ASSERT
 	for(auto& method : methods)
 	{
@@ -91,7 +91,7 @@ TEST(TestIntegration, TestIntegrationLimits)
 	};
 	double a						 = 2.0;
 	double b						 = 3.0;
-	std::vector<std::string> methods = {"Trapezoidal", "Gauss-Legendre", "Gauss-Kronrod"};
+	std::vector<std::string> methods = {"Trapezoidal", "Gauss-Legendre", "Gauss-Kronrod", "Tanh-Sinh", "Adaptive-Simpson", "Gauss-Legendre_2"};
 
 	// ACT & ASSERT
 	EXPECT_DOUBLE_EQ(Integrate(func, a, b, tolerance), -1.0 * Integrate(func, b, a, tolerance));
@@ -106,7 +106,7 @@ TEST(TestIntegration, TestIntegrate2DNested)
 	auto func		 = [](double x, double y) {
 		   return exp(-x * x - y * y);
 	};
-	std::vector<std::string> methods = {"Trapezoidal", "Gauss-Legendre", "Gauss-Kronrod"};
+	std::vector<std::string> methods = {"Trapezoidal", "Gauss-Legendre", "Gauss-Kronrod", "Tanh-Sinh", "Adaptive-Simpson", "Gauss-Legendre_2"};
 	// ACT & ASSERT
 	for(auto& method : methods)
 		EXPECT_NEAR(Integrate_2D(func, -1.0, 1.0, -1.0, 1.0, method), M_PI * erf(1.0) * erf(1.0), tolerance);
@@ -132,7 +132,7 @@ TEST(TestIntegration, TestIntegrate3DNested)
 	auto func		 = [](double x, double y, double z) {
 		   return x + y + z;
 	};
-	std::vector<std::string> methods = {"Trapezoidal", "Gauss-Legendre", "Gauss-Kronrod"};
+	std::vector<std::string> methods = {"Trapezoidal", "Gauss-Legendre", "Gauss-Kronrod", "Tanh-Sinh", "Adaptive-Simpson", "Gauss-Legendre_2"};
 	// ACT & ASSERT
 	for(auto& method : methods)
 		EXPECT_NEAR(Integrate_3D(func, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, method), 1.5, tolerance);
@@ -159,7 +159,7 @@ TEST(TestIntegration, TestIntegrate3DVector)
 	auto func		 = [](Vector vector) {
 		   return vector.Norm();
 	};
-	std::vector<std::string> methods = {"Trapezoidal", "Gauss-Legendre", "Gauss-Kronrod"};
+	std::vector<std::string> methods = {"Trapezoidal", "Gauss-Legendre", "Gauss-Kronrod", "Tanh-Sinh", "Adaptive-Simpson", "Gauss-Legendre_2"};
 	// ACT & ASSERT
 	for(auto& method : methods)
 		EXPECT_NEAR(Integrate_3D(func, 0.0, 5.0, -1.0, 1.0, 0.0, 2.0 * M_PI, method), result, tolerance * result);
