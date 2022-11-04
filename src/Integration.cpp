@@ -158,7 +158,7 @@ double Integrate_Gauss_Legendre(std::vector<double> function_values, std::vector
 }
 
 // 1.3 1D integration with boost functions
-double Integrate(std::function<double(double)> func, double a, double b, const std::string& method)
+double Integrate(std::function<double(double)> func, double a, double b, const std::string& method, int method_parameter)
 {
 	double sign = 1.0;
 	if(a == b)
@@ -170,14 +170,20 @@ double Integrate(std::function<double(double)> func, double a, double b, const s
 	else if(method == "Gauss-Legendre")
 		return sign * gauss<double, 30>::integrate(func, a, b);
 	else if(method == "Gauss-Kronrod")
-		return sign * gauss_kronrod<double, 31>::integrate(func, a, b, 5, 1e-9);
+	{
+		int max_depth = method_parameter == 0 ? 5 : method_parameter;
+		return sign * gauss_kronrod<double, 31>::integrate(func, a, b, max_depth, 1e-9);
+	}
 	else if(method == "Tanh-Sinh")
 	{
 		tanh_sinh<double> integrator;
 		return sign * integrator.integrate(func, a, b);
 	}
 	else if(method == "Gauss-Legendre_2")
-		return sign * Integrate_Gauss_Legendre(func, a, b, 30);
+	{
+		int evaluation_points = method_parameter == 0 ? 30 : method_parameter;
+		return sign * Integrate_Gauss_Legendre(func, a, b, evaluation_points);
+	}
 	else if(method == "Adaptive-Simpson")
 	{
 		double eps = Find_Epsilon(func, a, b, 1e-9);
@@ -192,17 +198,17 @@ double Integrate(std::function<double(double)> func, double a, double b, const s
 
 // 2. Multidimensional integration
 // 2.1 Multidimensional integration via nesting 1D integration
-double Integrate_2D(std::function<double(double, double)> func, double x1, double x2, double y1, double y2, const std::string& method)
+double Integrate_2D(std::function<double(double, double)> func, double x1, double x2, double y1, double y2, const std::string& method, int method_parameter)
 {
 	if(method == "Trapezoidal" || method == "Gauss-Legendre" || method == "Gauss-Kronrod" || method == "Tanh-Sinh" || method == "Adaptive-Simpson" || method == "Gauss-Legendre_2")
 	{
-		auto integrand_x = [&func, y1, y2, method](double x) {
+		auto integrand_x = [&func, y1, y2, method, method_parameter](double x) {
 			auto integrand_y = [&func, x](double y) {
 				return func(x, y);
 			};
-			return Integrate(integrand_y, y1, y2, method);
+			return Integrate(integrand_y, y1, y2, method, method_parameter);
 		};
-		return Integrate(integrand_x, x1, x2, method);
+		return Integrate(integrand_x, x1, x2, method, method_parameter);
 	}
 	else if(method == "Monte-Carlo" || method == "Vegas")
 	{
@@ -210,7 +216,7 @@ double Integrate_2D(std::function<double(double, double)> func, double x1, doubl
 			return func(args[0], args[1]);
 		};
 		std::vector<double> region = {x1, y1, x2, y2};
-		int ncalls				   = 30000;
+		int ncalls				   = method_parameter == 0 ? 30000 : method_parameter;
 		return Integrate_MC(integrand, region, ncalls, method);
 	}
 	else
@@ -220,20 +226,20 @@ double Integrate_2D(std::function<double(double, double)> func, double x1, doubl
 	}
 }
 
-double Integrate_3D(std::function<double(double, double, double)> func, double x1, double x2, double y1, double y2, double z1, double z2, const std::string& method)
+double Integrate_3D(std::function<double(double, double, double)> func, double x1, double x2, double y1, double y2, double z1, double z2, const std::string& method, int method_parameter)
 {
 	if(method == "Trapezoidal" || method == "Gauss-Legendre" || method == "Gauss-Kronrod" || method == "Tanh-Sinh" || method == "Adaptive-Simpson" || method == "Gauss-Legendre_2")
 	{
-		auto integrand_x = [&func, y1, y2, z1, z2, method](double x) {
-			auto integrand_y = [&func, z1, z2, x, method](double y) {
-				auto integrand_z = [&func, x, y, method](double z) {
+		auto integrand_x = [&func, y1, y2, z1, z2, method, method_parameter](double x) {
+			auto integrand_y = [&func, z1, z2, x, method, method_parameter](double y) {
+				auto integrand_z = [&func, x, y](double z) {
 					return func(x, y, z);
 				};
-				return Integrate(integrand_z, z1, z2, method);
+				return Integrate(integrand_z, z1, z2, method, method_parameter);
 			};
-			return Integrate(integrand_y, y1, y2, method);
+			return Integrate(integrand_y, y1, y2, method, method_parameter);
 		};
-		return Integrate(integrand_x, x1, x2, method);
+		return Integrate(integrand_x, x1, x2, method, method_parameter);
 	}
 	else if(method == "Monte-Carlo" || method == "Vegas")
 	{
@@ -241,7 +247,7 @@ double Integrate_3D(std::function<double(double, double, double)> func, double x
 			return func(args[0], args[1], args[2]);
 		};
 		std::vector<double> region = {x1, y1, z1, x2, y2, z2};
-		int ncalls				   = 30000;
+		int ncalls				   = method_parameter == 0 ? 30000 : method_parameter;
 		return Integrate_MC(integrand, region, ncalls, method);
 	}
 	else
@@ -251,13 +257,13 @@ double Integrate_3D(std::function<double(double, double, double)> func, double x
 	}
 }
 
-double Integrate_3D(std::function<double(Vector)> func, double r1, double r2, double costheta_1, double costheta_2, double phi_1, double phi_2, const std::string& method)
+double Integrate_3D(std::function<double(Vector)> func, double r1, double r2, double costheta_1, double costheta_2, double phi_1, double phi_2, const std::string& method, int method_parameter)
 {
 	auto integrand = [&func](double r, double cos_theta, double phi) {
 		Vector rVec = Spherical_Coordinates(r, acos(cos_theta), phi);
 		return r * r * func(rVec);
 	};
-	return Integrate_3D(integrand, r1, r2, costheta_1, costheta_2, phi_1, phi_2, method);
+	return Integrate_3D(integrand, r1, r2, costheta_1, costheta_2, phi_1, phi_2, method, method_parameter);
 }
 
 // 2.2 Monte Carlo Integration
