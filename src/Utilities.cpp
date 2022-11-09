@@ -366,6 +366,19 @@ Configuration::Configuration(std::string cfg_filename, int MPI_rank)
 }
 
 // 6. Other utilities
+std::vector<int> Workload_Distribution(unsigned int workers, unsigned int tasks)
+{
+	int tasks_per_worker = tasks / workers;
+	std::vector<int> index_list(workers + 1, 0);
+	for(int i = 0; i < workers; i++)
+		index_list[i + 1] = index_list[i] + tasks_per_worker;
+	// Distribute the remainder on the workers starting at the end of the list.
+	int remainder = tasks % workers;
+	for(int i = 0; i < remainder; i++)
+		index_list[workers - i] += (remainder - i);
+	return index_list;
+}
+
 unsigned int Locate_Closest_Location(const std::vector<double>& sorted_list, double target)
 {
 	if(std::is_sorted(std::begin(sorted_list), std::end(sorted_list)) == false)

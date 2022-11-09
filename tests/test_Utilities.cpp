@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 
+#include "libphysica/List_Manipulations.hpp"
 #include "libphysica/Utilities.hpp"
 
 using namespace libphysica;
@@ -196,6 +197,20 @@ TEST(TestUtilities, TestLogger)
 // 5. Configuration class
 
 // 6. Other utilities
+TEST(TestUtilities, TestWorkLoadDistribution)
+{
+	// ARRANGE
+	unsigned int tasks		= 7;
+	unsigned int workers	= 3;
+	std::vector<int> result = {0, 2, 4, 7};
+	// ACT
+	std::vector<int> work_load = Workload_Distribution(workers, tasks);
+	// ASSERT
+	EXPECT_EQ(work_load.size(), workers + 1);
+	EXPECT_EQ(work_load.back(), tasks);
+	EXPECT_TRUE(Lists_Equal(work_load, result));
+}
+
 TEST(TestUtilities, TestLocateClosestLocation)
 {
 	// ARRANGE
