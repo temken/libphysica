@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.11)
 
 project(libphysica VERSION "0.1.4")
 
@@ -49,27 +49,32 @@ if(NOT DOWNLOAD_LIBCONFIG)
 endif()
 
 if(DOWNLOAD_LIBCONFIG)
-  message(STATUS "libconfig++: Download version 1.7.2 from http://www.hyperrealm.com/libconfig/ and install it in /external/.")
+  message(STATUS "libconfig++: Download version 1.7.3 from http://www.hyperrealm.com/libconfig/ and install it in /external/.")
   ExternalProject_Add(libconfig_download
     PREFIX ${EXTERNAL_DIR}/libconfig
-    URL https://hyperrealm.github.io/libconfig/dist/libconfig-1.7.2.tar.gz
+    URL https://hyperrealm.github.io/libconfig/dist/libconfig-1.7.3.tar.gz
     UPDATE_COMMAND ""
     PATCH_COMMAND ""
     CONFIGURE_COMMAND ${EXTERNAL_DIR}/libconfig/src/libconfig_download/configure
     --prefix=${EXTERNAL_DIR}/libconfig
     --enable-shared
+    --disable-tests
     --disable-examples
     BUILD_COMMAND $(MAKE)
     INSTALL_COMMAND $(MAKE) install
   )
   set(LIBCONFIG_INCLUDE_DIRs ${EXTERNAL_DIR}/libconfig/include)
   set(LIBCONFIGPP_LIBRARY_PATH ${EXTERNAL_DIR}/libconfig/lib/libconfig++${CMAKE_SHARED_LIBRARY_SUFFIX})
+
+  # By default if you don't change any RPATH related settings, CMake will link the executables and shared libraries with full RPATH to all used libraries in the build tree.
+  # When installing, it will clear the RPATH of these targets so they are installed with an empty RPATH.
+  # This setting avoids this.
+  list(APPEND CMAKE_INSTALL_RPATH ${EXTERNAL_DIR}/libconfig/lib)
+  message(STATUS "libconfig++ will be installed in ${LIBCONFIGPP_LIBRARY_PATH} and headers in ${LIBCONFIG_INCLUDE_DIRs}.")
 endif()
 
 add_library(libconfig++ SHARED IMPORTED)
 set_target_properties(libconfig++ PROPERTIES IMPORTED_LOCATION ${LIBCONFIGPP_LIBRARY_PATH})
-
-# target_include_directories(libconfig++ INTERFACE ${LIBCONFIG_INCLUDE_DIRs})
 
 # 3. Googletest
 set(GTEST_DIR ${EXTERNAL_DIR}/googletest)

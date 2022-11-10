@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 
+#include "libphysica/List_Manipulations.hpp"
 #include "libphysica/Utilities.hpp"
 
 using namespace libphysica;
@@ -52,8 +53,8 @@ TEST(TestUtilities, TestExportImportList)
 	std::vector<double> list = {1.0 * unit, 2.0 * unit, 3.0 * unit, 4.0 * unit, 5.0 * unit};
 	std::string file_name	 = "test_list.txt";
 	// ACT
-	Export_List(file_name, list, unit);
-	std::vector<double> imported_list = Import_List(file_name, unit);
+	Export_List(file_name, list, unit, "# Header line 1\n# Header line 2");
+	std::vector<double> imported_list = Import_List(file_name, unit, 2);
 	// ASSERT
 	ASSERT_EQ(imported_list.size(), list.size());
 	for(unsigned int i = 0; i < list.size(); i++)
@@ -68,8 +69,8 @@ TEST(TestUtilities, TestExportImportTable)
 	std::vector<std::vector<double>> table = {{11.0 * units[0], 12.0 * units[1]}, {21.0 * units[0], 22.0 * units[1]}};
 	std::string file_name				   = "test_table.txt";
 	// ACT
-	Export_Table(file_name, table, units);
-	std::vector<std::vector<double>> imported_table = Import_Table(file_name, units);
+	Export_Table(file_name, table, units, "# Header line 1\n# Header line 2");
+	std::vector<std::vector<double>> imported_table = Import_Table(file_name, units, 2);
 	// ASSERT
 	ASSERT_EQ(imported_table.size(), table.size());
 	for(unsigned int i = 0; i < table.size(); i++)
@@ -94,8 +95,8 @@ TEST(TestUtilities, TestExportImportFunction)
 	std::vector<std::vector<double>> correct_values = {{1.0, 1.0}, {2.0, 4.0}, {3.0, 9.0}};
 	std::string file_name							= "test_function.txt";
 	// ACT
-	Export_Function(file_name, func, xMin, xMax, steps);
-	std::vector<std::vector<double>> imported_values = Import_Table(file_name);
+	Export_Function(file_name, func, xMin, xMax, steps, {}, false, "# Header line 1\n# Header line 2");
+	std::vector<std::vector<double>> imported_values = Import_Table(file_name, {}, 2);
 	// ASSERT
 	ASSERT_EQ(imported_values.size(), correct_values.size());
 	for(unsigned int i = 0; i < correct_values.size(); i++)
@@ -196,6 +197,20 @@ TEST(TestUtilities, TestLogger)
 // 5. Configuration class
 
 // 6. Other utilities
+TEST(TestUtilities, TestWorkLoadDistribution)
+{
+	// ARRANGE
+	unsigned int tasks		= 7;
+	unsigned int workers	= 3;
+	std::vector<int> result = {0, 2, 4, 7};
+	// ACT
+	std::vector<int> work_load = Workload_Distribution(workers, tasks);
+	// ASSERT
+	EXPECT_EQ(work_load.size(), workers + 1);
+	EXPECT_EQ(work_load.back(), tasks);
+	EXPECT_TRUE(Lists_Equal(work_load, result));
+}
+
 TEST(TestUtilities, TestLocateClosestLocation)
 {
 	// ARRANGE

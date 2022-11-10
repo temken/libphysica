@@ -183,19 +183,40 @@ std::vector<std::vector<double>> Import_Table(std::string filepath, std::vector<
 	}
 }
 
-void Export_List(std::string filepath, std::vector<double> data, double dimension)
+void Create_Folder(const std::string& path, int mpi_rank)
+{
+	if(mpi_rank == 0)
+	{
+		mode_t nMode = 0733;   // UNIX style permissions
+		int nError	 = 0;
+#if defined(_WIN32)
+		nError = _mkdir(path.c_str());	 // can be used on Windows
+#else
+		nError = mkdir(path.c_str(), nMode);   // can be used on non-Windows
+#endif
+		if(nError != 0)
+			std::cerr << "\nWarning in libphysica::Create_Folder(): The folder " << path << " exists already." << std::endl
+					  << std::endl;
+	}
+}
+
+void Export_List(std::string filepath, std::vector<double> data, double dimension, const std::string& header)
 {
 	std::ofstream outputfile;
 	outputfile.open(filepath);
+	if(header.length() > 0)
+		outputfile << header << std::endl;
 	for(unsigned int i = 0; i < data.size(); i++)
 		outputfile << In_Units(data[i], dimension) << std::endl;
 	outputfile.close();
 }
 
-void Export_Table(std::string filepath, const std::vector<std::vector<double>>& data, std::vector<double> dimensions)
+void Export_Table(std::string filepath, const std::vector<std::vector<double>>& data, std::vector<double> dimensions, const std::string& header)
 {
 	std::ofstream outputfile;
 	outputfile.open(filepath);
+	if(header.length() > 0)
+		outputfile << header << std::endl;
 	unsigned int lines = data.size();
 	for(unsigned int line = 0; line < lines; line++)
 	{
@@ -218,18 +239,18 @@ void Export_Table(std::string filepath, const std::vector<std::vector<double>>& 
 	outputfile.close();
 }
 
-void Export_Function(std::string filepath, std::function<double(double)> func, const std::vector<double>& x_list, std::vector<double> dimensions)
+void Export_Function(std::string filepath, std::function<double(double)> func, const std::vector<double>& x_list, std::vector<double> dimensions, const std::string& header)
 {
 	std::vector<std::vector<double>> data;
 	for(auto& x : x_list)
 		data.push_back({x, func(x)});
-	Export_Table(filepath, data, dimensions);
+	Export_Table(filepath, data, dimensions, header);
 }
 
-void Export_Function(std::string filepath, std::function<double(double)> func, double xMin, double xMax, unsigned int steps, std::vector<double> dimensions, bool logarithmic)
+void Export_Function(std::string filepath, std::function<double(double)> func, double xMin, double xMax, unsigned int steps, std::vector<double> dimensions, bool logarithmic, const std::string& header)
 {
 	std::vector<double> x_list = (logarithmic) ? Log_Space(xMin, xMax, steps) : Linear_Space(xMin, xMax, steps);
-	Export_Function(filepath, func, x_list, dimensions);
+	Export_Function(filepath, func, x_list, dimensions, header);
 }
 
 // 3. Create lists with equi-distant numbers
@@ -309,38 +330,13 @@ void Configuration::Initialize_Result_Folder(int MPI_rank)
 		std::cerr << "Error in libphysica::Configuration::Initialize_Result_Folder(): No 'ID' setting in configuration file." << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
-	results_path = TOP_LEVEL_DIR "results/" + ID + "/";
-	Create_Result_Folder(MPI_rank);
+	// 1. Create the /results/ folder if necessary
+	std::string results_folder = TOP_LEVEL_DIR "results/";
+	Create_Folder(results_folder, MPI_rank);
+	// 2. Create a /result/<ID>/ folder for result files.
+	results_path = results_folder + ID + "/";
+	Create_Folder(results_path, MPI_rank);
 	Copy_Config_File(MPI_rank);
-}
-
-void Configuration::Create_Result_Folder(int MPI_rank)
-{
-	if(MPI_rank == 0)
-	{
-		// 1. Create the /results/ folder if necessary
-		std::string results_folder = TOP_LEVEL_DIR "results";
-		mode_t nMode			   = 0733;	 // UNIX style permissions
-		int nError_1			   = 0;
-#if defined(_WIN32)
-		nError_1 = _mkdir(results_folder.c_str());	 // can be used on Windows
-#else
-		nError_1 = mkdir(results_folder.c_str(), nMode);   // can be used on non-Windows
-#endif
-
-		// 2. Create a /result/<ID>/ folder for result files.
-		int nError = 0;
-#if defined(_WIN32)
-		nError = _mkdir(results_path.c_str());	 // can be used on Windows
-#else
-		nError	 = mkdir(results_path.c_str(), nMode);	   // can be used on non-Windows
-#endif
-		if(nError != 0)
-		{
-			std::cerr << "\nWarning in Configuration::Create_Result_Folder(int): The folder exists already, data will be overwritten." << std::endl
-					  << std::endl;
-		}
-	}
 }
 
 void Configuration::Copy_Config_File(int MPI_rank)
@@ -370,6 +366,19 @@ Configuration::Configuration(std::string cfg_filename, int MPI_rank)
 }
 
 // 6. Other utilities
+std::vector<int> Workload_Distribution(unsigned int workers, unsigned int tasks)
+{
+	int tasks_per_worker = tasks / workers;
+	std::vector<int> index_list(workers + 1, 0);
+	for(int i = 0; i < workers; i++)
+		index_list[i + 1] = index_list[i] + tasks_per_worker;
+	// Distribute the remainder on the workers starting at the end of the list.
+	int remainder = tasks % workers;
+	for(int i = 0; i < remainder; i++)
+		index_list[workers - i] += (remainder - i);
+	return index_list;
+}
+
 unsigned int Locate_Closest_Location(const std::vector<double>& sorted_list, double target)
 {
 	if(std::is_sorted(std::begin(sorted_list), std::end(sorted_list)) == false)

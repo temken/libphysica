@@ -23,13 +23,13 @@ extern double Integrate_Gauss_Legendre(std::function<double(double)> func, std::
 extern double Integrate_Gauss_Legendre(std::vector<double> function_values, std::vector<std::vector<double>> roots_and_weights);
 
 // 1.3 1D integration with boost functions
-extern double Integrate(std::function<double(double)> func, double a, double b, const std::string& method = "Gauss-Legendre");
+extern double Integrate(std::function<double(double)> func, double a, double b, const std::string& method = "Gauss-Legendre", int method_parameter = 0);
 
 // 2. Multidimensional integration
 // 2.1 Multidimensional integration via nesting 1D integration
-extern double Integrate_2D(std::function<double(double, double)> func, double x1, double x2, double y1, double y2, const std::string& method = "Gauss-Legendre");
-extern double Integrate_3D(std::function<double(double, double, double)> func, double x1, double x2, double y1, double y2, double z1, double z2, const std::string& method = "Gauss-Legendre");
-extern double Integrate_3D(std::function<double(Vector)> func, double r1, double r2, double costheta_1 = -1.0, double costheta_2 = 1.0, double phi_1 = 0.0, double phi_2 = 2.0 * M_PI, const std::string& method = "Gauss-Legendre");
+extern double Integrate_2D(std::function<double(double, double)> func, double x1, double x2, double y1, double y2, const std::string& method = "Gauss-Legendre", int method_parameter = 0);
+extern double Integrate_3D(std::function<double(double, double, double)> func, double x1, double x2, double y1, double y2, double z1, double z2, const std::string& method = "Gauss-Legendre", int method_parameter = 0);
+extern double Integrate_3D(std::function<double(Vector)> func, double r1, double r2, double costheta_1 = -1.0, double costheta_2 = 1.0, double phi_1 = 0.0, double phi_2 = 2.0 * M_PI, const std::string& method = "Gauss-Legendre", int method_parameter = 0);
 
 // 2.2 Monte Carlo Integration
 extern double Integrate_MC(std::function<double(std::vector<double>&, const double)> func, std::vector<double>& region, const int ncalls = 10000, const std::string& method = "Vegas");

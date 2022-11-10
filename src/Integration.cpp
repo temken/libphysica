@@ -5,6 +5,7 @@
 
 #include <boost/math/quadrature/gauss.hpp>
 #include <boost/math/quadrature/gauss_kronrod.hpp>
+#include <boost/math/quadrature/tanh_sinh.hpp>
 #include <boost/math/quadrature/trapezoidal.hpp>
 
 #include "libphysica/Special_Functions.hpp"
@@ -157,7 +158,7 @@ double Integrate_Gauss_Legendre(std::vector<double> function_values, std::vector
 }
 
 // 1.3 1D integration with boost functions
-double Integrate(std::function<double(double)> func, double a, double b, const std::string& method)
+double Integrate(std::function<double(double)> func, double a, double b, const std::string& method, int method_parameter)
 {
 	double sign = 1.0;
 	if(a == b)
@@ -169,7 +170,20 @@ double Integrate(std::function<double(double)> func, double a, double b, const s
 	else if(method == "Gauss-Legendre")
 		return sign * gauss<double, 30>::integrate(func, a, b);
 	else if(method == "Gauss-Kronrod")
-		return sign * gauss_kronrod<double, 31>::integrate(func, a, b, 5, 1e-9);
+	{
+		int max_depth = method_parameter == 0 ? 5 : method_parameter;
+		return sign * gauss_kronrod<double, 31>::integrate(func, a, b, max_depth, 1e-9);
+	}
+	else if(method == "Tanh-Sinh")
+	{
+		tanh_sinh<double> integrator;
+		return sign * integrator.integrate(func, a, b);
+	}
+	else if(method == "Gauss-Legendre_2")
+	{
+		int evaluation_points = method_parameter == 0 ? 30 : method_parameter;
+		return sign * Integrate_Gauss_Legendre(func, a, b, evaluation_points);
+	}
 	else if(method == "Adaptive-Simpson")
 	{
 		double eps = Find_Epsilon(func, a, b, 1e-9);
@@ -184,25 +198,25 @@ double Integrate(std::function<double(double)> func, double a, double b, const s
 
 // 2. Multidimensional integration
 // 2.1 Multidimensional integration via nesting 1D integration
-double Integrate_2D(std::function<double(double, double)> func, double x1, double x2, double y1, double y2, const std::string& method)
+double Integrate_2D(std::function<double(double, double)> func, double x1, double x2, double y1, double y2, const std::string& method, int method_parameter)
 {
-	if(method == "Trapezoidal" || method == "Gauss-Legendre" || method == "Gauss-Kronrod" || method == "Adaptive-Simpson")
+	if(method == "Trapezoidal" || method == "Gauss-Legendre" || method == "Gauss-Kronrod" || method == "Tanh-Sinh" || method == "Adaptive-Simpson" || method == "Gauss-Legendre_2")
 	{
-		auto integrand_x = [&func, y1, y2, method](double x) {
+		auto integrand_x = [&func, y1, y2, method, method_parameter](double x) {
 			auto integrand_y = [&func, x](double y) {
 				return func(x, y);
 			};
-			return Integrate(integrand_y, y1, y2, method);
+			return Integrate(integrand_y, y1, y2, method, method_parameter);
 		};
-		return Integrate(integrand_x, x1, x2, method);
+		return Integrate(integrand_x, x1, x2, method, method_parameter);
 	}
-	else if(method == "Monte-Carlo" || method == "Vegas")
+	else if(method == "Monte-Carlo" || method == "Vegas" || method == "Miser")
 	{
 		std::function<double(std::vector<double>&, const double)> integrand = [&func](std::vector<double>& args, double param) {
 			return func(args[0], args[1]);
 		};
 		std::vector<double> region = {x1, y1, x2, y2};
-		int ncalls				   = 30000;
+		int ncalls				   = method_parameter == 0 ? 30000 : method_parameter;
 		return Integrate_MC(integrand, region, ncalls, method);
 	}
 	else
@@ -212,28 +226,28 @@ double Integrate_2D(std::function<double(double, double)> func, double x1, doubl
 	}
 }
 
-double Integrate_3D(std::function<double(double, double, double)> func, double x1, double x2, double y1, double y2, double z1, double z2, const std::string& method)
+double Integrate_3D(std::function<double(double, double, double)> func, double x1, double x2, double y1, double y2, double z1, double z2, const std::string& method, int method_parameter)
 {
-	if(method == "Trapezoidal" || method == "Gauss-Legendre" || method == "Gauss-Kronrod" || method == "Adaptive-Simpson")
+	if(method == "Trapezoidal" || method == "Gauss-Legendre" || method == "Gauss-Kronrod" || method == "Tanh-Sinh" || method == "Adaptive-Simpson" || method == "Gauss-Legendre_2")
 	{
-		auto integrand_x = [&func, y1, y2, z1, z2, method](double x) {
-			auto integrand_y = [&func, z1, z2, x, method](double y) {
-				auto integrand_z = [&func, x, y, method](double z) {
+		auto integrand_x = [&func, y1, y2, z1, z2, method, method_parameter](double x) {
+			auto integrand_y = [&func, z1, z2, x, method, method_parameter](double y) {
+				auto integrand_z = [&func, x, y](double z) {
 					return func(x, y, z);
 				};
-				return Integrate(integrand_z, z1, z2, method);
+				return Integrate(integrand_z, z1, z2, method, method_parameter);
 			};
-			return Integrate(integrand_y, y1, y2, method);
+			return Integrate(integrand_y, y1, y2, method, method_parameter);
 		};
-		return Integrate(integrand_x, x1, x2, method);
+		return Integrate(integrand_x, x1, x2, method, method_parameter);
 	}
-	else if(method == "Monte-Carlo" || method == "Vegas")
+	else if(method == "Monte-Carlo" || method == "Vegas" || method == "Miser")
 	{
 		std::function<double(std::vector<double>&, const double)> integrand = [&func](std::vector<double>& args, double param) {
 			return func(args[0], args[1], args[2]);
 		};
 		std::vector<double> region = {x1, y1, z1, x2, y2, z2};
-		int ncalls				   = 30000;
+		int ncalls				   = method_parameter == 0 ? 30000 : method_parameter;
 		return Integrate_MC(integrand, region, ncalls, method);
 	}
 	else
@@ -243,13 +257,13 @@ double Integrate_3D(std::function<double(double, double, double)> func, double x
 	}
 }
 
-double Integrate_3D(std::function<double(Vector)> func, double r1, double r2, double costheta_1, double costheta_2, double phi_1, double phi_2, const std::string& method)
+double Integrate_3D(std::function<double(Vector)> func, double r1, double r2, double costheta_1, double costheta_2, double phi_1, double phi_2, const std::string& method, int method_parameter)
 {
 	auto integrand = [&func](double r, double cos_theta, double phi) {
 		Vector rVec = Spherical_Coordinates(r, acos(cos_theta), phi);
 		return r * r * func(rVec);
 	};
-	return Integrate_3D(integrand, r1, r2, costheta_1, costheta_2, phi_1, phi_2, method);
+	return Integrate_3D(integrand, r1, r2, costheta_1, costheta_2, phi_1, phi_2, method, method_parameter);
 }
 
 // 2.2 Monte Carlo Integration
@@ -497,24 +511,38 @@ double Integrate_MC_Vegas(std::function<double(std::vector<double>&, const doubl
 	return integral;
 }
 
+std::vector<double> Random_Point(std::vector<double>& region, std::mt19937& PRNG)
+{
+	int dim = region.size() / 2.0;
+	std::vector<double> point(dim);
+	for(int i = 0; i < dim; i++)
+		point[i] = region[i] + Sample_Uniform(PRNG) * (region[i + dim] - region[i]);
+	return point;
+}
+
+double MC_Volume(std::vector<double>& region)
+{
+	int dim		  = region.size() / 2.0;
+	double volume = 1.0;
+	for(int i = 0; i < dim; i++)
+		volume *= (region[i + dim] - region[i]);
+	return volume;
+}
+
 double Integrate_MC_Brute_Force(std::function<double(std::vector<double>&, const double)> func, std::vector<double>& region, const int ncall)
 {
 	int dim = region.size() / 2.0;
 	std::random_device rd;
 	std::mt19937 PRNG(rd());
 
-	double volume = 1.0;
-	for(int i = 0; i < dim; i++)
-		volume *= (region[i + dim] - region[i]);
+	double volume = MC_Volume(region);
 
 	double sum = 0.0;
 	// double sum_2 = 0.0;
 	for(int i = 0; i < ncall; i++)
 	{
-		std::vector<double> args(dim);
-		for(int j = 0; j < dim; j++)
-			args[j] = region[j] + libphysica::Sample_Uniform(PRNG) * (region[j + dim] - region[j]);
-		double fct = func(args, 0.0);
+		std::vector<double> args = Random_Point(region, PRNG);
+		double fct				 = func(args, 0.0);
 		sum += volume * fct;
 		// sum_2 += volume * volume * fct * fct;
 	}
@@ -522,6 +550,118 @@ double Integrate_MC_Brute_Force(std::function<double(std::vector<double>&, const
 	// double standard_deviation = sqrt((sum_2 / ncall - integral * integral) / (ncall - 1.0));
 	// double chi2a			  = 0.0;
 	return integral;
+}
+
+void Miser(std::function<double(std::vector<double>&, const double)> func, std::vector<double>& region, const int npts,
+		   const double dith, double& ave, double& var, std::mt19937& PRNG)
+{
+	const int MNPT = 15, MNBS = 60;
+	const double PFAC = 0.1, TINY = 1.0e-30, BIG = 1.0e30;
+	static int iran = 0;
+	int j, jb, n, ndim, npre, nptl, nptr;
+	double avel, varl, fracl, fval, rgl, rgm, rgr, s, sigl, siglb, sigr, sigrb;
+	double sum, sumb, summ, summ2;
+
+	ndim = region.size() / 2;
+	std::vector<double> pt(ndim);
+	if(npts < MNBS)
+	{
+		summ = summ2 = 0.0;
+		for(n = 0; n < npts; n++)
+		{
+			pt	 = Random_Point(region, PRNG);
+			fval = func(pt, 0.0);
+			summ += fval;
+			summ2 += fval * fval;
+		}
+		ave = summ / npts;
+		var = std::max(TINY, (summ2 - summ * summ / npts) / (npts * npts));
+	}
+	else
+	{
+		std::vector<double> rmid(ndim);
+		npre = std::max(int(npts * PFAC), int(MNPT));
+		std::vector<double> fmaxl(ndim), fmaxr(ndim), fminl(ndim), fminr(ndim);
+		for(j = 0; j < ndim; j++)
+		{
+			iran	 = (iran * 2661 + 36979) % 175000;
+			s		 = Sign(dith, double(iran - 87500));
+			rmid[j]	 = (0.5 + s) * region[j] + (0.5 - s) * region[ndim + j];
+			fminl[j] = fminr[j] = BIG;
+			fmaxl[j] = fmaxr[j] = (-BIG);
+		}
+		for(n = 0; n < npre; n++)
+		{
+			pt	 = Random_Point(region, PRNG);
+			fval = func(pt, 0.0);
+			for(j = 0; j < ndim; j++)
+			{
+				if(pt[j] <= rmid[j])
+				{
+					fminl[j] = std::min(fminl[j], fval);
+					fmaxl[j] = std::max(fmaxl[j], fval);
+				}
+				else
+				{
+					fminr[j] = std::min(fminr[j], fval);
+					fmaxr[j] = std::max(fmaxr[j], fval);
+				}
+			}
+		}
+		sumb  = BIG;
+		jb	  = -1;
+		siglb = sigrb = 1.0;
+		for(j = 0; j < ndim; j++)
+		{
+			if(fmaxl[j] > fminl[j] && fmaxr[j] > fminr[j])
+			{
+				sigl = std::max(TINY, std::pow(fmaxl[j] - fminl[j], 2.0 / 3.0));
+				sigr = std::max(TINY, std::pow(fmaxr[j] - fminr[j], 2.0 / 3.0));
+				sum	 = sigl + sigr;
+				if(sum <= sumb)
+				{
+					sumb  = sum;
+					jb	  = j;
+					siglb = sigl;
+					sigrb = sigr;
+				}
+			}
+		}
+		if(jb == -1)
+			jb = (ndim * iran) / 175000;
+		rgl	  = region[jb];
+		rgm	  = rmid[jb];
+		rgr	  = region[ndim + jb];
+		fracl = std::abs((rgm - rgl) / (rgr - rgl));
+		nptl  = int(MNPT + (npts - npre - 2 * MNPT) * fracl * siglb / (fracl * siglb + (1.0 - fracl) * sigrb));
+		nptr  = npts - npre - nptl;
+		std::vector<double> region_temp(2 * ndim);
+		for(j = 0; j < ndim; j++)
+		{
+			region_temp[j]		  = region[j];
+			region_temp[ndim + j] = region[ndim + j];
+		}
+		region_temp[ndim + jb] = rmid[jb];
+		Miser(func, region_temp, nptl, dith, avel, var, PRNG);
+		region_temp[jb]		   = rmid[jb];
+		region_temp[ndim + jb] = region[ndim + jb];
+		Miser(func, region_temp, nptr, dith, ave, var, PRNG);
+		ave = fracl * avel + (1 - fracl) * ave;
+		var = fracl * fracl * varl + (1 - fracl) * (1 - fracl) * var;
+	}
+}
+
+double Integrate_MC_Miser(std::function<double(std::vector<double>&, const double)> func, std::vector<double>& region, const int ncall)
+{
+	// Initialize  captive, static random number generator
+	std::random_device rd;
+	std::mt19937 PRNG(rd());
+
+	double dith = 0.0;
+	double average, var;
+	Miser(func, region, ncall, dith, average, var, PRNG);
+	// double sd		= std::sqrt(var) * volume;
+	return MC_Volume(region) * average;
 }
 
 double Integrate_MC(std::function<double(std::vector<double>&, const double)> func, std::vector<double>& region, const int ncalls, const std::string& method)
@@ -535,6 +675,8 @@ double Integrate_MC(std::function<double(std::vector<double>&, const double)> fu
 		const int nprn = -1;
 		return Integrate_MC_Vegas(func, region, init, ncalls, itmx, nprn);
 	}
+	else if(method == "Miser")
+		return Integrate_MC_Miser(func, region, ncalls);
 	else
 	{
 		std::cerr << "Error in libphysica::Integrate_MC(): Method " << method << " not recognized." << std::endl;
