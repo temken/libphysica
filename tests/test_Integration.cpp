@@ -117,12 +117,15 @@ TEST(TestIntegration, TestIntegrate2DMC)
 	// ARRANGE
 	double tolerance_MC	   = 1.0e-2;
 	double tolerance_Vegas = 1.0e-4;
+	double tolerance_Miser = 1.0e-3;
 	auto func			   = [](double x, double y) {
 		 return exp(-x * x - y * y);
 	};
+	int nPoints = 500000;
 	// ACT & ASSERT
-	EXPECT_NEAR(Integrate_2D(func, -1.0, 1.0, -1.0, 1.0, "Monte-Carlo"), M_PI * erf(1.0) * erf(1.0), tolerance_MC);
-	EXPECT_NEAR(Integrate_2D(func, -1.0, 1.0, -1.0, 1.0, "Vegas"), M_PI * erf(1.0) * erf(1.0), tolerance_Vegas);
+	EXPECT_NEAR(Integrate_2D(func, -1.0, 1.0, -1.0, 1.0, "Monte-Carlo", nPoints), M_PI * erf(1.0) * erf(1.0), tolerance_MC);
+	EXPECT_NEAR(Integrate_2D(func, -1.0, 1.0, -1.0, 1.0, "Vegas", nPoints), M_PI * erf(1.0) * erf(1.0), tolerance_Vegas);
+	EXPECT_NEAR(Integrate_2D(func, -1.0, 1.0, -1.0, 1.0, "Miser", nPoints), M_PI * erf(1.0) * erf(1.0), tolerance_Miser);
 }
 
 TEST(TestIntegration, TestIntegrate3DNested)
@@ -143,12 +146,15 @@ TEST(TestIntegration, TestIntegrate3DMC)
 	// ARRANGE
 	double tolerance_MC	   = 1.0e-2;
 	double tolerance_Vegas = 1.0e-4;
+	double tolerance_Miser = 1.0e-3;
 	auto func			   = [](double x, double y, double z) {
 		 return x + y + z;
 	};
+	int nPoints = 100000;
 	// ACT & ASSERT
-	EXPECT_NEAR(Integrate_3D(func, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, "Monte-Carlo"), 1.5, tolerance_MC);
-	EXPECT_NEAR(Integrate_3D(func, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, "Vegas"), 1.5, tolerance_Vegas);
+	EXPECT_NEAR(Integrate_3D(func, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, "Monte-Carlo", nPoints), 1.5, tolerance_MC);
+	EXPECT_NEAR(Integrate_3D(func, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, "Vegas", nPoints), 1.5, tolerance_Vegas);
+	EXPECT_NEAR(Integrate_3D(func, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, "Miser", nPoints), 1.5, tolerance_Miser);
 }
 
 TEST(TestIntegration, TestIntegrate3DVector)
@@ -189,4 +195,43 @@ TEST(TestIntegration, TestIntegrateMCVegas)
 	};
 	// ACT & ASSERT
 	EXPECT_NEAR(Integrate_MC(func, region, 1000000, "Vegas"), result, tolerance);
+}
+
+TEST(TestIntegration, TestIntegrateMCVegasZero)
+{
+	// ARRANGE
+	double tolerance		   = 1.0e-4;
+	std::vector<double> region = {0.0, 0.0, 0.0, 1.0, 1.0, 1.0};
+	double result			   = 0.0;
+	auto func				   = [](const std::vector<double>& x, const double wgt) {
+		 return 0.0;
+	};
+	// ACT & ASSERT
+	EXPECT_NEAR(Integrate_MC(func, region, 1000000, "Vegas"), result, tolerance);
+}
+
+TEST(TestIntegration, TestIntegrateMCMiser)
+{
+	// ARRANGE
+	double tolerance		   = 1.0e-4;
+	std::vector<double> region = {0.0, 0.0, 0.0, 1.0, 1.0, 1.0};
+	double result			   = std::pow((exp(1.0) - 1.0) / exp(1), 3.0);
+	auto func				   = [](const std::vector<double>& x, const double wgt) {
+		 return exp(-x[0] - x[1] - x[2]);
+	};
+	// ACT & ASSERT
+	EXPECT_NEAR(Integrate_MC(func, region, 1000000, "Miser"), result, tolerance);
+}
+
+TEST(TestIntegration, TestIntegrateMCMiserZero)
+{
+	// ARRANGE
+	double tolerance		   = 1.0e-4;
+	std::vector<double> region = {0.0, 0.0, 0.0, 1.0, 1.0, 1.0};
+	double result			   = 0.0;
+	auto func				   = [](const std::vector<double>& x, const double wgt) {
+		 return 0.0;
+	};
+	// ACT & ASSERT
+	EXPECT_NEAR(Integrate_MC(func, region, 1000000, "Miser"), result, tolerance);
 }
