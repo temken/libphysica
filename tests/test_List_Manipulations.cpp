@@ -57,6 +57,15 @@ TEST(TestUtilities, TestTransposeLists)
 	ASSERT_TRUE(Lists_Equal(Transpose_Lists(list1, list2), transposed_list));
 }
 
+TEST(TestUtilities, TestTransposeLists2)
+{
+	// ARRANGE
+	std::vector<std::vector<int>> lists			  = {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}};
+	std::vector<std::vector<int>> transposed_list = {{1, 5, 9}, {2, 6, 10}, {3, 7, 11}, {4, 8, 12}};
+	// ACT & ASSERT
+	ASSERT_TRUE(Lists_Equal(Transpose_Lists(lists), transposed_list));
+}
+
 TEST(TestUtilities, TestSubList)
 {
 	// ARRANGE

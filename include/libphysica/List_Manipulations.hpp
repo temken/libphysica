@@ -34,18 +34,29 @@ extern std::vector<T> Combine_Lists(const std::vector<T>& v1, const std::vector<
 	return result;
 }
 
+// Transforms a list of lists {{x1,x2,..},{y1,y2,..},{z1,z2,..}...} into a list of vectors {{x1,y1,z1...},{x2,y2,z2...},...}
+template <typename T>
+extern std::vector<std::vector<T>> Transpose_Lists(const std::vector<std::vector<T>>& lists)
+{
+	unsigned int N = lists.size();
+	unsigned int M = lists[0].size();
+	for(unsigned int i = 1; i < N; i++)
+		if(lists[i].size() != M)
+		{
+			std::cerr << "Error in libphysica::Transpose_Lists(): Lists have different sizes." << std::endl;
+			std::exit(EXIT_FAILURE);
+		}
+	std::vector<std::vector<T>> result(M, std::vector<T>(N));
+	for(unsigned int i = 0; i < N; i++)
+		for(unsigned int j = 0; j < M; j++)
+			result[j][i] = lists[i][j];
+	return result;
+}
+
 template <typename T>
 extern std::vector<std::vector<T>> Transpose_Lists(const std::vector<T>& v1, const std::vector<T>& v2)
 {
-	if(v1.size() != v2.size())
-	{
-		std::cerr << "Error in libphysica::Transpose_Vectors(): Vectors have different sizes." << std::endl;
-		std::exit(EXIT_FAILURE);
-	}
-	std::vector<std::vector<T>> result;
-	for(unsigned int i = 0; i < v1.size(); i++)
-		result.push_back({v1[i], v2[i]});
-	return result;
+	return Transpose_Lists(std::vector<std::vector<T>> {v1, v2});
 }
 
 template <typename T>
