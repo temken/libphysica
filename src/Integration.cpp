@@ -450,7 +450,12 @@ double Integrate_MC_Vegas(std::function<double(std::vector<double>&, const doubl
 			chi2a = 0.0;
 		standard_deviation = sqrt(1.0 / swgt);
 		tsi				   = sqrt(tsi);
-		if(nprn >= 0)
+		if(std::isnan(integral))
+		{
+			std::cerr << "Error in libphysica::Integrate_MC_Vegas(): The integral is NaN after iteration no. " << (it + 1) << std::endl;
+			std::exit(EXIT_FAILURE);
+		}
+		else if(nprn >= 0)
 		{
 			std::cout << " iteration no. " << std::setw(3) << (it + 1);
 			std::cout << " : integral = " << std::setw(14) << ti;
