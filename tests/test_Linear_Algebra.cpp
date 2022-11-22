@@ -463,6 +463,15 @@ TEST(TestMatrix, TestDeterminant)
 	ASSERT_DOUBLE_EQ(M1.Determinant(), correct_determinant);
 }
 
+TEST(TestMatrix, TestMatrixNorm)
+{
+	// ARRANGE
+	Matrix M1({{3, 2, 1}, {4, 2, 1}, {3, 10, -3.3}});
+	double correct_norm = std::sqrt(154.89);
+	// ACT & ASSERT
+	ASSERT_DOUBLE_EQ(M1.Norm(), correct_norm);
+}
+
 TEST(TestMatrix, TestSubMatrix)
 {
 	// ARRANGE
