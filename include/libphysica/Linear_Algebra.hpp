@@ -109,6 +109,7 @@ class Matrix
 	Matrix Inverse() const;
 	double Trace() const;
 	double Determinant() const;
+	double Norm() const;
 
 	Matrix Sub_Matrix(int row, int column) const;
 	std::vector<double> Eigen_Values() const;	 // TODO

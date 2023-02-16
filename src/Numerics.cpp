@@ -431,7 +431,7 @@ double Interpolation_2D::Interpolate(double x, double y)
 	double f2 = function_values[i + 1][j + 1];
 	double f3 = function_values[i][j + 1];
 
-	return (1.0 - t) * (1.0 - u) * f0 + t * (1.0 - u) * f1 + t * u * f2 + (1.0 - t) * u * f3;
+	return prefactor * ((1.0 - t) * (1.0 - u) * f0 + t * (1.0 - u) * f1 + t * u * f2 + (1.0 - t) * u * f3);
 }
 
 void Interpolation_2D::Set_Prefactor(double factor)

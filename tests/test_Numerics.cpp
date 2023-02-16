@@ -321,6 +321,55 @@ TEST(TestNumerics, TestInterpolation2dUnits)
 	}
 }
 
+TEST(TestNumerics, TestInterpolation2dSetPrefactor)
+{
+	// ARRANGE
+	std::vector<std::vector<double>> data_table = {
+		{-5.0, -5.0, -53.0},
+		{-5.0, 0.0, 0.0},
+		{-5.0, 5.0, 5.0},
+		{0.0, -5.0, -5.0},
+		{0.0, 0.0, 0.0},
+		{0.0, 5.0, 5.0},
+		{5.0, -5.0, -5.0},
+		{5.0, 0.0, 0.0},
+		{5.0, 5.0, 8.0}};
+	Interpolation_2D interpolation(data_table);
+	double x = 0.4;
+	double y = -3.7;
+	// ACT
+	double before = interpolation(x, y);
+	interpolation.Set_Prefactor(2.0);
+	double after = interpolation(x, y);
+	// ASSERT
+	ASSERT_DOUBLE_EQ(before * 2.0, after);
+}
+
+TEST(TestNumerics, TestInterpolation2dMultiply)
+{
+	// ARRANGE
+	std::vector<std::vector<double>> data_table = {
+		{-5.0, -5.0, -53.0},
+		{-5.0, 0.0, 0.0},
+		{-5.0, 5.0, 5.0},
+		{0.0, -5.0, -5.0},
+		{0.0, 0.0, 0.0},
+		{0.0, 5.0, 5.0},
+		{5.0, -5.0, -5.0},
+		{5.0, 0.0, 0.0},
+		{5.0, 5.0, 8.0}};
+	Interpolation_2D interpolation(data_table);
+	double x = 0.4;
+	double y = -3.7;
+	// ACT
+	double before = interpolation(x, y);
+	interpolation.Set_Prefactor(2.0);
+	interpolation.Multiply(3.7);
+	double after = interpolation(x, y);
+	// ASSERT
+	ASSERT_DOUBLE_EQ(before * 2.0 * 3.7, after);
+}
+
 // 2. Root finding
 double find_root_func(double x)
 {

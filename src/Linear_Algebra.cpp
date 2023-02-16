@@ -789,6 +789,16 @@ double Matrix::Determinant() const
 		return det;
 	}
 }
+double Matrix::Norm() const
+{
+	double squared_norm = 0.0;
+	for(unsigned int i = 0; i < rows; i++)
+	{
+		for(unsigned int j = 0; j < columns; j++)
+			squared_norm += components[i][j] * components[i][j];
+	}
+	return std::sqrt(squared_norm);
+}
 
 Matrix Matrix::Sub_Matrix(int row, int column) const
 {
