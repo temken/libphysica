@@ -140,6 +140,89 @@ TEST(TestNaturalUnits, TestInUnitsMatrix)
 		for(unsigned int j = 0; j < M.Columns(); j++)
 			ASSERT_DOUBLE_EQ(In_Units(M, AU)[i][j], M_AU[i][j]);
 }
+
+TEST(TestNaturalUnits, TestInUnitsScalarRound)
+{
+	// ARRANGE
+	double c						= 1.0;
+	int digits						= 3;
+	double speed_of_light_mps_round = 3.0e8;
+	// ACT & ASSERT
+	ASSERT_DOUBLE_EQ(In_Units(c, meter / sec, true, digits), speed_of_light_mps_round);
+}
+
+TEST(TestNaturalUnits, TestInUnitsStdVectorRound)
+{
+	// ARRANGE
+	std::vector<double> quantities			   = {3.78567 * Ohm, 4.178563 * Ohm, 2.78918 * Ohm};
+	int digits								   = 3;
+	std::vector<double> quantities_Ohm_rounded = {3.79, 4.18, 2.79};
+	// ACT & ASSERT
+	ASSERT_EQ(In_Units(quantities, Ohm, true, digits).size(), quantities_Ohm_rounded.size());
+	for(unsigned int i = 0; i < quantities_Ohm_rounded.size(); i++)
+		ASSERT_DOUBLE_EQ(In_Units(quantities, Ohm, true, digits)[i], quantities_Ohm_rounded[i]);
+}
+
+TEST(TestNaturalUnits, TestInUnitsNestedStdVector1Round)
+{
+	// ARRANGE
+	std::vector<std::vector<double>> quantities			   = {{3.646846 * Hz, 4.68484848 * Hz}, {4.84684894 * Hz, 5.6464 * Hz}};
+	int digits											   = 2;
+	std::vector<std::vector<double>> quantities_Hz_rounded = {{3.6, 4.7}, {4.8, 5.6}};
+	// ACT & ASSERT
+	ASSERT_EQ(In_Units(quantities, Hz, true, digits).size(), quantities_Hz_rounded.size());
+	for(unsigned int i = 0; i < quantities_Hz_rounded.size(); i++)
+	{
+		ASSERT_EQ(In_Units(quantities, Hz, true, digits)[i].size(), quantities_Hz_rounded[i].size());
+		for(unsigned int j = 0; j < quantities_Hz_rounded[i].size(); j++)
+			ASSERT_DOUBLE_EQ(In_Units(quantities, Hz, true, digits)[i][j], quantities_Hz_rounded[i][j]);
+	}
+}
+
+TEST(TestNaturalUnits, TestInUnitsNestedStdVector2Round)
+{
+	// ARRANGE
+	std::vector<std::vector<double>> quantities					= {{0.154684 * hr, 1.584613 * Watt}, {0.34684618 * hr, 2.38656351861 * Watt}};
+	int digits													= 4;
+	std::vector<std::vector<double>> quantities_hr_Watt_rounded = {{0.1547, 1.585}, {0.3468, 2.387}};
+	std::vector<double> units									= {hr, Watt};
+	// ACT & ASSERT
+	ASSERT_EQ(In_Units(quantities, units).size(), quantities_hr_Watt_rounded.size());
+	for(unsigned int i = 0; i < quantities_hr_Watt_rounded.size(); i++)
+	{
+		ASSERT_EQ(In_Units(quantities, units, true, digits)[i].size(), quantities_hr_Watt_rounded[i].size());
+		for(unsigned int j = 0; j < quantities_hr_Watt_rounded[i].size(); j++)
+			ASSERT_DOUBLE_EQ(In_Units(quantities, units, true, digits)[i][j], quantities_hr_Watt_rounded[i][j]);
+	}
+}
+
+TEST(TestNaturalUnits, TestInUnitsVectorRound)
+{
+	// ARRANGE
+	Vector vec({1.154984684 * Newton, 2.26846848 * Newton, 3.3684648 * Newton});
+	int digits = 2;
+	Vector vec_Newton_rounded({1.2, 2.3, 3.4});
+	// ACT & ASSERT
+	ASSERT_EQ(In_Units(vec, Newton, true, digits).Size(), vec_Newton_rounded.Size());
+	for(unsigned int i = 0; i < vec_Newton_rounded.Size(); i++)
+		ASSERT_DOUBLE_EQ(In_Units(vec, Newton, true, digits)[i], vec_Newton_rounded[i]);
+}
+
+TEST(TestNaturalUnits, TestInUnitsMatrixRound)
+{
+	// ARRANGE
+	Matrix M({{13.368461 * AU, 12.268486 * AU}, {11.15849 * AU, 10.068486 * AU}, {9.9984681 * AU, 8.868468 * AU}});
+	int digits = 4;
+	Matrix M_AU_rounded({{13.37, 12.27}, {11.16, 10.07}, {9.998, 8.868}});
+
+	// ACT & ASSERT
+	ASSERT_EQ(In_Units(M, AU, true, digits).Rows(), M_AU_rounded.Rows());
+	ASSERT_EQ(In_Units(M, AU, true, digits).Columns(), M_AU_rounded.Columns());
+	for(unsigned int i = 0; i < M.Rows(); i++)
+		for(unsigned int j = 0; j < M.Columns(); j++)
+			ASSERT_DOUBLE_EQ(In_Units(M, AU, true, digits)[i][j], M_AU_rounded[i][j]);
+}
+
 // 6. Simple physics functions
 TEST(TestNaturalUnits, TestReducedMass)
 {

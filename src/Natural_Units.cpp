@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "libphysica/Special_Functions.hpp"
+
 namespace libphysica
 {
 namespace natural_units
@@ -182,31 +184,32 @@ const double Mpc	= mega * pc;
 const double ly		= 365.25 * day;
 
 // 5. Functions
-double In_Units(double quantity, double dimension)
+double In_Units(double quantity, double dimension, bool round, int digits)
 {
-	return quantity / dimension;
+	if(!round)
+		return quantity / dimension;
+	else
+		return Round(quantity / dimension, digits);
 }
 
-std::vector<double> In_Units(const std::vector<double>& quantities, double dimension)
+std::vector<double> In_Units(const std::vector<double>& quantities, double dimension, bool round, int digits)
 {
 	std::vector<double> result(quantities.size());
 	for(unsigned int i = 0; i < quantities.size(); i++)
-	{
-		result[i] = In_Units(quantities[i], dimension);
-	}
+		result[i] = In_Units(quantities[i], dimension, round, digits);
+
 	return result;
 }
-std::vector<std::vector<double>> In_Units(const std::vector<std::vector<double>>& quantities, double dimension)
+std::vector<std::vector<double>> In_Units(const std::vector<std::vector<double>>& quantities, double dimension, bool round, int digits)
 {
 	std::vector<std::vector<double>> result(quantities.size());
 	for(unsigned int i = 0; i < quantities.size(); i++)
-	{
-		result[i] = In_Units(quantities[i], dimension);
-	}
+		result[i] = In_Units(quantities[i], dimension, round, digits);
+
 	return result;
 }
 
-std::vector<std::vector<double>> In_Units(const std::vector<std::vector<double>>& quantities, std::vector<double> dimensions)
+std::vector<std::vector<double>> In_Units(const std::vector<std::vector<double>>& quantities, std::vector<double> dimensions, bool round, int digits)
 {
 	std::vector<std::vector<double>> result(quantities.size(), std::vector<double>(dimensions.size(), 0.0));
 	for(unsigned int i = 0; i < quantities.size(); i++)
@@ -219,27 +222,30 @@ std::vector<std::vector<double>> In_Units(const std::vector<std::vector<double>>
 		else
 		{
 			for(unsigned int j = 0; j < quantities[i].size(); j++)
-			{
-				result[i][j] = In_Units(quantities[i][j], dimensions[j]);
-			}
+				result[i][j] = In_Units(quantities[i][j], dimensions[j], round, digits);
 		}
 	}
+
 	return result;
 }
 
-Vector In_Units(const Vector& quantities, double dimension)
+Vector In_Units(const Vector& quantities, double dimension, bool round, int digits)
 {
 	Vector result(quantities.Size());
 	for(unsigned int i = 0; i < quantities.Size(); i++)
-	{
-		result[i] = In_Units(quantities[i], dimension);
-	}
+		result[i] = In_Units(quantities[i], dimension, round, digits);
+
 	return result;
 }
 
-Matrix In_Units(const Matrix& quantities, double dimension)
+Matrix In_Units(const Matrix& quantities, double dimension, bool round, int digits)
 {
-	return 1.0 / dimension * quantities;
+	Matrix result(quantities.Rows(), quantities.Columns());
+	for(unsigned int i = 0; i < quantities.Rows(); i++)
+		for(unsigned int j = 0; j < quantities.Columns(); j++)
+			result[i][j] = In_Units(quantities[i][j], dimension, round, digits);
+
+	return result;
 }
 
 }	// namespace natural_units

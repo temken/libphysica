@@ -95,12 +95,12 @@ extern const double mSun;
 extern const double rEarth, rSun, AU, pc, kpc, Mpc, ly;
 
 // 5. Transform quantities to a given dimension
-extern double In_Units(double quantity, double dimension);
-extern std::vector<double> In_Units(const std::vector<double>& quantities, double dimension);
-extern std::vector<std::vector<double>> In_Units(const std::vector<std::vector<double>>& quantities, double dimension);
-extern std::vector<std::vector<double>> In_Units(const std::vector<std::vector<double>>& quantities, std::vector<double> dimensions);
-extern Vector In_Units(const Vector& quantities, double dimension);
-extern Matrix In_Units(const Matrix& quantities, double dimension);
+extern double In_Units(double quantity, double dimension, bool round = false, int digits = 4);
+extern std::vector<double> In_Units(const std::vector<double>& quantities, double dimension, bool round = false, int digits = 4);
+extern std::vector<std::vector<double>> In_Units(const std::vector<std::vector<double>>& quantities, double dimension, bool round = false, int digits = 4);
+extern std::vector<std::vector<double>> In_Units(const std::vector<std::vector<double>>& quantities, std::vector<double> dimensions, bool round = false, int digits = 4);
+extern Vector In_Units(const Vector& quantities, double dimension, bool round = false, int digits = 4);
+extern Matrix In_Units(const Matrix& quantities, double dimension, bool round = false, int digits = 4);
 
 }	// namespace natural_units
 
