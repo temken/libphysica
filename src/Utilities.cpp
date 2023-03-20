@@ -75,26 +75,30 @@ void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar
 	}
 }
 
-void Print_Box(std::string str, unsigned int tabs, int mpi_rank)
+void Print_Box(std::string str, unsigned int tabs, int mpi_rank, std::string box_color, std::string text_color)
 {
 	if(mpi_rank == 0)
 	{
+		std::string box_string_1, box_string_2 = "";
 		unsigned int length = str.length() + 2;
 		for(unsigned int i = 0; i < tabs; i++)
-			std::cout << "\t";
-		std::cout << "╔";
+			box_string_1 += "\t";
+		box_string_1 += "╔";
 		for(unsigned int i = 0; i < length; i++)
-			std::cout << "═";
-		std::cout << "╗" << std::endl;
+			box_string_1 += "═";
+		box_string_1 += "╗\n";
 		for(unsigned int i = 0; i < tabs; i++)
-			std::cout << "\t";
-		std::cout << "║ " << str << " ║" << std::endl;
+			box_string_1 += "\t";
+		box_string_1 += "║ ";
+		box_string_2 += " ║\n";
 		for(unsigned int i = 0; i < tabs; i++)
-			std::cout << "\t";
-		std::cout << "╚";
+			box_string_2 += "\t";
+		box_string_2 += "╚";
 		for(unsigned int i = 0; i < length; i++)
-			std::cout << "═";
-		std::cout << "╝" << std::endl;
+			box_string_2 += "═";
+		box_string_2 += "╝\n";
+
+		std::cout << Colored_Text(box_string_1, box_color) << Colored_Text(str, text_color) << Colored_Text(box_string_2, box_color) << std::endl;
 	}
 }
 
@@ -467,14 +471,14 @@ void Check_For_Error(bool error_condition, std::string function_name, std::strin
 {
 	if(error_condition)
 	{
-		std::cerr << "Error in " << function_name << ": " << error_message << std::endl;
+		std::cerr << Colored_Text("Error") << " in " << function_name << ": " << error_message << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
 }
 void Check_For_Warning(bool warning_condition, std::string function_name, std::string warning_message)
 {
 	if(warning_condition)
-		std::cerr << "Warning in " << function_name << ": " << warning_message << std::endl;
+		std::cerr << Colored_Text("Warning", "Yellow") << " in " << function_name << ": " << warning_message << std::endl;
 }
 
 }	// namespace libphysica
