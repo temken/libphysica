@@ -98,6 +98,60 @@ void Print_Box(std::string str, unsigned int tabs, int mpi_rank)
 	}
 }
 
+extern std::string Colored_Text(std::string str, std::string color, bool bold, std::string background_color)
+{
+	std::string color_code = "0";
+	if(color == "Black")
+		color_code = "30";
+	else if(color == "Red")
+		color_code = "31";
+	else if(color == "Green")
+		color_code = "32";
+	else if(color == "Yellow")
+		color_code = "33";
+	else if(color == "Blue")
+		color_code = "34";
+	else if(color == "Magenta")
+		color_code = "35";
+	else if(color == "Cyan")
+		color_code = "36";
+	else if(color == "White")
+		color_code = "37";
+	else if(color == "Default")
+		color_code = "39";
+	else
+	{
+		std::cerr << Colored_Text("Error", "Red", true) << ": in libphysica::Colored_Text(): Unknown color " << color << "." << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+	std::string bold_code			  = (bold) ? "1" : "0";
+	std::string background_color_code = "0";
+	if(background_color == "Black")
+		background_color_code = "40";
+	else if(background_color == "Red")
+		background_color_code = "41";
+	else if(background_color == "Green")
+		background_color_code = "42";
+	else if(background_color == "Yellow")
+		background_color_code = "43";
+	else if(background_color == "Blue")
+		background_color_code = "44";
+	else if(background_color == "Magenta")
+		background_color_code = "45";
+	else if(background_color == "Cyan")
+		background_color_code = "46";
+	else if(background_color == "White")
+		background_color_code = "47";
+	else if(background_color == "Default")
+		background_color_code = "49";
+	else
+	{
+		std::cerr << Colored_Text("Error", "Red", true) << ": in libphysica::Colored_Text(): Unknown background color " << background_color << "." << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+	return "\033[" + bold_code + ";" + color_code + ";" + background_color_code + "m" + str + "\033[0m";
+}
+
 // 2. Import and export data from files
 bool File_Exists(const std::string& file_path)
 {

@@ -31,6 +31,11 @@ TEST(TestUtilities, TestPrintBox)
 	Print_Box("Hello", 1, 0);
 }
 
+TEST(TestUtilities, TestColoredText)
+{
+	std::cout << Colored_Text("Hello, this should be red and bold on white background.", "Red", true, "White") << std::endl;
+}
+
 // 2. Import and export data from files
 TEST(TestUtilities, TestFileExists)
 {

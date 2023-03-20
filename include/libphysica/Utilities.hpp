@@ -15,6 +15,7 @@ namespace libphysica
 extern std::string Time_Display(double seconds);
 extern void Print_Progress_Bar(double progress, unsigned int MPI_rang = 0, unsigned int bar_length = 50, double time = 0.0);
 extern void Print_Box(std::string str, unsigned int tabs = 0, int mpi_rank = 0);
+extern std::string Colored_Text(std::string str, std::string color = "Default", bool bold = false, std::string background_color = "Default");
 
 // 2. Import and export data from files
 extern bool File_Exists(const std::string& file_path);
