@@ -104,6 +104,8 @@ void Print_Box(std::string str, unsigned int tabs, int mpi_rank, std::string box
 
 extern std::string Colored_Text(std::string str, std::string color, bool bold, std::string background_color)
 {
+	if(color == "Default")
+		return str;
 	std::string color_code = "0";
 	if(color == "Black")
 		color_code = "30";
