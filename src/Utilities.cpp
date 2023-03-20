@@ -39,7 +39,7 @@ std::string Time_Display(double seconds_total)
 	return "[" + time_strings[i] + units_strings[i] + separator + time_strings[i + 1] + units_strings[i + 1] + separator + time_strings[i + 2] + units_strings[i + 2] + "]";
 }
 
-void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar_length, double time)
+void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar_length, double time, std::string bar_color)
 {
 	if(MPI_rank == 0 && progress >= 0.0 && progress <= 1.0)
 	{
@@ -51,10 +51,10 @@ void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar
 		{
 			if(i == bar_length / 2)
 			{
-				if(progress < 0.1)
+				if(progress < 0.1 || progress == 1.0)
 				{
 					std::cout << Round(100.0 * progress, 1) << "%" << std::flush;
-					i += (progress < 0.01) ? 3 : 1;
+					i += (progress < 0.01 || progress == 1.0) ? 3 : 1;
 				}
 				else
 				{
@@ -63,9 +63,9 @@ void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar
 				}
 			}
 			else if(progress > 1.0 * i / bar_length)
-				std::cout << "█" << std::flush;
+				std::cout << Colored_Text("█", bar_color) << std::flush;
 			else
-				std::cout << "░" << std::flush;
+				std::cout << Colored_Text("░", bar_color) << std::flush;
 		}
 		if(time > 0.0 && progress > 1.0e-3)
 		{
