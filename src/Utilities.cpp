@@ -183,7 +183,7 @@ std::vector<std::vector<double>> Import_Table(std::string filepath, std::vector<
 	}
 }
 
-void Create_Folder(const std::string& path, int mpi_rank)
+void Create_Folder(const std::string& path, int mpi_rank, bool terminal_output)
 {
 	if(mpi_rank == 0)
 	{
@@ -194,7 +194,7 @@ void Create_Folder(const std::string& path, int mpi_rank)
 #else
 		nError = mkdir(path.c_str(), nMode);   // can be used on non-Windows
 #endif
-		if(nError != 0)
+		if(nError != 0 && terminal_output)
 			std::cerr << "\nWarning in libphysica::Create_Folder(): The folder " << path << " exists already." << std::endl
 					  << std::endl;
 	}
@@ -332,7 +332,7 @@ void Configuration::Initialize_Result_Folder(int MPI_rank)
 	}
 	// 1. Create the /results/ folder if necessary
 	std::string results_folder = TOP_LEVEL_DIR "results/";
-	Create_Folder(results_folder, MPI_rank);
+	Create_Folder(results_folder, MPI_rank, false);
 	// 2. Create a /result/<ID>/ folder for result files.
 	results_path = results_folder + ID + "/";
 	Create_Folder(results_path, MPI_rank);
