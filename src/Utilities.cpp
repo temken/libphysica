@@ -5,6 +5,7 @@
 #include <sys/stat.h>	 //required to create a folder
 #include <sys/types.h>	 // required for stat.h
 
+#include "libphysica/List_Manipulations.hpp"
 #include "libphysica/Natural_Units.hpp"
 #include "libphysica/Special_Functions.hpp"
 #include "version.hpp"
@@ -63,9 +64,9 @@ void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar
 				}
 			}
 			else if(progress > 1.0 * i / bar_length)
-				std::cout << Colored_Text("█", bar_color) << std::flush;
+				std::cout << Formatted_String("█", bar_color, true) << std::flush;
 			else
-				std::cout << Colored_Text("░", bar_color) << std::flush;
+				std::cout << Formatted_String("░", bar_color, true) << std::flush;
 		}
 		if(time > 0.0 && progress > 1.0e-3)
 		{
@@ -98,64 +99,32 @@ void Print_Box(std::string str, unsigned int tabs, int mpi_rank, std::string box
 			box_string_2 += "═";
 		box_string_2 += "╝\n";
 
-		std::cout << Colored_Text(box_string_1, box_color) << Colored_Text(str, text_color) << Colored_Text(box_string_2, box_color) << std::endl;
+		std::cout << Formatted_String(box_string_1, box_color, true) << Formatted_String(str, text_color, true) << Formatted_String(box_string_2, box_color, true) << std::endl;
 	}
 }
 
-extern std::string Colored_Text(std::string str, std::string color, bool bold, std::string background_color)
+const std::vector<std::string> colors				  = {"Default", "Black", "Red", "Green", "Yellow", "Blue", "Magenta", "Cyan", "White"};
+const std::vector<std::string> color_codes			  = {"0", "30", "31", "32", "33", "34", "35", "36", "37"};
+const std::vector<std::string> background_color_codes = {"49", "40", "41", "42", "43", "44", "45", "46", "47"};
+extern std::string Formatted_String(std::string str, std::string color, bool bold, bool underlined, std::string background_color)
 {
-	if(color == "Default")
+	if(color == "Default" && !bold)
 		return str;
-	std::string color_code = "0";
-	if(color == "Black")
-		color_code = "30";
-	else if(color == "Red")
-		color_code = "31";
-	else if(color == "Green")
-		color_code = "32";
-	else if(color == "Yellow")
-		color_code = "33";
-	else if(color == "Blue")
-		color_code = "34";
-	else if(color == "Magenta")
-		color_code = "35";
-	else if(color == "Cyan")
-		color_code = "36";
-	else if(color == "White")
-		color_code = "37";
-	else if(color == "Default")
-		color_code = "39";
+	else if(List_Contains(colors, color) == false || List_Contains(colors, background_color) == false)
+	{
+		std::cerr << Formatted_String("Warning", "Yellow", true) << ": in libphysica::Formatted_String(): Unknown color " << color << " or background color " << background_color << "." << std::endl;
+		return str;
+	}
 	else
 	{
-		std::cerr << Colored_Text("Error", "Red", true) << ": in libphysica::Colored_Text(): Unknown color " << color << "." << std::endl;
-		std::exit(EXIT_FAILURE);
+		int i_color						  = Find_Indices(colors, color)[0];
+		int i_background_color			  = Find_Indices(colors, background_color)[0];
+		std::string color_code			  = color_codes[i_color];
+		std::string background_color_code = background_color_codes[i_background_color];
+		std::string bold_code			  = (bold) ? "1" : "0";
+		std::string underlined_code		  = (underlined) ? "4" : "0";
+		return "\033[" + bold_code + ";" + underlined_code + ";" + color_code + ";" + background_color_code + "m" + str + "\033[0m";
 	}
-	std::string bold_code			  = (bold) ? "1" : "0";
-	std::string background_color_code = "0";
-	if(background_color == "Black")
-		background_color_code = "40";
-	else if(background_color == "Red")
-		background_color_code = "41";
-	else if(background_color == "Green")
-		background_color_code = "42";
-	else if(background_color == "Yellow")
-		background_color_code = "43";
-	else if(background_color == "Blue")
-		background_color_code = "44";
-	else if(background_color == "Magenta")
-		background_color_code = "45";
-	else if(background_color == "Cyan")
-		background_color_code = "46";
-	else if(background_color == "White")
-		background_color_code = "47";
-	else if(background_color == "Default")
-		background_color_code = "49";
-	else
-	{
-		std::cerr << Colored_Text("Error", "Red", true) << ": in libphysica::Colored_Text(): Unknown background color " << background_color << "." << std::endl;
-		std::exit(EXIT_FAILURE);
-	}
-	return "\033[" + bold_code + ";" + color_code + ";" + background_color_code + "m" + str + "\033[0m";
 }
 
 // 2. Import and export data from files
@@ -473,14 +442,14 @@ void Check_For_Error(bool error_condition, std::string function_name, std::strin
 {
 	if(error_condition)
 	{
-		std::cerr << Colored_Text("Error") << " in " << function_name << ": " << error_message << std::endl;
+		std::cerr << Formatted_String("Error", "Red", true) << " in " << function_name << ": " << error_message << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
 }
 void Check_For_Warning(bool warning_condition, std::string function_name, std::string warning_message)
 {
 	if(warning_condition)
-		std::cerr << Colored_Text("Warning", "Yellow") << " in " << function_name << ": " << warning_message << std::endl;
+		std::cerr << Formatted_String("Warning", "Yellow", true) << " in " << function_name << ": " << warning_message << std::endl;
 }
 
 }	// namespace libphysica

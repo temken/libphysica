@@ -31,9 +31,9 @@ TEST(TestUtilities, TestPrintBox)
 	Print_Box("Hello", 1, 0);
 }
 
-TEST(TestUtilities, TestColoredText)
+TEST(TestUtilities, TestFormattedString)
 {
-	std::cout << Colored_Text("Hello, this should be red and bold on white background.", "Red", true, "White") << std::endl;
+	std::cout << Formatted_String("Hello, this should be red, bold and underlined on white background.", "Red", true, true, "White") << std::endl;
 }
 
 // 2. Import and export data from files
