@@ -64,9 +64,9 @@ void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar
 				}
 			}
 			else if(progress > 1.0 * i / bar_length)
-				std::cout << Formatted_String("█", bar_color, true) << std::flush;
+				std::cout << Formatted_String("█", bar_color) << std::flush;
 			else
-				std::cout << Formatted_String("░", bar_color, true) << std::flush;
+				std::cout << Formatted_String("░", bar_color) << std::flush;
 		}
 		if(time > 0.0 && progress > 1.0e-3)
 		{
