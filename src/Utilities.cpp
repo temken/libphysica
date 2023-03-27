@@ -399,7 +399,7 @@ std::vector<int> Workload_Distribution(unsigned int workers, unsigned int tasks)
 {
 	int tasks_per_worker = tasks / workers;
 	std::vector<int> index_list(workers + 1, 0);
-	for(int i = 0; i < workers; i++)
+	for(unsigned int i = 0; i < workers; i++)
 		index_list[i + 1] = index_list[i] + tasks_per_worker;
 	// Distribute the remainder on the workers starting at the end of the list.
 	int remainder = tasks % workers;
@@ -421,7 +421,7 @@ unsigned int Locate_Closest_Location(const std::vector<double>& sorted_list, dou
 		return sorted_list.size() - 1;
 	else
 	{
-		int index = std::distance(sorted_list.begin(), it);
+		unsigned int index = std::distance(sorted_list.begin(), it);
 		if(index == 0)
 			return 0;
 		else if(index == sorted_list.size())
