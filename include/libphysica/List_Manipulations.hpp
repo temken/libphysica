@@ -60,7 +60,7 @@ extern std::vector<std::vector<T>> Transpose_Lists(const std::vector<T>& v1, con
 }
 
 template <typename T>
-extern std::vector<T> Sub_List(const std::vector<T>& v, int i1, int i2)
+extern std::vector<T> Sub_List(const std::vector<T>& v, int i1, unsigned int i2)
 {
 	if(i1 < 0)
 		i1 = 0;

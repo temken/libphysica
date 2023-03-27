@@ -13,8 +13,9 @@ namespace libphysica
 
 // 1. Terminal output
 extern std::string Time_Display(double seconds);
-extern void Print_Progress_Bar(double progress, unsigned int MPI_rang = 0, unsigned int bar_length = 50, double time = 0.0);
-extern void Print_Box(std::string str, unsigned int tabs = 0, int mpi_rank = 0);
+extern void Print_Progress_Bar(double progress, unsigned int MPI_rang = 0, unsigned int bar_length = 50, double time = 0.0, std::string bar_color = "Default");
+extern void Print_Box(std::string str, unsigned int tabs = 0, int mpi_rank = 0, std::string box_color = "Default", std::string text_color = "Default");
+extern std::string Formatted_String(std::string str, std::string color = "Red", bool bold = false, bool underlined = false, std::string background_color = "Default");
 
 // 2. Import and export data from files
 extern bool File_Exists(const std::string& file_path);
@@ -22,7 +23,7 @@ extern bool File_Exists(const std::string& file_path);
 extern std::vector<double> Import_List(std::string filepath, double dimension = 1.0, unsigned int ignored_initial_lines = 0);
 extern std::vector<std::vector<double>> Import_Table(std::string filepath, std::vector<double> dimensions = {}, unsigned int ignored_initial_lines = 0);
 
-extern void Create_Folder(const std::string& path, int mpi_rank = 0);
+extern void Create_Folder(const std::string& path, int mpi_rank = 0, bool terminal_output = true);
 extern void Export_List(std::string filepath, std::vector<double> data, double dimension = 1.0, const std::string& header = "");
 extern void Export_Table(std::string filepath, const std::vector<std::vector<double>>& data, std::vector<double> dimensions = {}, const std::string& header = "");
 extern void Export_Function(std::string filepath, std::function<double(double)> func, const std::vector<double>& x_list, std::vector<double> dimensions = {}, const std::string& header = "");

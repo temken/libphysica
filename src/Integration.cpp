@@ -110,7 +110,7 @@ std::vector<std::vector<double>> Compute_Gauss_Legendre_Roots_and_Weights(unsign
 		{
 			double p1 = 1.0;
 			double p2 = 0.0;
-			for(int j = 0; j < n; j++)
+			for(unsigned int j = 0; j < n; j++)
 			{
 				double p3 = p2;
 				p2		  = p1;
@@ -518,9 +518,9 @@ double Integrate_MC_Vegas(std::function<double(std::vector<double>&, const doubl
 
 std::vector<double> Random_Point(std::vector<double>& region, std::mt19937& PRNG)
 {
-	int dim = region.size() / 2.0;
+	unsigned int dim = region.size() / 2.0;
 	std::vector<double> point(dim);
-	for(int i = 0; i < dim; i++)
+	for(unsigned int i = 0; i < dim; i++)
 		point[i] = region[i] + Sample_Uniform(PRNG) * (region[i + dim] - region[i]);
 	return point;
 }
@@ -536,7 +536,6 @@ double MC_Volume(std::vector<double>& region)
 
 double Integrate_MC_Brute_Force(std::function<double(std::vector<double>&, const double)> func, std::vector<double>& region, const int ncall)
 {
-	int dim = region.size() / 2.0;
 	std::random_device rd;
 	std::mt19937 PRNG(rd());
 

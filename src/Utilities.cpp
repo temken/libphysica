@@ -5,6 +5,7 @@
 #include <sys/stat.h>	 //required to create a folder
 #include <sys/types.h>	 // required for stat.h
 
+#include "libphysica/List_Manipulations.hpp"
 #include "libphysica/Natural_Units.hpp"
 #include "libphysica/Special_Functions.hpp"
 #include "version.hpp"
@@ -39,7 +40,7 @@ std::string Time_Display(double seconds_total)
 	return "[" + time_strings[i] + units_strings[i] + separator + time_strings[i + 1] + units_strings[i + 1] + separator + time_strings[i + 2] + units_strings[i + 2] + "]";
 }
 
-void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar_length, double time)
+void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar_length, double time, std::string bar_color)
 {
 	if(MPI_rank == 0 && progress >= 0.0 && progress <= 1.0)
 	{
@@ -51,10 +52,10 @@ void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar
 		{
 			if(i == bar_length / 2)
 			{
-				if(progress < 0.1)
+				if(progress < 0.1 || progress == 1.0)
 				{
 					std::cout << Round(100.0 * progress, 1) << "%" << std::flush;
-					i += (progress < 0.01) ? 3 : 1;
+					i += (progress < 0.01 || progress == 1.0) ? 3 : 1;
 				}
 				else
 				{
@@ -63,9 +64,9 @@ void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar
 				}
 			}
 			else if(progress > 1.0 * i / bar_length)
-				std::cout << "█" << std::flush;
+				std::cout << Formatted_String("█", bar_color) << std::flush;
 			else
-				std::cout << "░" << std::flush;
+				std::cout << Formatted_String("░", bar_color) << std::flush;
 		}
 		if(time > 0.0 && progress > 1.0e-3)
 		{
@@ -75,26 +76,54 @@ void Print_Progress_Bar(double progress, unsigned int MPI_rank, unsigned int bar
 	}
 }
 
-void Print_Box(std::string str, unsigned int tabs, int mpi_rank)
+void Print_Box(std::string str, unsigned int tabs, int mpi_rank, std::string box_color, std::string text_color)
 {
 	if(mpi_rank == 0)
 	{
+		std::string box_string_1, box_string_2 = "";
 		unsigned int length = str.length() + 2;
 		for(unsigned int i = 0; i < tabs; i++)
-			std::cout << "\t";
-		std::cout << "╔";
+			box_string_1 += "\t";
+		box_string_1 += "╔";
 		for(unsigned int i = 0; i < length; i++)
-			std::cout << "═";
-		std::cout << "╗" << std::endl;
+			box_string_1 += "═";
+		box_string_1 += "╗\n";
 		for(unsigned int i = 0; i < tabs; i++)
-			std::cout << "\t";
-		std::cout << "║ " << str << " ║" << std::endl;
+			box_string_1 += "\t";
+		box_string_1 += "║ ";
+		box_string_2 += " ║\n";
 		for(unsigned int i = 0; i < tabs; i++)
-			std::cout << "\t";
-		std::cout << "╚";
+			box_string_2 += "\t";
+		box_string_2 += "╚";
 		for(unsigned int i = 0; i < length; i++)
-			std::cout << "═";
-		std::cout << "╝" << std::endl;
+			box_string_2 += "═";
+		box_string_2 += "╝\n";
+
+		std::cout << Formatted_String(box_string_1, box_color, true) << Formatted_String(str, text_color, true) << Formatted_String(box_string_2, box_color, true) << std::endl;
+	}
+}
+
+const std::vector<std::string> colors				  = {"Default", "Black", "Red", "Green", "Yellow", "Blue", "Magenta", "Cyan", "White"};
+const std::vector<std::string> color_codes			  = {"0", "30", "31", "32", "33", "34", "35", "36", "37"};
+const std::vector<std::string> background_color_codes = {"49", "40", "41", "42", "43", "44", "45", "46", "47"};
+extern std::string Formatted_String(std::string str, std::string color, bool bold, bool underlined, std::string background_color)
+{
+	if(color == "Default" && !bold)
+		return str;
+	else if(List_Contains(colors, color) == false || List_Contains(colors, background_color) == false)
+	{
+		std::cerr << Formatted_String("Warning", "Yellow", true) << ": in libphysica::Formatted_String(): Unknown color " << color << " or background color " << background_color << "." << std::endl;
+		return str;
+	}
+	else
+	{
+		int i_color						  = Find_Indices(colors, color)[0];
+		int i_background_color			  = Find_Indices(colors, background_color)[0];
+		std::string color_code			  = color_codes[i_color];
+		std::string background_color_code = background_color_codes[i_background_color];
+		std::string bold_code			  = (bold) ? "1" : "0";
+		std::string underlined_code		  = (underlined) ? "4" : "0";
+		return "\033[" + bold_code + ";" + underlined_code + ";" + color_code + ";" + background_color_code + "m" + str + "\033[0m";
 	}
 }
 
@@ -183,7 +212,7 @@ std::vector<std::vector<double>> Import_Table(std::string filepath, std::vector<
 	}
 }
 
-void Create_Folder(const std::string& path, int mpi_rank)
+void Create_Folder(const std::string& path, int mpi_rank, bool terminal_output)
 {
 	if(mpi_rank == 0)
 	{
@@ -194,7 +223,7 @@ void Create_Folder(const std::string& path, int mpi_rank)
 #else
 		nError = mkdir(path.c_str(), nMode);   // can be used on non-Windows
 #endif
-		if(nError != 0)
+		if(nError != 0 && terminal_output)
 			std::cerr << "\nWarning in libphysica::Create_Folder(): The folder " << path << " exists already." << std::endl
 					  << std::endl;
 	}
@@ -332,7 +361,7 @@ void Configuration::Initialize_Result_Folder(int MPI_rank)
 	}
 	// 1. Create the /results/ folder if necessary
 	std::string results_folder = TOP_LEVEL_DIR "results/";
-	Create_Folder(results_folder, MPI_rank);
+	Create_Folder(results_folder, MPI_rank, false);
 	// 2. Create a /result/<ID>/ folder for result files.
 	results_path = results_folder + ID + "/";
 	Create_Folder(results_path, MPI_rank);
@@ -370,7 +399,7 @@ std::vector<int> Workload_Distribution(unsigned int workers, unsigned int tasks)
 {
 	int tasks_per_worker = tasks / workers;
 	std::vector<int> index_list(workers + 1, 0);
-	for(int i = 0; i < workers; i++)
+	for(unsigned int i = 0; i < workers; i++)
 		index_list[i + 1] = index_list[i] + tasks_per_worker;
 	// Distribute the remainder on the workers starting at the end of the list.
 	int remainder = tasks % workers;
@@ -392,7 +421,7 @@ unsigned int Locate_Closest_Location(const std::vector<double>& sorted_list, dou
 		return sorted_list.size() - 1;
 	else
 	{
-		int index = std::distance(sorted_list.begin(), it);
+		unsigned int index = std::distance(sorted_list.begin(), it);
 		if(index == 0)
 			return 0;
 		else if(index == sorted_list.size())
@@ -413,14 +442,14 @@ void Check_For_Error(bool error_condition, std::string function_name, std::strin
 {
 	if(error_condition)
 	{
-		std::cerr << "Error in " << function_name << ": " << error_message << std::endl;
+		std::cerr << Formatted_String("Error", "Red", true) << " in " << function_name << ": " << error_message << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
 }
 void Check_For_Warning(bool warning_condition, std::string function_name, std::string warning_message)
 {
 	if(warning_condition)
-		std::cerr << "Warning in " << function_name << ": " << warning_message << std::endl;
+		std::cerr << Formatted_String("Warning", "Yellow", true) << " in " << function_name << ": " << warning_message << std::endl;
 }
 
 }	// namespace libphysica
