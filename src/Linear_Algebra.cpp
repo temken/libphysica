@@ -239,7 +239,7 @@ bool operator==(const Vector& v1, const Vector& v2)
 		bool result = true;
 		for(unsigned int i = 0; i < v1.Size(); i++)
 		{
-			result *= (v1[i] == v2[i]);
+			result = result && (v1[i] == v2[i]);
 			if(!result)
 				break;
 		}
@@ -974,7 +974,7 @@ bool operator==(const Matrix& M1, const Matrix& M2)
 		bool result = true;
 		for(unsigned int i = 0; i < M1.Rows(); i++)
 			for(unsigned int j = 0; j < M1.Columns(); j++)
-				result *= (M1[i][j] == M2[i][j]);
+				result = result && (M1[i][j] == M2[i][j]);
 		return result;
 	}
 }

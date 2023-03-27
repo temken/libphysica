@@ -551,6 +551,8 @@ TEST(TestMatrix, TestOperators)
 	for(unsigned int i = 0; i < M.Rows(); i++)
 		for(unsigned int j = 0; j < M.Columns(); j++)
 			ASSERT_DOUBLE_EQ(M_copy[i][j], M_minus_M[i][j]);
+	// ASSERT_TRUE(M_copy == M);
+	ASSERT_FALSE(M_copy == M2);
 }
 
 TEST(TestMatrix, TestUnitMatrix)
