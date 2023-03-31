@@ -442,14 +442,16 @@ void Check_For_Error(bool error_condition, std::string function_name, std::strin
 {
 	if(error_condition)
 	{
-		std::cerr << Formatted_String("Error", "Red", true) << " in " << function_name << ": " << error_message << std::endl;
+		std::cerr << std::endl
+				  << Formatted_String("Error", "Red", true) << " in " << function_name << ": " << error_message << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
 }
 void Check_For_Warning(bool warning_condition, std::string function_name, std::string warning_message)
 {
 	if(warning_condition)
-		std::cerr << Formatted_String("Warning", "Yellow", true) << " in " << function_name << ": " << warning_message << std::endl;
+		std::cerr << std::endl
+				  << Formatted_String("Warning", "Yellow", true) << " in " << function_name << ": " << warning_message << std::endl;
 }
 
 }	// namespace libphysica
